@@ -1,12 +1,24 @@
 {
-  "name": "domain",
+  "$schema": "https://json.schemastore.org/package",
+  "name": "@chronops/domain",
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "exports": {
+    ".": {
+      "default": "./index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "effect": "^3.19.14"
   }
 }
