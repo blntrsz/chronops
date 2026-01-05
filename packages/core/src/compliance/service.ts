@@ -7,7 +7,7 @@ export class ComplianceService extends Effect.Service<ComplianceService>()(
   {
     effect: Effect.gen(function* () {
       const repository = yield* Repository.make({
-        tableName: "compliances",
+        tableName: "compliance",
         model: Compliance.Compliance,
         id: Compliance.ComplianceId,
         createSchema: Compliance.CreateCompliance,
