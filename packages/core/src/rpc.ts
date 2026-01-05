@@ -2,6 +2,8 @@ import { RpcSerialization, RpcServer } from "@effect/rpc";
 import { Layer, Logger } from "effect";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
+import { ControlHandler } from "./control/handler";
+import { ControlService } from "./control/service";
 import { HttpLayerRouter } from "@effect/platform";
 import { Base } from "@chronops/domain";
 import { SqlLayer } from "./common/sql";
@@ -16,6 +18,8 @@ const RpcRouter = RpcServer.layerHttpRouter({
 }).pipe(
   Layer.provide(FrameworkHandler),
   Layer.provide(FrameworkService.Default),
+  Layer.provide(ControlHandler),
+  Layer.provide(ControlService.Default),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
   Layer.provide(SqlLayer),
   Layer.provide(RpcSerialization.layerNdjson),
