@@ -1,1 +1,1 @@
-export { authClient } from "@chronops/auth/client";
+export { authClient } from "@chronops/core/auth/client";

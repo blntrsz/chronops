@@ -7,11 +7,11 @@ export const FrameworkHandler = FrameworkContract.toLayer(
     const service = yield* FrameworkService;
 
     return {
-      FrameworkById: (req) => service.getById(req),
-      FrameworkCreate: (req) => service.insert(req),
-      FrameworkList: (req) => service.list(req),
-      FrameworkUpdate: (req) => service.update(req),
-      FrameworkDestroy: (req) => service.destroy(req),
+      FrameworkById: service.getById,
+      FrameworkCreate: service.insert,
+      FrameworkList: service.list,
+      FrameworkUpdate: service.update,
+      FrameworkDestroy: service.destroy,
     };
   }),
 );

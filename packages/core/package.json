@@ -4,6 +4,11 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "auth:gen": "bun x @better-auth/cli@latest generate --config ./src/auth/server.ts",
+    "auth:migrate": "bun x @better-auth/cli@latest migrate --config ./src/auth/server.ts",
+    "db:migrate": "bun ./src/migration.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -18,6 +23,7 @@
   "dependencies": {
     "@chronops/domain": "workspace:^",
     "@effect/platform": "^0.94.1",
+    "@effect/platform-bun": "^0.87.0",
     "@effect/rpc": "^0.73.0",
     "@effect/sql": "^0.49.0",
     "@effect/sql-pg": "^0.50.1",

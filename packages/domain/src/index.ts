@@ -1,2 +1,2 @@
 export * as Framework from "./framework";
-export * from "./base";
+export * as Base from "./base";

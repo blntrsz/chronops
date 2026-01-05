@@ -1,14 +1,14 @@
 import { RpcSerialization, RpcServer } from "@effect/rpc";
 import { Layer, Logger } from "effect";
-import { FrameworkContract } from "./framework/contract";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { HttpLayerRouter } from "@effect/platform";
-import { ULID, ULIDLayer } from "@chronops/domain";
+import { Base } from "@chronops/domain";
 import { SqlLayer } from "./common/sql";
+import { RpcContract } from "./contract";
 
 const RpcRouter = RpcServer.layerHttpRouter({
-  group: FrameworkContract,
+  group: RpcContract,
   path: "/api/rpc",
   protocol: "http",
   spanPrefix: "rpc",
@@ -16,7 +16,7 @@ const RpcRouter = RpcServer.layerHttpRouter({
 }).pipe(
   Layer.provide(FrameworkHandler),
   Layer.provide(FrameworkService.Default),
-  Layer.provide(Layer.succeed(ULID, ULIDLayer)),
+  Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
   Layer.provide(SqlLayer),
   Layer.provide(RpcSerialization.layerNdjson),
 );
