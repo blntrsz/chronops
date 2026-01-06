@@ -5,12 +5,14 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "auth:gen": "bun x @better-auth/cli@latest generate --config ./src/auth/server.ts",
     "auth:migrate": "bun x @better-auth/cli@latest migrate --config ./src/auth/server.ts",
     "db:migrate": "bun ./src/migration.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pg": "^8.16.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -27,7 +29,9 @@
     "@effect/rpc": "^0.73.0",
     "@effect/sql": "^0.49.0",
     "@effect/sql-pg": "^0.50.1",
+    "better-auth": "^1.4.10",
     "effect": "^3.19.14",
+    "pg": "^8.16.3",
     "ulid": "^3.0.2"
   }
 }

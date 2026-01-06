@@ -1,19 +1,19 @@
 import { Effect, Option } from "effect";
 import * as Repository from "../common/repository";
-import { Framework } from "@chronops/domain";
+import { Document } from "@chronops/domain";
 
-export class FrameworkService extends Effect.Service<FrameworkService>()(
-  "FrameworkService",
+export class DocumentService extends Effect.Service<DocumentService>()(
+  "DocumentService",
   {
     effect: Effect.gen(function* () {
       const repository = yield* Repository.make({
-        id: Framework.FrameworkId,
-        model: Framework.Framework,
-        tableName: "framework",
+        id: Document.DocumentId,
+        model: Document.Document,
+        tableName: "document",
       });
 
-      const insert = Effect.fn(function* (input: Framework.CreateFramework) {
-        const model = yield* Framework.make(input);
+      const insert = Effect.fn(function* (input: Document.CreateDocument) {
+        const model = yield* Document.make(input);
         yield* repository.save(model);
 
         return model;
@@ -23,28 +23,28 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
         id,
         data,
       }: {
-        id: Framework.FrameworkId;
-        data: Framework.UpdateFramework;
+        id: Document.DocumentId;
+        data: Document.UpdateDocument;
       }) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return yield* Framework.FrameworkNotFoundError.fromId(id);
+          return yield* Document.DocumentNotFoundError.fromId(id);
         }
 
-        const updatedModel = yield* Framework.update(model.value, data);
+        const updatedModel = yield* Document.update(model.value, data);
 
         yield* repository.save(updatedModel);
 
         return updatedModel;
       });
 
-      const remove = Effect.fn(function* (id: Framework.FrameworkId) {
+      const remove = Effect.fn(function* (id: Document.DocumentId) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return yield* Framework.FrameworkNotFoundError.fromId(id);
+          return yield* Document.DocumentNotFoundError.fromId(id);
         }
 
-        const deletedModel = yield* Framework.remove(model.value);
+        const deletedModel = yield* Document.remove(model.value);
 
         yield* repository.save(deletedModel);
       });
@@ -52,9 +52,9 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
       return {
         getById: repository.getById,
         list: repository.list,
-        remove,
         insert,
         update,
+        remove,
       };
     }),
   },

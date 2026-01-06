@@ -1,63 +1,55 @@
 import { Rpc, RpcGroup } from "@effect/rpc";
-import { Control, Framework } from "@chronops/domain";
+import { Document } from "@chronops/domain";
 import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
 import { AuthMiddleware } from "../auth/middleware";
 
-export class ControlContract extends RpcGroup.make(
-  Rpc.make("ControlCreate", {
-    success: Control.Control,
+export class DocumentContract extends RpcGroup.make(
+  Rpc.make("DocumentCreate", {
+    success: Document.Document,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Control.CreateControl,
+    payload: Document.CreateDocument,
   }),
-  Rpc.make("ControlById", {
-    success: Schema.Option(Control.Control),
+  Rpc.make("DocumentById", {
+    success: Schema.Option(Document.Document),
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Control.ControlId,
+    payload: Document.DocumentId,
   }),
-  Rpc.make("ControlList", {
-    success: Schema.Array(Control.Control),
+  Rpc.make("DocumentList", {
+    success: Schema.Array(Document.Document),
     payload: Pagination,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
   }),
-  Rpc.make("ControlUpdate", {
-    success: Control.Control,
+  Rpc.make("DocumentUpdate", {
+    success: Document.Document,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
-      Control.ControlNotFoundError,
+      Document.DocumentNotFoundError,
     ),
     payload: {
-      id: Control.ControlId,
-      data: Control.UpdateControl,
+      id: Document.DocumentId,
+      data: Document.UpdateDocument,
     },
   }),
-  Rpc.make("ControlRemove", {
+  Rpc.make("DocumentRemove", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
-      Control.ControlNotFoundError,
+      Document.DocumentNotFoundError,
     ),
-    payload: Control.ControlId,
-  }),
-  Rpc.make("ControlByFramework", {
-    success: Schema.Array(Control.Control),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
-    payload: Framework.FrameworkId,
+    payload: Document.DocumentId,
   }),
 ).middleware(AuthMiddleware) {}

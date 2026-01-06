@@ -4,10 +4,25 @@ import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
+import { DocumentHandler } from "./document/handler";
+import { DocumentService } from "./document/service";
 import { HttpLayerRouter } from "@effect/platform";
 import { Base } from "@chronops/domain";
 import { SqlLayer } from "./common/sql";
 import { RpcContract } from "./contract";
+import { AuthMiddlewareLive } from "./auth/middleware";
+
+const HandlersLayer = Layer.mergeAll(
+  FrameworkHandler,
+  ControlHandler,
+  DocumentHandler,
+).pipe(
+  Layer.provide(FrameworkService.Default),
+  Layer.provide(ControlService.Default),
+  Layer.provide(DocumentService.Default),
+  Layer.provide(SqlLayer),
+  Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
+);
 
 const RpcRouter = RpcServer.layerHttpRouter({
   group: RpcContract,
@@ -16,12 +31,8 @@ const RpcRouter = RpcServer.layerHttpRouter({
   spanPrefix: "rpc",
   disableFatalDefects: true,
 }).pipe(
-  Layer.provide(FrameworkHandler),
-  Layer.provide(FrameworkService.Default),
-  Layer.provide(ControlHandler),
-  Layer.provide(ControlService.Default),
-  Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
-  Layer.provide(SqlLayer),
+  Layer.provide(HandlersLayer),
+  Layer.provide(AuthMiddlewareLive),
   Layer.provide(RpcSerialization.layerNdjson),
 );
 

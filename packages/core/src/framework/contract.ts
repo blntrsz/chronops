@@ -4,6 +4,7 @@ import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
+import { AuthMiddleware } from "../auth/middleware";
 
 export class FrameworkContract extends RpcGroup.make(
   Rpc.make("FrameworkCreate", {
@@ -31,22 +32,24 @@ export class FrameworkContract extends RpcGroup.make(
     ),
   }),
   Rpc.make("FrameworkUpdate", {
-    success: Schema.Option(Framework.Framework),
+    success: Framework.Framework,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
     ),
     payload: {
       id: Framework.FrameworkId,
       data: Framework.UpdateFramework,
     },
   }),
-  Rpc.make("FrameworkDestroy", {
+  Rpc.make("FrameworkRemove", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
     ),
     payload: Framework.FrameworkId,
   }),
-) {}
+).middleware(AuthMiddleware) {}

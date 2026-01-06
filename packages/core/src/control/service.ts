@@ -1,22 +1,24 @@
+import { SqlClient } from "@effect/sql";
 import { Effect, Option } from "effect";
 import * as Repository from "../common/repository";
-import { Control } from "@chronops/domain";
+import { Control, Framework } from "@chronops/domain";
+import { Actor } from "@chronops/domain/actor";
 
 export class ControlService extends Effect.Service<ControlService>()(
   "ControlService",
   {
     effect: Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+
       const repository = yield* Repository.make({
-        tableName: "control",
-        model: Control.Control,
         id: Control.ControlId,
-        createSchema: Control.CreateControl,
-        updateSchema: Control.UpdateControl,
+        model: Control.Control,
+        tableName: "control",
       });
 
       const insert = Effect.fn(function* (input: Control.CreateControl) {
         const model = yield* Control.make(input);
-        yield* repository.insert(model);
+        yield* repository.save(model);
 
         return model;
       });
@@ -30,20 +32,49 @@ export class ControlService extends Effect.Service<ControlService>()(
       }) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return Option.none();
+          return yield* Control.ControlNotFoundError.fromId(id);
         }
 
-        const updatedModel = model.value.update(data);
+        const updatedModel = yield* Control.update(model.value, data);
 
-        yield* repository.update(updatedModel);
+        yield* repository.save(updatedModel);
 
-        return Option.some(updatedModel);
+        return updatedModel;
       });
 
+      const remove = Effect.fn(function* (id: Control.ControlId) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Control.ControlNotFoundError.fromId(id);
+        }
+
+        const deletedModel = yield* Control.remove(model.value);
+
+        yield* repository.save(deletedModel);
+
+        return deletedModel;
+      });
+
+      const getByFramework = (frameworkId: Framework.FrameworkId) =>
+        Effect.gen(function* () {
+          const actor = yield* Actor;
+          return yield* sql<Control.Control>`
+            SELECT * FROM ${sql("control")} 
+            WHERE ${sql.and([
+              sql`framework_id = ${frameworkId}`,
+              sql`org_id = ${actor.orgId}`,
+              sql`deleted_at IS NULL`,
+            ])}
+          `;
+        });
+
       return {
-        ...repository,
         insert,
         update,
+        remove,
+        getById: repository.getById,
+        list: repository.list,
+        getByFramework,
       };
     }),
   },

@@ -1,16 +1,27 @@
-import { Context, Schema } from "effect";
+import { Context, DateTime, Effect, Schema } from "effect";
 import { ulid } from "ulid";
+import { Actor } from "./actor";
 
-export class BaseSchema extends Schema.Class<BaseSchema>("BaseSchema")({
+export const MemberId = Schema.String.pipe(Schema.brand("MemberId"));
+export type MemberId = typeof MemberId.Type;
+
+export const OrgId = Schema.String.pipe(Schema.brand("OrgId"));
+export type OrgId = typeof OrgId.Type;
+
+export const Hash = Schema.String.pipe(Schema.brand("Hash"));
+export type Hash = typeof Hash.Type;
+
+export class Base extends Schema.Class<Base>("BaseSchema")({
   createdAt: Schema.Date,
   updatedAt: Schema.Date,
   deletedAt: Schema.optional(Schema.Date),
 
-  createdBy: Schema.String,
-  updatedBy: Schema.String,
-  deletedBy: Schema.optional(Schema.String),
+  createdBy: MemberId,
+  updatedBy: MemberId,
+  deletedBy: Schema.optional(MemberId),
 
-  organizationId: Schema.String,
+  hash: Hash,
+  organizationId: OrgId,
 }) {}
 
 export class ULID extends Context.Tag("ULID")<
@@ -22,4 +33,45 @@ export class ULID extends Context.Tag("ULID")<
 
 export const ULIDLayer = ULID.of({
   createId: ulid,
+});
+
+export const make = Effect.fn(function* () {
+  const ulid = yield* ULID;
+  const now = yield* DateTime.nowAsDate;
+  const actor = yield* Actor;
+
+  return Base.make({
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: undefined,
+    createdBy: actor.memberId,
+    updatedBy: actor.memberId,
+    deletedBy: undefined,
+    hash: Hash.make(ulid.createId()),
+    organizationId: actor.orgId,
+  });
+});
+
+export const update = Effect.fn(function* () {
+  const ulid = yield* ULID;
+  const now = yield* DateTime.nowAsDate;
+  const actor = yield* Actor;
+
+  return {
+    updatedAt: now,
+    updatedBy: actor.memberId,
+    hash: Hash.make(ulid.createId()),
+  };
+});
+
+export const remove = Effect.fn(function* () {
+  const ulid = yield* ULID;
+  const now = yield* DateTime.nowAsDate;
+  const actor = yield* Actor;
+
+  return {
+    deletedAt: now,
+    deletedBy: actor.memberId,
+    hash: Hash.make(ulid.createId()),
+  };
 });
