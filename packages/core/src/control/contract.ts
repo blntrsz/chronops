@@ -1,5 +1,5 @@
 import { Rpc, RpcGroup } from "@effect/rpc";
-import { Control } from "@chronops/domain";
+import { Control, Framework } from "@chronops/domain";
 import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
@@ -31,21 +31,23 @@ export class ControlContract extends RpcGroup.make(
     ),
   }),
   Rpc.make("ControlUpdate", {
-    success: Schema.Option(Control.Control),
+    success: Control.Control,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Control.ControlNotFoundError,
     ),
     payload: {
       id: Control.ControlId,
       data: Control.UpdateControl,
     },
   }),
-  Rpc.make("ControlDestroy", {
+  Rpc.make("ControlRemove", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Control.ControlNotFoundError,
     ),
     payload: Control.ControlId,
   }),
@@ -55,14 +57,6 @@ export class ControlContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Control.Props["frameworkId"],
-  }),
-  Rpc.make("ControlByOrganization", {
-    success: Schema.Array(Control.Control),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
-    payload: Schema.String,
+    payload: Framework.FrameworkId,
   }),
 ) {}

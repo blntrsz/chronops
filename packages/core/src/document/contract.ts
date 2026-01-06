@@ -31,38 +31,24 @@ export class DocumentContract extends RpcGroup.make(
     ),
   }),
   Rpc.make("DocumentUpdate", {
-    success: Schema.Option(Document.Document),
+    success: Document.Document,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Document.DocumentNotFoundError,
     ),
     payload: {
       id: Document.DocumentId,
       data: Document.UpdateDocument,
     },
   }),
-  Rpc.make("DocumentDestroy", {
+  Rpc.make("DocumentRemove", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Document.DocumentNotFoundError,
     ),
     payload: Document.DocumentId,
-  }),
-  Rpc.make("DocumentByFramework", {
-    success: Schema.Array(Document.Document),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
-    payload: Document.Props["frameworkId"],
-  }),
-  Rpc.make("DocumentByControl", {
-    success: Schema.Array(Document.Document),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
-    payload: Document.Props["controlId"],
   }),
 ) {}

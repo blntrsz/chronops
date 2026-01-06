@@ -11,9 +11,8 @@ export const ControlHandler = ControlContract.toLayer(
       ControlCreate: service.insert,
       ControlList: service.list,
       ControlUpdate: service.update,
-      ControlDestroy: service.destroy,
+      ControlRemove: service.remove,
       ControlByFramework: service.getByFramework,
-      ControlByOrganization: service.getByOrganization,
     };
   }),
 );

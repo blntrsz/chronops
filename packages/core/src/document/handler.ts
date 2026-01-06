@@ -11,9 +11,7 @@ export const DocumentHandler = DocumentContract.toLayer(
       DocumentCreate: service.insert,
       DocumentList: service.list,
       DocumentUpdate: service.update,
-      DocumentDestroy: service.destroy,
-      DocumentByFramework: service.getByFramework,
-      DocumentByControl: service.getByControl,
+      DocumentRemove: service.remove,
     };
   }),
 );

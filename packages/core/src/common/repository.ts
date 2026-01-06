@@ -1,3 +1,4 @@
+import { Actor } from "@chronops/domain/actor";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import type { SqlError } from "@effect/sql/SqlError";
 import { Effect, Schema } from "effect";
@@ -10,43 +11,33 @@ export const Pagination = Schema.Struct({
 });
 
 export interface RepositoryConfig<
-  TCreateSchema extends Schema.Schema<any>,
-  TUpdateSchema extends Schema.Schema<any>,
   TIdSchema extends Schema.Schema<any>,
   TModelSchema extends Schema.Schema<any>,
 > {
   tableName: string;
-  createSchema: TCreateSchema;
-  updateSchema: TUpdateSchema;
   id: TIdSchema;
   model: TModelSchema;
 }
 
 export const make = Effect.fn(function* <
-  TCreateSchema extends Schema.Schema<any>,
-  TUpdateSchema extends Schema.Schema<any>,
   TIdSchema extends Schema.Schema<any>,
   TModelSchema extends Schema.Schema<any>,
->(
-  config: RepositoryConfig<
-    TCreateSchema,
-    TUpdateSchema,
-    TIdSchema,
-    TModelSchema
-  >,
-) {
+>(config: RepositoryConfig<TIdSchema, TModelSchema>) {
   const sql = yield* SqlClient.SqlClient;
+  const actor = yield* Actor;
 
   /**
-   * Insert a new record into the database.
+   * Save a new record. Create new entity if it does not exist. Update if it does.
    */
-  const insert = SqlSchema.void({
-    Request: config.createSchema,
+  const save = SqlSchema.void({
+    Request: config.model,
     execute(request) {
-      return sql`INSERT INTO ${sql(`${config.tableName}`)} ${sql.insert(request)}`;
+      return sql`INSERT INTO ${sql(config.tableName)} ${sql.insert(request)} 
+          ON CONFLICT (id) 
+          DO UPDATE SET ${sql.update(request)}`;
     },
   }) as (
-    request: Schema.Schema.Type<typeof config.createSchema>,
+    request: Schema.Schema.Type<typeof config.model>,
   ) => Effect.Effect<void, SqlError | ParseError, never>;
 
   /**
@@ -56,9 +47,11 @@ export const make = Effect.fn(function* <
     Request: config.id,
     Result: config.model,
     execute(request) {
-      return sql`SELECT * FROM ${sql(
-        `${config.tableName}`,
-      )} WHERE id = ${(request as unknown as { id: string }).id}`;
+      return sql`SELECT * FROM ${sql(config.tableName)} ${sql.and([
+        sql`id = ${request.id}`,
+        sql`org_id = ${actor.orgId}`,
+        sql`deleted_at IS NULL`,
+      ])}`;
     },
   }) as (
     request: Schema.Schema.Type<typeof config.id>,
@@ -77,7 +70,10 @@ export const make = Effect.fn(function* <
     execute(request) {
       return sql`SELECT * FROM ${sql(`${config.tableName}`)} LIMIT ${request.size} OFFSET ${
         request.page * request.size
-      }`;
+      } WHERE ${sql.and([
+        sql`org_id = ${actor.orgId}`,
+        sql`deleted_at IS NULL`,
+      ])}`;
     },
   }) as (request: {
     readonly page: number;
@@ -89,27 +85,19 @@ export const make = Effect.fn(function* <
   >;
 
   /**
-   * Update an existing record.
-   */
-  const update = SqlSchema.void({
-    Request: config.model,
-    execute(request) {
-      return sql`UPDATE ${sql(`${config.tableName}`)} SET ${sql.update(request)} WHERE id = ${request.id}`;
-    },
-  }) as (
-    request: Schema.Schema.Type<typeof config.model>,
-  ) => Effect.Effect<void, SqlError | ParseError, never>;
-
-  /**
    * Delete a record by its ID.
    */
   const destroy = SqlSchema.void({
     Request: config.id,
     execute(request) {
-      return sql`DELETE FROM ${sql(`${config.tableName}`)} WHERE id = ${(request as unknown as { id: string }).id}`;
+      return sql`DELETE FROM ${sql(`${config.tableName}`)} WHERE ${sql.and([
+        sql`id = ${request.id}`,
+        sql`org_id = ${actor.orgId}`,
+      ])}`;
     },
   }) as (
     request: Schema.Schema.Type<typeof config.id>,
   ) => Effect.Effect<void, ParseError | SqlError, never>;
-  return { insert, getById, list, update, destroy };
+
+  return { save, getById, list, destroy };
 });

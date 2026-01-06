@@ -3,6 +3,6 @@ import { PgClient } from "@effect/sql-pg";
 
 export const SqlLayer = PgClient.layerConfig({
   url: Config.redacted("DATABASE_URL"),
-  transformQueryNames: String.camelToSnake,
-  transformResultNames: String.snakeToCamel,
+  transformQueryNames: Config.succeed(String.camelToSnake),
+  transformResultNames: Config.succeed(String.snakeToCamel),
 });

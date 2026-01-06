@@ -1,22 +1,25 @@
+import { SqlClient, SqlSchema } from "@effect/sql";
 import { Effect, Option } from "effect";
 import * as Repository from "../common/repository";
-import { Control } from "@chronops/domain";
+import { Control, Framework } from "@chronops/domain";
+import { Actor } from "@chronops/domain/actor";
 
 export class ControlService extends Effect.Service<ControlService>()(
   "ControlService",
   {
     effect: Effect.gen(function* () {
+      const sql = yield* SqlClient.SqlClient;
+      const actor = yield* Actor;
+
       const repository = yield* Repository.make({
-        tableName: "control",
-        model: Control.Control,
         id: Control.ControlId,
-        createSchema: Control.CreateControl,
-        updateSchema: Control.UpdateControl,
+        model: Control.Control,
+        tableName: "control",
       });
 
       const insert = Effect.fn(function* (input: Control.CreateControl) {
         const model = yield* Control.make(input);
-        yield* repository.insert(model);
+        yield* repository.save(model);
 
         return model;
       });
@@ -30,36 +33,48 @@ export class ControlService extends Effect.Service<ControlService>()(
       }) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return Option.none();
+          return yield* Control.ControlNotFoundError.fromId(id);
         }
 
-        const updatedModel = model.value.update(data);
+        const updatedModel = yield* Control.update(model.value, data);
 
-        yield* repository.update(updatedModel);
+        yield* repository.save(updatedModel);
 
-        return Option.some(updatedModel);
+        return updatedModel;
       });
 
-      const getByFramework = Effect.fn(function* (frameworkId: Control.Props["frameworkId"]) {
-        const { sql } = yield* Repository;
-        return sql`SELECT * FROM ${sql("control")} WHERE framework_id = ${frameworkId}`.query(Control.Control);
+      const remove = Effect.fn(function* (id: Control.ControlId) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Control.ControlNotFoundError.fromId(id);
+        }
+
+        const deletedModel = yield* Control.remove(model.value);
+
+        yield* repository.save(deletedModel);
+
+        return deletedModel;
       });
 
-      const getByOrganization = Effect.fn(function* (organizationId: string) {
-        const { sql } = yield* Repository;
-        return sql`
-          SELECT c.* FROM ${sql("control")} c
-          JOIN ${sql("framework")} f ON c.framework_id = f.id
-          WHERE f.organization_id = ${organizationId} AND c.id IS NOT NULL
-        `.query(Control.Control);
+      const getByFramework = SqlSchema.findAll({
+        Request: Framework.FrameworkId,
+        Result: Control.Control,
+        execute(frameworkId) {
+          return sql`SELECT * FROM ${sql("control")} WHERE ${sql.and([
+            sql`framework_id = ${frameworkId}`,
+            sql`org_id = ${actor.orgId}`,
+            sql`deleted_at IS NULL`,
+          ])}`;
+        },
       });
 
       return {
-        ...repository,
         insert,
         update,
+        remove,
+        getById: repository.getById,
+        list: repository.list,
         getByFramework,
-        getByOrganization,
       };
     }),
   },

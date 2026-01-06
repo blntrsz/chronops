@@ -31,30 +31,24 @@ export class FrameworkContract extends RpcGroup.make(
     ),
   }),
   Rpc.make("FrameworkUpdate", {
-    success: Schema.Option(Framework.Framework),
+    success: Framework.Framework,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
     ),
     payload: {
       id: Framework.FrameworkId,
       data: Framework.UpdateFramework,
     },
   }),
-  Rpc.make("FrameworkDestroy", {
+  Rpc.make("FrameworkRemove", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
     ),
     payload: Framework.FrameworkId,
-  }),
-  Rpc.make("FrameworkByOrganization", {
-    success: Schema.Array(Framework.Framework),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
-    payload: Schema.String,
   }),
 ) {}

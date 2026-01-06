@@ -17,7 +17,9 @@ export const auth = betterAuth({
     organization({
       async sendInvitationEmail(data) {
         // TODO: implement invitation email
-        console.log(`Invitation for ${data.email} to ${data.organization.name}`);
+        console.log(
+          `Invitation for ${data.email} to ${data.organization.name}`,
+        );
       },
     }),
     tanstackStartCookies(), // must be last

@@ -10,13 +10,11 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
         tableName: "framework",
         model: Framework.Framework,
         id: Framework.FrameworkId,
-        createSchema: Framework.CreateFramework,
-        updateSchema: Framework.UpdateFramework,
       });
 
       const insert = Effect.fn(function* (input: Framework.CreateFramework) {
         const model = yield* Framework.make(input);
-        yield* repository.insert(model);
+        yield* repository.save(model);
 
         return model;
       });
@@ -30,26 +28,33 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
       }) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return Option.none();
+          return yield* Framework.FrameworkNotFoundError.fromId(id);
         }
 
-        const updatedModel = model.value.update(data);
+        const updatedModel = yield* Framework.update(model.value, data);
 
-        yield* repository.update(updatedModel);
+        yield* repository.save(updatedModel);
 
-        return Option.some(updatedModel);
+        return updatedModel;
       });
 
-      const getByOrganization = Effect.fn(function* (organizationId: string) {
-        const { sql } = yield* Repository;
-        return sql`SELECT * FROM ${sql("framework")} WHERE organization_id = ${organizationId} AND deleted_at IS NULL`.query(Framework.Framework);
+      const remove = Effect.fn(function* (id: Framework.FrameworkId) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Framework.FrameworkNotFoundError.fromId(id);
+        }
+
+        const deletedModel = yield* Framework.remove(model.value);
+
+        yield* repository.save(deletedModel);
       });
 
       return {
-        ...repository,
+        getById: repository.getById,
+        list: repository.list,
+        remove,
         insert,
         update,
-        getByOrganization,
       };
     }),
   },

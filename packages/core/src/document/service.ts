@@ -7,16 +7,14 @@ export class DocumentService extends Effect.Service<DocumentService>()(
   {
     effect: Effect.gen(function* () {
       const repository = yield* Repository.make({
-        tableName: "document",
-        model: Document.Document,
         id: Document.DocumentId,
-        createSchema: Document.CreateDocument,
-        updateSchema: Document.UpdateDocument,
+        model: Document.Document,
+        tableName: "document",
       });
 
       const insert = Effect.fn(function* (input: Document.CreateDocument) {
         const model = yield* Document.make(input);
-        yield* repository.insert(model);
+        yield* repository.save(model);
 
         return model;
       });
@@ -30,32 +28,33 @@ export class DocumentService extends Effect.Service<DocumentService>()(
       }) {
         const model = yield* repository.getById(id);
         if (Option.isNone(model)) {
-          return Option.none();
+          return yield* Document.DocumentNotFoundError.fromId(id);
         }
 
-        const updatedModel = model.value.update(data);
+        const updatedModel = yield* Document.update(model.value, data);
 
-        yield* repository.update(updatedModel);
+        yield* repository.save(updatedModel);
 
-        return Option.some(updatedModel);
+        return updatedModel;
       });
 
-      const getByFramework = Effect.fn(function* (frameworkId: Document.Props["frameworkId"]) {
-        const { sql } = yield* Repository;
-        return sql`SELECT * FROM ${sql("document")} WHERE framework_id = ${frameworkId}`.query(Document.Document);
-      });
+      const remove = Effect.fn(function* (id: Document.DocumentId) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Document.DocumentNotFoundError.fromId(id);
+        }
 
-      const getByControl = Effect.fn(function* (controlId: Document.Props["controlId"]) {
-        const { sql } = yield* Repository;
-        return sql`SELECT * FROM ${sql("document")} WHERE control_id = ${controlId}`.query(Document.Document);
+        const deletedModel = yield* Document.remove(model.value);
+
+        yield* repository.save(deletedModel);
       });
 
       return {
-        ...repository,
+        getById: repository.getById,
+        list: repository.list,
         insert,
         update,
-        getByFramework,
-        getByControl,
+        remove,
       };
     }),
   },
