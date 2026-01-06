@@ -1,9 +1,17 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import { ULID } from "./base";
+import { FrameworkId } from "./framework";
 
 export const ControlId = Schema.String.pipe(Schema.brand("ControlId"));
 export type ControlId = typeof ControlId.Type;
+
+export const ControlStatus = Schema.Union(
+  Schema.Literal("draft"),
+  Schema.Literal("active"),
+  Schema.Literal("deprecated"),
+);
+export type ControlStatus = typeof ControlStatus.Type;
 
 export const makeControlId = Effect.fn(function* () {
   const { createId } = yield* ULID;
@@ -14,6 +22,10 @@ export const makeControlId = Effect.fn(function* () {
 export class Control extends Schema.Class<Control>("Control")({
   id: ControlId,
   name: Schema.String,
+  description: Schema.optional(Schema.String),
+  frameworkId: FrameworkId,
+  status: ControlStatus,
+  testingFrequency: Schema.optional(Schema.String),
 }) {
   update(input: UpdateControl) {
     return new Control({
@@ -23,7 +35,7 @@ export class Control extends Schema.Class<Control>("Control")({
   }
 }
 
-export const CreateControl = Control.pipe(Schema.pick("name"));
+export const CreateControl = Control.pipe(Schema.pick("name", "description", "frameworkId", "status", "testingFrequency"));
 export type CreateControl = typeof CreateControl.Type;
 
 export const UpdateControl = CreateControl.pipe(Schema.partial);

@@ -40,10 +40,26 @@ export class ControlService extends Effect.Service<ControlService>()(
         return Option.some(updatedModel);
       });
 
+      const getByFramework = Effect.fn(function* (frameworkId: Control.Props["frameworkId"]) {
+        const { sql } = yield* Repository;
+        return sql`SELECT * FROM ${sql("control")} WHERE framework_id = ${frameworkId}`.query(Control.Control);
+      });
+
+      const getByOrganization = Effect.fn(function* (organizationId: string) {
+        const { sql } = yield* Repository;
+        return sql`
+          SELECT c.* FROM ${sql("control")} c
+          JOIN ${sql("framework")} f ON c.framework_id = f.id
+          WHERE f.organization_id = ${organizationId} AND c.id IS NOT NULL
+        `.query(Control.Control);
+      });
+
       return {
         ...repository,
         insert,
         update,
+        getByFramework,
+        getByOrganization,
       };
     }),
   },

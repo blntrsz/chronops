@@ -1,60 +1,68 @@
 import { Rpc, RpcGroup } from "@effect/rpc";
-import { Framework } from "@chronops/domain";
+import { Document } from "@chronops/domain";
 import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
 
-export class FrameworkContract extends RpcGroup.make(
-  Rpc.make("FrameworkCreate", {
-    success: Framework.Framework,
+export class DocumentContract extends RpcGroup.make(
+  Rpc.make("DocumentCreate", {
+    success: Document.Document,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Framework.CreateFramework,
+    payload: Document.CreateDocument,
   }),
-  Rpc.make("FrameworkById", {
-    success: Schema.Option(Framework.Framework),
+  Rpc.make("DocumentById", {
+    success: Schema.Option(Document.Document),
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Framework.FrameworkId,
+    payload: Document.DocumentId,
   }),
-  Rpc.make("FrameworkList", {
-    success: Schema.Array(Framework.Framework),
+  Rpc.make("DocumentList", {
+    success: Schema.Array(Document.Document),
     payload: Pagination,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
   }),
-  Rpc.make("FrameworkUpdate", {
-    success: Schema.Option(Framework.Framework),
+  Rpc.make("DocumentUpdate", {
+    success: Schema.Option(Document.Document),
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
     payload: {
-      id: Framework.FrameworkId,
-      data: Framework.UpdateFramework,
+      id: Document.DocumentId,
+      data: Document.UpdateDocument,
     },
   }),
-  Rpc.make("FrameworkDestroy", {
+  Rpc.make("DocumentDestroy", {
     success: Schema.Void,
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Framework.FrameworkId,
+    payload: Document.DocumentId,
   }),
-  Rpc.make("FrameworkByOrganization", {
-    success: Schema.Array(Framework.Framework),
+  Rpc.make("DocumentByFramework", {
+    success: Schema.Array(Document.Document),
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Schema.String,
+    payload: Document.Props["frameworkId"],
+  }),
+  Rpc.make("DocumentByControl", {
+    success: Schema.Array(Document.Document),
+    error: Schema.Union(
+      Schema.instanceOf(SqlError.SqlError),
+      Schema.instanceOf(ParseError),
+    ),
+    payload: Document.Props["controlId"],
   }),
 ) {}

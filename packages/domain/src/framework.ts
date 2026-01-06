@@ -14,6 +14,9 @@ export const makeFrameworkId = Effect.fn(function* () {
 export class Framework extends Schema.Class<Framework>("Framework")({
   id: FrameworkId,
   name: Schema.String,
+  description: Schema.optional(Schema.String),
+  version: Schema.optional(Schema.String),
+  sourceUrl: Schema.optional(Schema.String),
 }) {
   update(input: UpdateFramework) {
     return new Framework({
@@ -23,7 +26,7 @@ export class Framework extends Schema.Class<Framework>("Framework")({
   }
 }
 
-export const CreateFramework = Framework.pipe(Schema.pick("name"));
+export const CreateFramework = Framework.pipe(Schema.pick("name", "description", "version", "sourceUrl"));
 export type CreateFramework = typeof CreateFramework.Type;
 
 export const UpdateFramework = CreateFramework.pipe(Schema.partial);

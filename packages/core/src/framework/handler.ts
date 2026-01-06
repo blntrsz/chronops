@@ -12,6 +12,7 @@ export const FrameworkHandler = FrameworkContract.toLayer(
       FrameworkList: service.list,
       FrameworkUpdate: service.update,
       FrameworkDestroy: service.destroy,
+      FrameworkByOrganization: service.getByOrganization,
     };
   }),
 );

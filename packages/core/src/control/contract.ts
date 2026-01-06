@@ -49,4 +49,20 @@ export class ControlContract extends RpcGroup.make(
     ),
     payload: Control.ControlId,
   }),
+  Rpc.make("ControlByFramework", {
+    success: Schema.Array(Control.Control),
+    error: Schema.Union(
+      Schema.instanceOf(SqlError.SqlError),
+      Schema.instanceOf(ParseError),
+    ),
+    payload: Control.Props["frameworkId"],
+  }),
+  Rpc.make("ControlByOrganization", {
+    success: Schema.Array(Control.Control),
+    error: Schema.Union(
+      Schema.instanceOf(SqlError.SqlError),
+      Schema.instanceOf(ParseError),
+    ),
+    payload: Schema.String,
+  }),
 ) {}

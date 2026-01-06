@@ -40,10 +40,16 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
         return Option.some(updatedModel);
       });
 
+      const getByOrganization = Effect.fn(function* (organizationId: string) {
+        const { sql } = yield* Repository;
+        return sql`SELECT * FROM ${sql("framework")} WHERE organization_id = ${organizationId} AND deleted_at IS NULL`.query(Framework.Framework);
+      });
+
       return {
         ...repository,
         insert,
         update,
+        getByOrganization,
       };
     }),
   },
