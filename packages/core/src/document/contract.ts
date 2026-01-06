@@ -4,6 +4,7 @@ import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
+import { AuthMiddleware } from "../auth/middleware";
 
 export class DocumentContract extends RpcGroup.make(
   Rpc.make("DocumentCreate", {
@@ -51,4 +52,4 @@ export class DocumentContract extends RpcGroup.make(
     ),
     payload: Document.DocumentId,
   }),
-) {}
+).middleware(AuthMiddleware) {}

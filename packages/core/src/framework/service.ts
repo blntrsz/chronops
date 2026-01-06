@@ -7,9 +7,9 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
   {
     effect: Effect.gen(function* () {
       const repository = yield* Repository.make({
-        tableName: "framework",
-        model: Framework.Framework,
         id: Framework.FrameworkId,
+        model: Framework.Framework,
+        tableName: "framework",
       });
 
       const insert = Effect.fn(function* (input: Framework.CreateFramework) {

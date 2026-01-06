@@ -4,6 +4,7 @@ import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
+import { AuthMiddleware } from "../auth/middleware";
 
 export class ControlContract extends RpcGroup.make(
   Rpc.make("ControlCreate", {
@@ -59,4 +60,4 @@ export class ControlContract extends RpcGroup.make(
     ),
     payload: Framework.FrameworkId,
   }),
-) {}
+).middleware(AuthMiddleware) {}

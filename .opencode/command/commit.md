@@ -1,0 +1,1 @@
+Check the current git changes. If not all changes are staged, stage them first, then commit with a message with a short descriptive message. Be extremely concise. Sacrifice grammar for the sake of concision.

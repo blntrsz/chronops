@@ -1,4 +1,4 @@
-import { SqlClient, SqlSchema } from "@effect/sql";
+import { SqlClient } from "@effect/sql";
 import { Effect, Option } from "effect";
 import * as Repository from "../common/repository";
 import { Control, Framework } from "@chronops/domain";
@@ -9,7 +9,6 @@ export class ControlService extends Effect.Service<ControlService>()(
   {
     effect: Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
-      const actor = yield* Actor;
 
       const repository = yield* Repository.make({
         id: Control.ControlId,
@@ -56,17 +55,18 @@ export class ControlService extends Effect.Service<ControlService>()(
         return deletedModel;
       });
 
-      const getByFramework = SqlSchema.findAll({
-        Request: Framework.FrameworkId,
-        Result: Control.Control,
-        execute(frameworkId) {
-          return sql`SELECT * FROM ${sql("control")} WHERE ${sql.and([
-            sql`framework_id = ${frameworkId}`,
-            sql`org_id = ${actor.orgId}`,
-            sql`deleted_at IS NULL`,
-          ])}`;
-        },
-      });
+      const getByFramework = (frameworkId: Framework.FrameworkId) =>
+        Effect.gen(function* () {
+          const actor = yield* Actor;
+          return yield* sql<Control.Control>`
+            SELECT * FROM ${sql("control")} 
+            WHERE ${sql.and([
+              sql`framework_id = ${frameworkId}`,
+              sql`org_id = ${actor.orgId}`,
+              sql`deleted_at IS NULL`,
+            ])}
+          `;
+        });
 
       return {
         insert,

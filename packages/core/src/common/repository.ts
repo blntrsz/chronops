@@ -1,8 +1,8 @@
 import { Actor } from "@chronops/domain/actor";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import type { SqlError } from "@effect/sql/SqlError";
-import { Effect, Schema } from "effect";
-import type { Option } from "effect/Option";
+import { Effect, Option, Schema } from "effect";
+
 import type { ParseError } from "effect/ParseResult";
 
 export const Pagination = Schema.Struct({
@@ -24,7 +24,6 @@ export const make = Effect.fn(function* <
   TModelSchema extends Schema.Schema<any>,
 >(config: RepositoryConfig<TIdSchema, TModelSchema>) {
   const sql = yield* SqlClient.SqlClient;
-  const actor = yield* Actor;
 
   /**
    * Save a new record. Create new entity if it does not exist. Update if it does.
@@ -43,61 +42,74 @@ export const make = Effect.fn(function* <
   /**
    * Get a record by its ID.
    */
-  const getById = SqlSchema.findOne({
-    Request: config.id,
-    Result: config.model,
-    execute(request) {
-      return sql`SELECT * FROM ${sql(config.tableName)} ${sql.and([
-        sql`id = ${request.id}`,
-        sql`org_id = ${actor.orgId}`,
-        sql`deleted_at IS NULL`,
-      ])}`;
-    },
-  }) as (
+  const getById = ((request: Schema.Schema.Type<typeof config.id>) =>
+    Effect.gen(function* () {
+      const actor = yield* Actor;
+      return yield* SqlSchema.findOne({
+        Request: config.id,
+        Result: config.model,
+        execute(req) {
+          return sql`SELECT * FROM ${sql(config.tableName)} 
+            WHERE ${sql.and([
+              sql`id = ${req.id}`,
+              sql`org_id = ${actor.orgId}`,
+              sql`deleted_at IS NULL`,
+            ])}`;
+        },
+      })(request);
+    })) as (
     request: Schema.Schema.Type<typeof config.id>,
   ) => Effect.Effect<
-    Option<Schema.Schema.Type<typeof config.model>>,
+    Option.Option<Schema.Schema.Type<typeof config.model>>,
     SqlError | ParseError,
-    never
+    Actor
   >;
 
   /**
    * List records with pagination.
    */
-  const list = SqlSchema.findAll({
-    Request: Pagination,
-    Result: config.model,
-    execute(request) {
-      return sql`SELECT * FROM ${sql(`${config.tableName}`)} LIMIT ${request.size} OFFSET ${
-        request.page * request.size
-      } WHERE ${sql.and([
-        sql`org_id = ${actor.orgId}`,
-        sql`deleted_at IS NULL`,
-      ])}`;
-    },
-  }) as (request: {
-    readonly page: number;
-    readonly size: number;
-  }) => Effect.Effect<
+  const list = ((request: Schema.Schema.Type<typeof Pagination>) =>
+    Effect.gen(function* () {
+      const actor = yield* Actor;
+      return yield* SqlSchema.findAll({
+        Request: Pagination,
+        Result: config.model,
+        execute(req) {
+          return sql`SELECT * FROM ${sql(config.tableName)} 
+            WHERE ${sql.and([
+              sql`org_id = ${actor.orgId}`,
+              sql`deleted_at IS NULL`,
+            ])}
+            LIMIT ${req.size} OFFSET ${req.page * req.size}`;
+        },
+      })(request);
+    })) as (
+    request: Schema.Schema.Type<typeof Pagination>,
+  ) => Effect.Effect<
     Schema.Schema.Type<typeof config.model>[],
     SqlError | ParseError,
-    never
+    Actor
   >;
 
   /**
    * Delete a record by its ID.
    */
-  const destroy = SqlSchema.void({
-    Request: config.id,
-    execute(request) {
-      return sql`DELETE FROM ${sql(`${config.tableName}`)} WHERE ${sql.and([
-        sql`id = ${request.id}`,
-        sql`org_id = ${actor.orgId}`,
-      ])}`;
-    },
-  }) as (
+  const destroy = ((request: Schema.Schema.Type<typeof config.id>) =>
+    Effect.gen(function* () {
+      const actor = yield* Actor;
+      return yield* SqlSchema.void({
+        Request: config.id,
+        execute(req) {
+          return sql`DELETE FROM ${sql(config.tableName)} 
+            WHERE ${sql.and([
+              sql`id = ${req.id}`,
+              sql`org_id = ${actor.orgId}`,
+            ])}`;
+        },
+      })(request);
+    })) as (
     request: Schema.Schema.Type<typeof config.id>,
-  ) => Effect.Effect<void, ParseError | SqlError, never>;
+  ) => Effect.Effect<void, ParseError | SqlError, Actor>;
 
   return { save, getById, list, destroy };
 });

@@ -1,9 +1,15 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "chronops",
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "bun --filter '*' typecheck"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

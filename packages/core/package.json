@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "auth:gen": "bun x @better-auth/cli@latest generate --config ./src/auth/server.ts",
     "auth:migrate": "bun x @better-auth/cli@latest migrate --config ./src/auth/server.ts",
     "db:migrate": "bun ./src/migration.ts"

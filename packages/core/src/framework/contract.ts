@@ -4,6 +4,7 @@ import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
+import { AuthMiddleware } from "../auth/middleware";
 
 export class FrameworkContract extends RpcGroup.make(
   Rpc.make("FrameworkCreate", {
@@ -51,4 +52,4 @@ export class FrameworkContract extends RpcGroup.make(
     ),
     payload: Framework.FrameworkId,
   }),
-) {}
+).middleware(AuthMiddleware) {}
