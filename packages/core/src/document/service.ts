@@ -1,11 +1,19 @@
 import { Effect, Option } from "effect";
+
+import { Document, Workflow } from "@chronops/domain";
+
 import * as Repository from "../common/repository";
-import { Document } from "@chronops/domain";
 
 export class DocumentService extends Effect.Service<DocumentService>()(
   "DocumentService",
   {
     effect: Effect.gen(function* () {
+      const workflowRepository = yield* Repository.make({
+        id: Workflow.WorkflowId,
+        model: Workflow.Workflow,
+        tableName: "workflow",
+      });
+
       const repository = yield* Repository.make({
         id: Document.DocumentId,
         model: Document.Document,
@@ -13,7 +21,10 @@ export class DocumentService extends Effect.Service<DocumentService>()(
       });
 
       const insert = Effect.fn(function* (input: Document.CreateDocument) {
-        const model = yield* Document.make(input);
+        const workflow = yield* Workflow.make({ entityType: "document" });
+        yield* workflowRepository.save(workflow);
+
+        const model = yield* Document.make(input, workflow.id);
         yield* repository.save(model);
 
         return model;

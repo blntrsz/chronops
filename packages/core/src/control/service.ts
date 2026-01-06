@@ -1,14 +1,22 @@
 import { SqlClient } from "@effect/sql";
 import { Effect, Option } from "effect";
-import * as Repository from "../common/repository";
-import { Control, Framework } from "@chronops/domain";
+
+import { Control, Framework, Workflow } from "@chronops/domain";
 import { Actor } from "@chronops/domain/actor";
+
+import * as Repository from "../common/repository";
 
 export class ControlService extends Effect.Service<ControlService>()(
   "ControlService",
   {
     effect: Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
+
+      const workflowRepository = yield* Repository.make({
+        id: Workflow.WorkflowId,
+        model: Workflow.Workflow,
+        tableName: "workflow",
+      });
 
       const repository = yield* Repository.make({
         id: Control.ControlId,
@@ -17,7 +25,10 @@ export class ControlService extends Effect.Service<ControlService>()(
       });
 
       const insert = Effect.fn(function* (input: Control.CreateControl) {
-        const model = yield* Control.make(input);
+        const workflow = yield* Workflow.make({ entityType: "control" });
+        yield* workflowRepository.save(workflow);
+
+        const model = yield* Control.make(input, workflow.id);
         yield* repository.save(model);
 
         return model;

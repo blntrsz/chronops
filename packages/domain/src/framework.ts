@@ -35,8 +35,11 @@ export type UpdateFramework = typeof UpdateFramework.Type;
 
 // --- Operations ---
 
-export const make = Effect.fn(function* (input: CreateFramework) {
-  const base = yield* Base.make();
+export const make = Effect.fn(function* (
+  input: CreateFramework,
+  workflowId: Base.WorkflowId,
+) {
+  const base = yield* Base.make({ workflowId });
 
   return Framework.make({
     id: yield* frameworkId(),

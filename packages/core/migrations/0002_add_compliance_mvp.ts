@@ -10,12 +10,8 @@ export default Effect.flatMap(
       type VARCHAR(50) NOT NULL,
       url VARCHAR(500) NOT NULL,
       size BIGINT,
-      document_id VARCHAR(255) NOT NULL,
-      document_type VARCHAR(100) NOT NULL,
-      entity_type VARCHAR(100),
-      entity_id VARCHAR(255),
-      CONSTRAINT idx_document_polymorphic UNIQUE (documentable_type, documentable_id, document_id)
-    );
-    CREATE INDEX idx_document_documentable ON document (documentable_type, documentable_id)
+      framework_id VARCHAR(255) REFERENCES framework(id),
+      control_id VARCHAR(255) REFERENCES control(id)
+    )
   `,
 );

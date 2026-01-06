@@ -1,11 +1,19 @@
 import { Effect, Option } from "effect";
+
+import { Framework, Workflow } from "@chronops/domain";
+
 import * as Repository from "../common/repository";
-import { Framework } from "@chronops/domain";
 
 export class FrameworkService extends Effect.Service<FrameworkService>()(
   "FrameworkService",
   {
     effect: Effect.gen(function* () {
+      const workflowRepository = yield* Repository.make({
+        id: Workflow.WorkflowId,
+        model: Workflow.Workflow,
+        tableName: "workflow",
+      });
+
       const repository = yield* Repository.make({
         id: Framework.FrameworkId,
         model: Framework.Framework,
@@ -13,7 +21,10 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
       });
 
       const insert = Effect.fn(function* (input: Framework.CreateFramework) {
-        const model = yield* Framework.make(input);
+        const workflow = yield* Workflow.make({ entityType: "framework" });
+        yield* workflowRepository.save(workflow);
+
+        const model = yield* Framework.make(input, workflow.id);
         yield* repository.save(model);
 
         return model;

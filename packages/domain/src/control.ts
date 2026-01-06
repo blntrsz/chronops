@@ -50,8 +50,11 @@ export type UpdateControl = typeof UpdateControl.Type;
 
 // --- Operations ---
 
-export const make = Effect.fn(function* (input: CreateControl) {
-  const base = yield* Base.make();
+export const make = Effect.fn(function* (
+  input: CreateControl,
+  workflowId: Base.WorkflowId,
+) {
+  const base = yield* Base.make({ workflowId });
 
   return Control.make({
     id: yield* controlId(),

@@ -46,8 +46,11 @@ export type UpdateDocument = typeof UpdateDocument.Type;
 
 // --- Operations ---
 
-export const make = Effect.fn(function* (input: CreateDocument) {
-  const base = yield* Base.make();
+export const make = Effect.fn(function* (
+  input: CreateDocument,
+  workflowId: Base.WorkflowId,
+) {
+  const base = yield* Base.make({ workflowId });
 
   return Document.make({
     id: yield* documentId(),

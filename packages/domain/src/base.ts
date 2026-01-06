@@ -8,6 +8,9 @@ export type MemberId = typeof MemberId.Type;
 export const OrgId = Schema.String.pipe(Schema.brand("OrgId"));
 export type OrgId = typeof OrgId.Type;
 
+export const WorkflowId = Schema.String.pipe(Schema.brand("WorkflowId"));
+export type WorkflowId = typeof WorkflowId.Type;
+
 export const Hash = Schema.String.pipe(Schema.brand("Hash"));
 export type Hash = typeof Hash.Type;
 
@@ -21,7 +24,8 @@ export class Base extends Schema.Class<Base>("BaseSchema")({
   deletedBy: Schema.optional(MemberId),
 
   hash: Hash,
-  organizationId: OrgId,
+  orgId: OrgId,
+  workflowId: WorkflowId,
 }) {}
 
 export class ULID extends Context.Tag("ULID")<
@@ -35,7 +39,11 @@ export const ULIDLayer = ULID.of({
   createId: ulid,
 });
 
-export const make = Effect.fn(function* () {
+export const make = Effect.fn(function* ({
+  workflowId,
+}: {
+  workflowId: WorkflowId;
+}) {
   const ulid = yield* ULID;
   const now = yield* DateTime.nowAsDate;
   const actor = yield* Actor;
@@ -48,7 +56,8 @@ export const make = Effect.fn(function* () {
     updatedBy: actor.memberId,
     deletedBy: undefined,
     hash: Hash.make(ulid.createId()),
-    organizationId: actor.orgId,
+    orgId: actor.orgId,
+    workflowId,
   });
 });
 
