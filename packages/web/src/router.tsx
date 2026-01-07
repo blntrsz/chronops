@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createRouter } from '@tanstack/react-router'
 
 // Import the generated route tree

@@ -10,12 +10,48 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FrameworksIndexRouteImport } from './routes/frameworks/index'
+import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks/$frameworkId'
+import { Route as ControlsIndexRouteImport } from './routes/controls/index'
+import { Route as ControlsControlIdRouteImport } from './routes/controls/$controlId'
+import { Route as DocumentsIndexRouteImport } from './routes/documents/index'
+import { Route as DocumentsDocumentIdRouteImport } from './routes/documents/$documentId'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrameworksIndexRoute = FrameworksIndexRouteImport.update({
+  id: '/frameworks',
+  path: '/frameworks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
+  id: '/frameworks/$frameworkId',
+  path: '/frameworks/$frameworkId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ControlsIndexRoute = ControlsIndexRouteImport.update({
+  id: '/controls',
+  path: '/controls',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ControlsControlIdRoute = ControlsControlIdRouteImport.update({
+  id: '/controls/$controlId',
+  path: '/controls/$controlId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsIndexRoute = DocumentsIndexRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsDocumentIdRoute = DocumentsDocumentIdRouteImport.update({
+  id: '/documents/$documentId',
+  path: '/documents/$documentId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
@@ -31,30 +67,82 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/controls': typeof ControlsIndexRoute
+  '/controls/$controlId': typeof ControlsControlIdRoute
+  '/documents': typeof DocumentsIndexRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/frameworks': typeof FrameworksIndexRoute
+  '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/controls': typeof ControlsIndexRoute
+  '/controls/$controlId': typeof ControlsControlIdRoute
+  '/documents': typeof DocumentsIndexRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/frameworks': typeof FrameworksIndexRoute
+  '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/controls': typeof ControlsIndexRoute
+  '/controls/$controlId': typeof ControlsControlIdRoute
+  '/documents': typeof DocumentsIndexRoute
+  '/documents/$documentId': typeof DocumentsDocumentIdRoute
+  '/frameworks': typeof FrameworksIndexRoute
+  '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/auth/$' | '/api/rpc/$'
+  fullPaths:
+    | '/'
+    | '/controls'
+    | '/controls/$controlId'
+    | '/documents'
+    | '/documents/$documentId'
+    | '/frameworks'
+    | '/frameworks/$frameworkId'
+    | '/api/auth/$'
+    | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/auth/$' | '/api/rpc/$'
-  id: '__root__' | '/' | '/api/auth/$' | '/api/rpc/$'
+  to:
+    | '/'
+    | '/controls'
+    | '/controls/$controlId'
+    | '/documents'
+    | '/documents/$documentId'
+    | '/frameworks'
+    | '/frameworks/$frameworkId'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/controls'
+    | '/controls/$controlId'
+    | '/documents'
+    | '/documents/$documentId'
+    | '/frameworks'
+    | '/frameworks/$frameworkId'
+    | '/api/auth/$'
+    | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FrameworksIndexRoute: typeof FrameworksIndexRoute
+  FrameworksFrameworkIdRoute: typeof FrameworksFrameworkIdRoute
+  ControlsIndexRoute: typeof ControlsIndexRoute
+  ControlsControlIdRoute: typeof ControlsControlIdRoute
+  DocumentsIndexRoute: typeof DocumentsIndexRoute
+  DocumentsDocumentIdRoute: typeof DocumentsDocumentIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
@@ -66,6 +154,48 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frameworks': {
+      id: '/frameworks'
+      path: '/frameworks'
+      fullPath: '/frameworks'
+      preLoaderRoute: typeof FrameworksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frameworks/$frameworkId': {
+      id: '/frameworks/$frameworkId'
+      path: '/frameworks/$frameworkId'
+      fullPath: '/frameworks/$frameworkId'
+      preLoaderRoute: typeof FrameworksFrameworkIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/controls': {
+      id: '/controls'
+      path: '/controls'
+      fullPath: '/controls'
+      preLoaderRoute: typeof ControlsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/controls/$controlId': {
+      id: '/controls/$controlId'
+      path: '/controls/$controlId'
+      fullPath: '/controls/$controlId'
+      preLoaderRoute: typeof ControlsControlIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents': {
+      id: '/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents/$documentId': {
+      id: '/documents/$documentId'
+      path: '/documents/$documentId'
+      fullPath: '/documents/$documentId'
+      preLoaderRoute: typeof DocumentsDocumentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/rpc/$': {
@@ -87,6 +217,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FrameworksIndexRoute: FrameworksIndexRoute,
+  FrameworksFrameworkIdRoute: FrameworksFrameworkIdRoute,
+  ControlsIndexRoute: ControlsIndexRoute,
+  ControlsControlIdRoute: ControlsControlIdRoute,
+  DocumentsIndexRoute: DocumentsIndexRoute,
+  DocumentsDocumentIdRoute: DocumentsDocumentIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
