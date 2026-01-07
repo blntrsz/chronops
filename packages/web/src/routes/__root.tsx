@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { RegistryProvider } from '@effect-atom/atom-react'
@@ -35,21 +35,26 @@ export const Route = createRootRoute({
 })
 
 function RootLayout() {
+  const pathname = useRouterState().location.pathname
+  const hideHeader = pathname === '/' || pathname === '/login' || pathname === '/otp' || pathname.startsWith('/org')
+
   return (
-    <RegistryProvider>
-      <Header />
-      <Outlet />
-    </RegistryProvider>
+    <div className="ds-app-bg">
+      <RegistryProvider>
+        {!hideHeader && <Header />}
+        <Outlet />
+      </RegistryProvider>
+    </div>
   )
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="antialiased">
         {children}
         <TanStackDevtools
           config={{

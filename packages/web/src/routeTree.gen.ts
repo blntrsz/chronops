@@ -9,24 +9,70 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OtpRouteImport } from './routes/otp'
+import { Route as OrganizationsRouteImport } from './routes/organizations'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FrameworksIndexRouteImport } from './routes/frameworks/index'
-import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks/$frameworkId'
-import { Route as ControlsIndexRouteImport } from './routes/controls/index'
-import { Route as ControlsControlIdRouteImport } from './routes/controls/$controlId'
 import { Route as DocumentsIndexRouteImport } from './routes/documents/index'
+import { Route as ControlsIndexRouteImport } from './routes/controls/index'
+import { Route as OrgSwitcherRouteImport } from './routes/org/switcher'
+import { Route as OrgCreateRouteImport } from './routes/org/create'
+import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks/$frameworkId'
 import { Route as DocumentsDocumentIdRouteImport } from './routes/documents/$documentId'
+import { Route as ControlsControlIdRouteImport } from './routes/controls/$controlId'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const OtpRoute = OtpRouteImport.update({
+  id: '/otp',
+  path: '/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrganizationsRoute = OrganizationsRouteImport.update({
+  id: '/organizations',
+  path: '/organizations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FrameworksIndexRoute = FrameworksIndexRouteImport.update({
-  id: '/frameworks',
-  path: '/frameworks',
+  id: '/frameworks/',
+  path: '/frameworks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsIndexRoute = DocumentsIndexRouteImport.update({
+  id: '/documents/',
+  path: '/documents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ControlsIndexRoute = ControlsIndexRouteImport.update({
+  id: '/controls/',
+  path: '/controls/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrgSwitcherRoute = OrgSwitcherRouteImport.update({
+  id: '/org/switcher',
+  path: '/org/switcher',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrgCreateRoute = OrgCreateRouteImport.update({
+  id: '/org/create',
+  path: '/org/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
@@ -34,24 +80,14 @@ const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
   path: '/frameworks/$frameworkId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ControlsIndexRoute = ControlsIndexRouteImport.update({
-  id: '/controls',
-  path: '/controls',
+const DocumentsDocumentIdRoute = DocumentsDocumentIdRouteImport.update({
+  id: '/documents/$documentId',
+  path: '/documents/$documentId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ControlsControlIdRoute = ControlsControlIdRouteImport.update({
   id: '/controls/$controlId',
   path: '/controls/$controlId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentsIndexRoute = DocumentsIndexRouteImport.update({
-  id: '/documents',
-  path: '/documents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocumentsDocumentIdRoute = DocumentsDocumentIdRouteImport.update({
-  id: '/documents/$documentId',
-  path: '/documents/$documentId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
@@ -67,35 +103,53 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/controls': typeof ControlsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/organizations': typeof OrganizationsRoute
+  '/otp': typeof OtpRoute
   '/controls/$controlId': typeof ControlsControlIdRoute
-  '/documents': typeof DocumentsIndexRoute
   '/documents/$documentId': typeof DocumentsDocumentIdRoute
-  '/frameworks': typeof FrameworksIndexRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
+  '/org/create': typeof OrgCreateRoute
+  '/org/switcher': typeof OrgSwitcherRoute
+  '/controls': typeof ControlsIndexRoute
+  '/documents': typeof DocumentsIndexRoute
+  '/frameworks': typeof FrameworksIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/controls': typeof ControlsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/organizations': typeof OrganizationsRoute
+  '/otp': typeof OtpRoute
   '/controls/$controlId': typeof ControlsControlIdRoute
-  '/documents': typeof DocumentsIndexRoute
   '/documents/$documentId': typeof DocumentsDocumentIdRoute
-  '/frameworks': typeof FrameworksIndexRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
+  '/org/create': typeof OrgCreateRoute
+  '/org/switcher': typeof OrgSwitcherRoute
+  '/controls': typeof ControlsIndexRoute
+  '/documents': typeof DocumentsIndexRoute
+  '/frameworks': typeof FrameworksIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/controls': typeof ControlsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/organizations': typeof OrganizationsRoute
+  '/otp': typeof OtpRoute
   '/controls/$controlId': typeof ControlsControlIdRoute
-  '/documents': typeof DocumentsIndexRoute
   '/documents/$documentId': typeof DocumentsDocumentIdRoute
-  '/frameworks': typeof FrameworksIndexRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
+  '/org/create': typeof OrgCreateRoute
+  '/org/switcher': typeof OrgSwitcherRoute
+  '/controls/': typeof ControlsIndexRoute
+  '/documents/': typeof DocumentsIndexRoute
+  '/frameworks/': typeof FrameworksIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
 }
@@ -103,52 +157,104 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/controls'
+    | '/dashboard'
+    | '/login'
+    | '/organizations'
+    | '/otp'
     | '/controls/$controlId'
-    | '/documents'
     | '/documents/$documentId'
-    | '/frameworks'
     | '/frameworks/$frameworkId'
+    | '/org/create'
+    | '/org/switcher'
+    | '/controls'
+    | '/documents'
+    | '/frameworks'
     | '/api/auth/$'
     | '/api/rpc/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/controls'
+    | '/dashboard'
+    | '/login'
+    | '/organizations'
+    | '/otp'
     | '/controls/$controlId'
-    | '/documents'
     | '/documents/$documentId'
-    | '/frameworks'
     | '/frameworks/$frameworkId'
+    | '/org/create'
+    | '/org/switcher'
+    | '/controls'
+    | '/documents'
+    | '/frameworks'
     | '/api/auth/$'
     | '/api/rpc/$'
   id:
     | '__root__'
     | '/'
-    | '/controls'
+    | '/dashboard'
+    | '/login'
+    | '/organizations'
+    | '/otp'
     | '/controls/$controlId'
-    | '/documents'
     | '/documents/$documentId'
-    | '/frameworks'
     | '/frameworks/$frameworkId'
+    | '/org/create'
+    | '/org/switcher'
+    | '/controls/'
+    | '/documents/'
+    | '/frameworks/'
     | '/api/auth/$'
     | '/api/rpc/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  FrameworksIndexRoute: typeof FrameworksIndexRoute
-  FrameworksFrameworkIdRoute: typeof FrameworksFrameworkIdRoute
-  ControlsIndexRoute: typeof ControlsIndexRoute
+  DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
+  OrganizationsRoute: typeof OrganizationsRoute
+  OtpRoute: typeof OtpRoute
   ControlsControlIdRoute: typeof ControlsControlIdRoute
-  DocumentsIndexRoute: typeof DocumentsIndexRoute
   DocumentsDocumentIdRoute: typeof DocumentsDocumentIdRoute
+  FrameworksFrameworkIdRoute: typeof FrameworksFrameworkIdRoute
+  OrgCreateRoute: typeof OrgCreateRoute
+  OrgSwitcherRoute: typeof OrgSwitcherRoute
+  ControlsIndexRoute: typeof ControlsIndexRoute
+  DocumentsIndexRoute: typeof DocumentsIndexRoute
+  FrameworksIndexRoute: typeof FrameworksIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/otp': {
+      id: '/otp'
+      path: '/otp'
+      fullPath: '/otp'
+      preLoaderRoute: typeof OtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/organizations': {
+      id: '/organizations'
+      path: '/organizations'
+      fullPath: '/organizations'
+      preLoaderRoute: typeof OrganizationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -156,11 +262,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/frameworks': {
-      id: '/frameworks'
+    '/frameworks/': {
+      id: '/frameworks/'
       path: '/frameworks'
       fullPath: '/frameworks'
       preLoaderRoute: typeof FrameworksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents/': {
+      id: '/documents/'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof DocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/controls/': {
+      id: '/controls/'
+      path: '/controls'
+      fullPath: '/controls'
+      preLoaderRoute: typeof ControlsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org/switcher': {
+      id: '/org/switcher'
+      path: '/org/switcher'
+      fullPath: '/org/switcher'
+      preLoaderRoute: typeof OrgSwitcherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org/create': {
+      id: '/org/create'
+      path: '/org/create'
+      fullPath: '/org/create'
+      preLoaderRoute: typeof OrgCreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/frameworks/$frameworkId': {
@@ -170,11 +304,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FrameworksFrameworkIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/controls': {
-      id: '/controls'
-      path: '/controls'
-      fullPath: '/controls'
-      preLoaderRoute: typeof ControlsIndexRouteImport
+    '/documents/$documentId': {
+      id: '/documents/$documentId'
+      path: '/documents/$documentId'
+      fullPath: '/documents/$documentId'
+      preLoaderRoute: typeof DocumentsDocumentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/controls/$controlId': {
@@ -182,20 +316,6 @@ declare module '@tanstack/react-router' {
       path: '/controls/$controlId'
       fullPath: '/controls/$controlId'
       preLoaderRoute: typeof ControlsControlIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documents': {
-      id: '/documents'
-      path: '/documents'
-      fullPath: '/documents'
-      preLoaderRoute: typeof DocumentsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/documents/$documentId': {
-      id: '/documents/$documentId'
-      path: '/documents/$documentId'
-      fullPath: '/documents/$documentId'
-      preLoaderRoute: typeof DocumentsDocumentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/rpc/$': {
@@ -217,12 +337,18 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  FrameworksIndexRoute: FrameworksIndexRoute,
-  FrameworksFrameworkIdRoute: FrameworksFrameworkIdRoute,
-  ControlsIndexRoute: ControlsIndexRoute,
+  DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
+  OrganizationsRoute: OrganizationsRoute,
+  OtpRoute: OtpRoute,
   ControlsControlIdRoute: ControlsControlIdRoute,
-  DocumentsIndexRoute: DocumentsIndexRoute,
   DocumentsDocumentIdRoute: DocumentsDocumentIdRoute,
+  FrameworksFrameworkIdRoute: FrameworksFrameworkIdRoute,
+  OrgCreateRoute: OrgCreateRoute,
+  OrgSwitcherRoute: OrgSwitcherRoute,
+  ControlsIndexRoute: ControlsIndexRoute,
+  DocumentsIndexRoute: DocumentsIndexRoute,
+  FrameworksIndexRoute: FrameworksIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
