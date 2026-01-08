@@ -3,8 +3,6 @@ import * as Schema from "effect/Schema";
 import * as Base from "./base";
 import { FrameworkId } from "./framework";
 
-// --- Id ---
-
 export const ControlId = Schema.String.pipe(Schema.brand("ControlId"));
 export type ControlId = typeof ControlId.Type;
 
@@ -13,8 +11,6 @@ export const controlId = Effect.fn(function* () {
 
   return ControlId.make(`ctr_${createId()}`);
 });
-
-// --- Model ---
 
 export const ControlStatus = Schema.Union(
   Schema.Literal("draft"),
@@ -32,8 +28,6 @@ export class Control extends Base.Base.extend<Control>("Control")({
   testingFrequency: Schema.optional(Schema.String),
 }) {}
 
-// --- Input Schemas ---
-
 export const CreateControl = Control.pipe(
   Schema.pick(
     "name",
@@ -48,13 +42,11 @@ export type CreateControl = typeof CreateControl.Type;
 export const UpdateControl = CreateControl.pipe(Schema.partial);
 export type UpdateControl = typeof UpdateControl.Type;
 
-// --- Operations ---
-
 export const make = Effect.fn(function* (
   input: CreateControl,
   workflowId: Base.WorkflowId,
 ) {
-  const base = yield* Base.make({ workflowId });
+  const base = yield* Base.makeBase({ workflowId });
 
   return Control.make({
     id: yield* controlId(),
@@ -67,7 +59,7 @@ export const update = Effect.fn(function* (
   model: Control,
   input: UpdateControl,
 ) {
-  const base = yield* Base.update();
+  const base = yield* Base.updateBase();
 
   return Control.make({
     ...model,
@@ -77,7 +69,7 @@ export const update = Effect.fn(function* (
 });
 
 export const remove = Effect.fn(function* (model: Control) {
-  const base = yield* Base.remove();
+  const base = yield* Base.removeBase();
 
   return Control.make({
     ...model,
@@ -85,16 +77,12 @@ export const remove = Effect.fn(function* (model: Control) {
   });
 });
 
-// --- Errors ---
-
-export class ControlNotFoundError extends Schema.TaggedError<ControlNotFoundError>(
-  "ControlNotFoundError",
-)("ControlNotFoundError", {
-  message: Schema.String,
-}) {
+export class ControlNotFoundError extends Base.NotFoundError {
   static fromId(id: ControlId) {
     return new ControlNotFoundError({
-      message: `Control with id ${id} not found`,
+      message: `Control with id ${id} not found.`,
+      entityType: "Control",
+      entityId: id,
     });
   }
 }

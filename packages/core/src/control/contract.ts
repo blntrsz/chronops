@@ -60,4 +60,12 @@ export class ControlContract extends RpcGroup.make(
     ),
     payload: Framework.FrameworkId,
   }),
+  Rpc.make("ControlCount", {
+    success: Schema.Number,
+    payload: Schema.Void,
+    error: Schema.Union(
+      Schema.instanceOf(SqlError.SqlError),
+      Schema.instanceOf(ParseError),
+    ),
+  }),
 ).middleware(AuthMiddleware) {}

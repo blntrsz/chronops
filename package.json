@@ -8,9 +8,12 @@
     "packages/*"
   ],
   "scripts": {
-    "typecheck": "bun --filter '*' typecheck"
+    "typecheck": "bun --filter '*' typecheck",
+    "lint": "biome check --write .",
+    "lint:check": "biome check ."
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/bun": "latest"
   },
   "peerDependencies": {

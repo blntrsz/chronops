@@ -39,7 +39,30 @@ export const ULIDLayer = ULID.of({
   createId: ulid,
 });
 
-export const make = Effect.fn(function* ({
+export class NotFoundError extends Schema.TaggedError<NotFoundError>(
+  "NotFoundError",
+)("NotFoundError", {
+  message: Schema.String,
+  entityType: Schema.String,
+  entityId: Schema.optional(Schema.String),
+}) {
+  static fromId(entityType: string, id: string) {
+    return new NotFoundError({
+      message: `${entityType} with id ${id} not found.`,
+      entityType,
+      entityId: id,
+    });
+  }
+
+  static fromType(entityType: string) {
+    return new NotFoundError({
+      message: `${entityType} not found.`,
+      entityType,
+    });
+  }
+}
+
+export const makeBase = Effect.fn(function* ({
   workflowId,
 }: {
   workflowId: WorkflowId;
@@ -61,7 +84,7 @@ export const make = Effect.fn(function* ({
   });
 });
 
-export const update = Effect.fn(function* () {
+export const updateBase = Effect.fn(function* () {
   const ulid = yield* ULID;
   const now = yield* DateTime.nowAsDate;
   const actor = yield* Actor;
@@ -73,7 +96,7 @@ export const update = Effect.fn(function* () {
   };
 });
 
-export const remove = Effect.fn(function* () {
+export const removeBase = Effect.fn(function* () {
   const ulid = yield* ULID;
   const now = yield* DateTime.nowAsDate;
   const actor = yield* Actor;

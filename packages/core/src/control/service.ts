@@ -1,10 +1,8 @@
 import { SqlClient } from "@effect/sql";
-import { Effect, Option } from "effect";
-
-import { Control, Framework, Workflow } from "@chronops/domain";
+import { Effect } from "effect";
+import { Control, Workflow } from "@chronops/domain";
 import { Actor } from "@chronops/domain/actor";
-
-import * as Repository from "../common/repository";
+import * as CrudService from "../common/crud-service";
 
 export class ControlService extends Effect.Service<ControlService>()(
   "ControlService",
@@ -12,61 +10,29 @@ export class ControlService extends Effect.Service<ControlService>()(
     effect: Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
 
-      const workflowRepository = yield* Repository.make({
-        id: Workflow.WorkflowId,
-        model: Workflow.Workflow,
-        tableName: "workflow",
-      });
-
-      const repository = yield* Repository.make({
-        id: Control.ControlId,
-        model: Control.Control,
+      const service = yield* CrudService.makeCrudService({
+        idSchema: Control.ControlId,
+        modelSchema: Control.Control,
         tableName: "control",
+        entityType: "control",
+        createInput: Control.CreateControl,
+        updateInput: Control.UpdateControl,
+        notFoundError: Control.ControlNotFoundError,
+        makeModel: Control.make,
+        updateModel: Control.update,
+        removeModel: Control.remove,
       });
 
-      const insert = Effect.fn(function* (input: Control.CreateControl) {
-        const workflow = yield* Workflow.make({ entityType: "control" });
-        yield* workflowRepository.save(workflow);
-
-        const model = yield* Control.make(input, workflow.id);
-        yield* repository.save(model);
-
-        return model;
+      const count = Effect.fn(function* () {
+        const actor = yield* Actor;
+        const result = yield* sql`SELECT COUNT(*) as count FROM ${sql("control")} WHERE ${sql.and([
+          sql`org_id = ${actor.orgId}`,
+          sql`deleted_at IS NULL`,
+        ])}`;
+        return result[0]?.count ?? 0;
       });
 
-      const update = Effect.fn(function* ({
-        id,
-        data,
-      }: {
-        id: Control.ControlId;
-        data: Control.UpdateControl;
-      }) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Control.ControlNotFoundError.fromId(id);
-        }
-
-        const updatedModel = yield* Control.update(model.value, data);
-
-        yield* repository.save(updatedModel);
-
-        return updatedModel;
-      });
-
-      const remove = Effect.fn(function* (id: Control.ControlId) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Control.ControlNotFoundError.fromId(id);
-        }
-
-        const deletedModel = yield* Control.remove(model.value);
-
-        yield* repository.save(deletedModel);
-
-        return deletedModel;
-      });
-
-      const getByFramework = (frameworkId: Framework.FrameworkId) =>
+      const getByFramework = (frameworkId: any) =>
         Effect.gen(function* () {
           const actor = yield* Actor;
           return yield* sql<Control.Control>`
@@ -80,12 +46,13 @@ export class ControlService extends Effect.Service<ControlService>()(
         });
 
       return {
-        insert,
-        update,
-        remove,
-        getById: repository.getById,
-        list: repository.list,
+        insert: service.insert,
+        update: service.update,
+        remove: service.remove,
+        getById: service.getById,
+        list: service.list,
         getByFramework,
+        count,
       };
     }),
   },

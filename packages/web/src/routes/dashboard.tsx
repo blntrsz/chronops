@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
-import { BookOpen, FileText, Home, ListChecks, Plus, Users } from 'lucide-react'
+import { BookOpen, FileText, ListChecks, Plus, Users } from 'lucide-react'
+import { useAtomValue } from '@effect-atom/atom-react'
 import { authClient } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,6 +12,9 @@ import {
 } from '@/components/ui/card'
 import { Page } from '@/components/Page'
 import { PageHeader } from '@/components/PageHeader'
+import { frameworkCountQuery } from '@/features/framework/atom/framework'
+import { controlCountQuery } from '@/features/control/atom/control'
+import { documentCountQuery } from '@/features/document/atom/document'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: async () => {
@@ -30,6 +33,14 @@ function DashboardPage() {
   const session = authClient.useSession()
   const activeOrg = authClient.useActiveOrganization()
 
+  const frameworkCount = useAtomValue(frameworkCountQuery())
+  const controlCount = useAtomValue(controlCountQuery())
+  const documentCount = useAtomValue(documentCountQuery())
+
+  const frameworks = frameworkCount.data ?? 0
+  const controls = controlCount.data ?? 0
+  const documents = documentCount.data ?? 0
+
   return (
     <Page>
       <div className="mb-6 flex items-center justify-between">
@@ -40,7 +51,7 @@ function DashboardPage() {
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600">
             <span className="text-lg font-semibold text-white">
-              {session.data?.user?.name?.[0] || session.data?.user?.email[0]?.toUpperCase()}
+              {session.data?.user?.name?.[0] || session.data?.user?.email?.[0]?.toUpperCase()}
             </span>
           </div>
           <div className="text-sm">
@@ -57,8 +68,8 @@ function DashboardPage() {
             <BookOpen className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">12</div>
-            <p className="text-xs text-slate-400">+2 from last month</p>
+            <div className="text-2xl font-bold text-white">{frameworks}</div>
+            <p className="text-xs text-slate-400">Active frameworks</p>
           </CardContent>
         </Card>
 
@@ -68,8 +79,8 @@ function DashboardPage() {
             <ListChecks className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">86</div>
-            <p className="text-xs text-slate-400">78% compliant</p>
+            <div className="text-2xl font-bold text-white">{controls}</div>
+            <p className="text-xs text-slate-400">Total controls</p>
           </CardContent>
         </Card>
 
@@ -79,8 +90,8 @@ function DashboardPage() {
             <FileText className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">24</div>
-            <p className="text-xs text-slate-400">+5 this week</p>
+            <div className="text-2xl font-bold text-white">{documents}</div>
+            <p className="text-xs text-slate-400">Evidence documents</p>
           </CardContent>
         </Card>
 
@@ -90,8 +101,8 @@ function DashboardPage() {
             <Users className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">8</div>
-            <p className="text-xs text-slate-400">2 pending invites</p>
+            <div className="text-2xl font-bold text-white">--</div>
+            <p className="text-xs text-slate-400">Team members</p>
           </CardContent>
         </Card>
       </div>
@@ -138,28 +149,28 @@ function DashboardPage() {
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm text-slate-300">SOC 2</span>
-                  <span className="text-sm font-medium text-cyan-400">78%</span>
+                  <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '78%' }} />
+                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
                 </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm text-slate-300">ISO 27001</span>
-                  <span className="text-sm font-medium text-cyan-400">65%</span>
+                  <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '65%' }} />
+                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
                 </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm text-slate-300">GDPR</span>
-                  <span className="text-sm font-medium text-cyan-400">82%</span>
+                  <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '82%' }} />
+                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
                 </div>
               </div>
             </div>

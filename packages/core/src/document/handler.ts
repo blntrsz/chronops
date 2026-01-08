@@ -12,6 +12,7 @@ export const DocumentHandler = DocumentContract.toLayer(
       DocumentList: service.list,
       DocumentUpdate: service.update,
       DocumentRemove: service.remove,
+      DocumentCount: service.count,
     };
   }),
 );

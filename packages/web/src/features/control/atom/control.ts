@@ -20,6 +20,11 @@ export const controlsByFrameworkQuery = (frameworkId: Framework.FrameworkId) =>
     reactivityKeys: { byFramework: ['control:byFramework', frameworkId] },
   })
 
+export const controlCountQuery = () =>
+  Client.query('ControlCount', undefined, {
+    reactivityKeys: { count: ['control:count'] },
+  })
+
 export const controlCreateMutation = Client.mutation('ControlCreate')
 export const controlUpdateMutation = Client.mutation('ControlUpdate')
 export const controlRemoveMutation = Client.mutation('ControlRemove')

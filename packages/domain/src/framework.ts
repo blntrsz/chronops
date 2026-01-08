@@ -2,8 +2,6 @@ import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
 
-// --- Id ---
-
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;
 
@@ -13,8 +11,6 @@ export const frameworkId = Effect.fn(function* () {
   return FrameworkId.make(`fwk_${createId()}`);
 });
 
-// --- Model ---
-
 export class Framework extends Base.Base.extend<Framework>("Framework")({
   id: FrameworkId,
   name: Schema.String,
@@ -22,8 +18,6 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   version: Schema.optional(Schema.String),
   sourceUrl: Schema.optional(Schema.String),
 }) {}
-
-// --- Input Schemas ---
 
 export const CreateFramework = Framework.pipe(
   Schema.pick("name", "description", "version", "sourceUrl"),
@@ -33,13 +27,11 @@ export type CreateFramework = typeof CreateFramework.Type;
 export const UpdateFramework = CreateFramework.pipe(Schema.partial);
 export type UpdateFramework = typeof UpdateFramework.Type;
 
-// --- Operations ---
-
 export const make = Effect.fn(function* (
   input: CreateFramework,
   workflowId: Base.WorkflowId,
 ) {
-  const base = yield* Base.make({ workflowId });
+  const base = yield* Base.makeBase({ workflowId });
 
   return Framework.make({
     id: yield* frameworkId(),
@@ -52,7 +44,7 @@ export const update = Effect.fn(function* (
   model: Framework,
   input: UpdateFramework,
 ) {
-  const base = yield* Base.update();
+  const base = yield* Base.updateBase();
 
   return Framework.make({
     ...model,
@@ -62,7 +54,7 @@ export const update = Effect.fn(function* (
 });
 
 export const remove = Effect.fn(function* (model: Framework) {
-  const base = yield* Base.remove();
+  const base = yield* Base.removeBase();
 
   return Framework.make({
     ...model,
@@ -70,16 +62,12 @@ export const remove = Effect.fn(function* (model: Framework) {
   });
 });
 
-// --- Errors ---
-
-export class FrameworkNotFoundError extends Schema.TaggedError<FrameworkNotFoundError>(
-  "FrameworkNotFoundError",
-)("FrameworkNotFoundError", {
-  message: Schema.String,
-}) {
+export class FrameworkNotFoundError extends Base.NotFoundError {
   static fromId(id: FrameworkId) {
     return new FrameworkNotFoundError({
       message: `Framework with id ${id} not found.`,
+      entityType: "Framework",
+      entityId: id,
     });
   }
 }

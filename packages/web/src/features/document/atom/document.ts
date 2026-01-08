@@ -15,6 +15,11 @@ export const documentByIdQuery = (id: Document.DocumentId) =>
     reactivityKeys: { detail: ['document:detail', id] },
   })
 
+export const documentCountQuery = () =>
+  Client.query('DocumentCount', undefined, {
+    reactivityKeys: { count: ['document:count'] },
+  })
+
 export const documentCreateMutation = Client.mutation('DocumentCreate')
 export const documentUpdateMutation = Client.mutation('DocumentUpdate')
 export const documentRemoveMutation = Client.mutation('DocumentRemove')

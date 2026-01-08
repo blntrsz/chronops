@@ -1,71 +1,45 @@
-import { Effect, Option } from "effect";
-
+import { Effect } from "effect";
 import { Framework, Workflow } from "@chronops/domain";
-
-import * as Repository from "../common/repository";
+import { Actor } from "@chronops/domain/actor";
+import { SqlClient } from "@effect/sql";
+import * as CrudService from "../common/crud-service";
+import { Pagination } from "../common/repository";
 
 export class FrameworkService extends Effect.Service<FrameworkService>()(
   "FrameworkService",
   {
     effect: Effect.gen(function* () {
-      const workflowRepository = yield* Repository.make({
-        id: Workflow.WorkflowId,
-        model: Workflow.Workflow,
-        tableName: "workflow",
-      });
+      const sql = yield* SqlClient.SqlClient;
 
-      const repository = yield* Repository.make({
-        id: Framework.FrameworkId,
-        model: Framework.Framework,
+      const service = yield* CrudService.makeCrudService({
+        idSchema: Framework.FrameworkId,
+        modelSchema: Framework.Framework,
         tableName: "framework",
+        entityType: "framework",
+        createInput: Framework.CreateFramework,
+        updateInput: Framework.UpdateFramework,
+        notFoundError: Framework.FrameworkNotFoundError,
+        makeModel: Framework.make,
+        updateModel: Framework.update,
+        removeModel: Framework.remove,
       });
 
-      const insert = Effect.fn(function* (input: Framework.CreateFramework) {
-        const workflow = yield* Workflow.make({ entityType: "framework" });
-        yield* workflowRepository.save(workflow);
-
-        const model = yield* Framework.make(input, workflow.id);
-        yield* repository.save(model);
-
-        return model;
-      });
-
-      const update = Effect.fn(function* ({
-        id,
-        data,
-      }: {
-        id: Framework.FrameworkId;
-        data: Framework.UpdateFramework;
-      }) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Framework.FrameworkNotFoundError.fromId(id);
-        }
-
-        const updatedModel = yield* Framework.update(model.value, data);
-
-        yield* repository.save(updatedModel);
-
-        return updatedModel;
-      });
-
-      const remove = Effect.fn(function* (id: Framework.FrameworkId) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Framework.FrameworkNotFoundError.fromId(id);
-        }
-
-        const deletedModel = yield* Framework.remove(model.value);
-
-        yield* repository.save(deletedModel);
+      const count = Effect.fn(function* () {
+        const actor = yield* Actor;
+        const result = yield* sql`SELECT COUNT(*) as count FROM ${sql("framework")} WHERE ${sql.and([
+          sql`org_id = ${actor.orgId}`,
+          sql`deleted_at IS NULL`,
+        ])}`;
+        return result[0]?.count ?? 0;
       });
 
       return {
-        getById: repository.getById,
-        list: repository.list,
-        remove,
-        insert,
-        update,
+        getById: service.getById,
+        list: service.list,
+        remove: service.remove,
+        insert: service.insert,
+        update: service.update,
+        count,
       };
     }),
   },

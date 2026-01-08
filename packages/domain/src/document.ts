@@ -4,8 +4,6 @@ import * as Base from "./base";
 import { FrameworkId } from "./framework";
 import { ControlId } from "./control";
 
-// --- Id ---
-
 export const DocumentId = Schema.String.pipe(Schema.brand("DocumentId"));
 export type DocumentId = typeof DocumentId.Type;
 
@@ -14,8 +12,6 @@ export const documentId = Effect.fn(function* () {
 
   return DocumentId.make(`doc_${createId()}`);
 });
-
-// --- Model ---
 
 export const DocumentType = Schema.Union(
   Schema.Literal("requirement"),
@@ -34,8 +30,6 @@ export class Document extends Base.Base.extend<Document>("Document")({
   controlId: Schema.optional(ControlId),
 }) {}
 
-// --- Input Schemas ---
-
 export const CreateDocument = Document.pipe(
   Schema.pick("name", "type", "url", "size", "frameworkId", "controlId"),
 );
@@ -44,13 +38,11 @@ export type CreateDocument = typeof CreateDocument.Type;
 export const UpdateDocument = CreateDocument.pipe(Schema.partial);
 export type UpdateDocument = typeof UpdateDocument.Type;
 
-// --- Operations ---
-
 export const make = Effect.fn(function* (
   input: CreateDocument,
   workflowId: Base.WorkflowId,
 ) {
-  const base = yield* Base.make({ workflowId });
+  const base = yield* Base.makeBase({ workflowId });
 
   return Document.make({
     id: yield* documentId(),
@@ -63,7 +55,7 @@ export const update = Effect.fn(function* (
   model: Document,
   input: UpdateDocument,
 ) {
-  const base = yield* Base.update();
+  const base = yield* Base.updateBase();
 
   return Document.make({
     ...model,
@@ -73,7 +65,7 @@ export const update = Effect.fn(function* (
 });
 
 export const remove = Effect.fn(function* (model: Document) {
-  const base = yield* Base.remove();
+  const base = yield* Base.removeBase();
 
   return Document.make({
     ...model,
@@ -81,16 +73,12 @@ export const remove = Effect.fn(function* (model: Document) {
   });
 });
 
-// --- Errors ---
-
-export class DocumentNotFoundError extends Schema.TaggedError<DocumentNotFoundError>(
-  "DocumentNotFoundError",
-)("DocumentNotFoundError", {
-  message: Schema.String,
-}) {
+export class DocumentNotFoundError extends Base.NotFoundError {
   static fromId(id: DocumentId) {
     return new DocumentNotFoundError({
-      message: `Document with id ${id} not found`,
+      message: `Document with id ${id} not found.`,
+      entityType: "Document",
+      entityId: id,
     });
   }
 }

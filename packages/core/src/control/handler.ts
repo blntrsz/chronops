@@ -13,6 +13,7 @@ export const ControlHandler = ControlContract.toLayer(
       ControlUpdate: service.update,
       ControlRemove: service.remove,
       ControlByFramework: service.getByFramework,
+      ControlCount: service.count,
     };
   }),
 );

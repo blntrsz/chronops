@@ -52,4 +52,12 @@ export class DocumentContract extends RpcGroup.make(
     ),
     payload: Document.DocumentId,
   }),
+  Rpc.make("DocumentCount", {
+    success: Schema.Number,
+    payload: Schema.Void,
+    error: Schema.Union(
+      Schema.instanceOf(SqlError.SqlError),
+      Schema.instanceOf(ParseError),
+    ),
+  }),
 ).middleware(AuthMiddleware) {}

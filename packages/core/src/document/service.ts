@@ -1,71 +1,44 @@
-import { Effect, Option } from "effect";
-
+import { Effect } from "effect";
 import { Document, Workflow } from "@chronops/domain";
-
-import * as Repository from "../common/repository";
+import { Actor } from "@chronops/domain/actor";
+import { SqlClient } from "@effect/sql";
+import * as CrudService from "../common/crud-service";
 
 export class DocumentService extends Effect.Service<DocumentService>()(
   "DocumentService",
   {
     effect: Effect.gen(function* () {
-      const workflowRepository = yield* Repository.make({
-        id: Workflow.WorkflowId,
-        model: Workflow.Workflow,
-        tableName: "workflow",
-      });
+      const sql = yield* SqlClient.SqlClient;
 
-      const repository = yield* Repository.make({
-        id: Document.DocumentId,
-        model: Document.Document,
+      const service = yield* CrudService.makeCrudService({
+        idSchema: Document.DocumentId,
+        modelSchema: Document.Document,
         tableName: "document",
+        entityType: "document",
+        createInput: Document.CreateDocument,
+        updateInput: Document.UpdateDocument,
+        notFoundError: Document.DocumentNotFoundError,
+        makeModel: Document.make,
+        updateModel: Document.update,
+        removeModel: Document.remove,
       });
 
-      const insert = Effect.fn(function* (input: Document.CreateDocument) {
-        const workflow = yield* Workflow.make({ entityType: "document" });
-        yield* workflowRepository.save(workflow);
-
-        const model = yield* Document.make(input, workflow.id);
-        yield* repository.save(model);
-
-        return model;
-      });
-
-      const update = Effect.fn(function* ({
-        id,
-        data,
-      }: {
-        id: Document.DocumentId;
-        data: Document.UpdateDocument;
-      }) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Document.DocumentNotFoundError.fromId(id);
-        }
-
-        const updatedModel = yield* Document.update(model.value, data);
-
-        yield* repository.save(updatedModel);
-
-        return updatedModel;
-      });
-
-      const remove = Effect.fn(function* (id: Document.DocumentId) {
-        const model = yield* repository.getById(id);
-        if (Option.isNone(model)) {
-          return yield* Document.DocumentNotFoundError.fromId(id);
-        }
-
-        const deletedModel = yield* Document.remove(model.value);
-
-        yield* repository.save(deletedModel);
+      const count = Effect.fn(function* () {
+        const actor = yield* Actor;
+        const result = yield* sql`SELECT COUNT(*) as count FROM ${sql("document")} WHERE ${sql.and([
+          sql`org_id = ${actor.orgId}`,
+          sql`deleted_at IS NULL`,
+        ])}`;
+        return result[0]?.count ?? 0;
       });
 
       return {
-        getById: repository.getById,
-        list: repository.list,
-        insert,
-        update,
-        remove,
+        getById: service.getById,
+        list: service.list,
+        insert: service.insert,
+        update: service.update,
+        remove: service.remove,
+        count,
       };
     }),
   },
