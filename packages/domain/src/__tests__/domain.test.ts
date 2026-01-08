@@ -4,32 +4,35 @@ import { MemberId, OrgId, WorkflowId, Hash, Base, NotFoundError, ULID, ULIDLayer
 import { FrameworkId, Framework, CreateFramework, UpdateFramework, FrameworkNotFoundError } from "../framework";
 import { ControlId, ControlStatus, Control, CreateControl, ControlNotFoundError } from "../control";
 
+// Helper to compare branded types
+const asString = (value: unknown) => value as string;
+
 describe("Base Domain", () => {
   describe("MemberId", () => {
     it("should create a valid MemberId", () => {
       const id = MemberId.make("mem_abc123");
-      expect(id).toBe("mem_abc123");
+      expect(asString(id)).toBe("mem_abc123");
     });
   });
 
   describe("OrgId", () => {
     it("should create a valid OrgId", () => {
       const id = OrgId.make("org_abc123");
-      expect(id).toBe("org_abc123");
+      expect(asString(id)).toBe("org_abc123");
     });
   });
 
   describe("WorkflowId", () => {
     it("should create a valid WorkflowId", () => {
       const id = WorkflowId.make("wf_abc123");
-      expect(id).toBe("wf_abc123");
+      expect(asString(id)).toBe("wf_abc123");
     });
   });
 
   describe("Hash", () => {
     it("should create a valid Hash", () => {
       const hash = Hash.make("abc123hash");
-      expect(hash).toBe("abc123hash");
+      expect(asString(hash)).toBe("abc123hash");
     });
   });
 
@@ -65,8 +68,8 @@ describe("Base Domain", () => {
 
       expect(base.createdAt).toEqual(new Date("2024-01-01T00:00:00Z"));
       expect(base.updatedAt).toEqual(new Date("2024-01-01T00:00:00Z"));
-      expect(base.orgId).toBe("org_test");
-      expect(base.workflowId).toBe("wf_test");
+      expect(asString(base.orgId)).toBe("org_test");
+      expect(asString(base.workflowId)).toBe("wf_test");
     });
   });
 });
@@ -75,7 +78,7 @@ describe("Framework Domain", () => {
   describe("FrameworkId", () => {
     it("should create a valid FrameworkId", () => {
       const id = FrameworkId.make("fwk_test");
-      expect(id).toBe("fwk_test");
+      expect(asString(id)).toBe("fwk_test");
     });
   });
 
@@ -98,7 +101,7 @@ describe("Framework Domain", () => {
         workflowId: WorkflowId.make("wf_test"),
       });
 
-      expect(framework.id).toBe("fwk_test");
+      expect(asString(framework.id)).toBe("fwk_test");
       expect(framework.name).toBe("SOC 2");
       expect(framework.description).toBe("SOC 2 Compliance Framework");
     });
@@ -132,10 +135,8 @@ describe("Framework Domain", () => {
         sourceUrl: "https://example.com/gdpr",
       };
 
-      const decoded = Schema.decode(CreateFramework)(input);
-      if (decoded._tag === "Right") {
-        expect(decoded.right.name).toBe("GDPR");
-      }
+      const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
+      expect(decoded.name).toBe("GDPR");
     });
   });
 
@@ -145,10 +146,8 @@ describe("Framework Domain", () => {
         name: "Updated Name",
       };
 
-      const decoded = Schema.decode(UpdateFramework)(input);
-      if (decoded._tag === "Right") {
-        expect(decoded.right.name).toBe("Updated Name");
-      }
+      const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
+      expect(decoded.name).toBe("Updated Name");
     });
   });
 
@@ -167,23 +166,23 @@ describe("Control Domain", () => {
   describe("ControlId", () => {
     it("should create a valid ControlId", () => {
       const id = ControlId.make("ctr_test");
-      expect(id).toBe("ctr_test");
+      expect(asString(id)).toBe("ctr_test");
     });
   });
 
   describe("ControlStatus", () => {
     it("should accept draft status", () => {
-      const status: Control.ControlStatus.Type = "draft";
+      const status: ControlStatus = "draft";
       expect(status).toBe("draft");
     });
 
     it("should accept active status", () => {
-      const status: Control.ControlStatus.Type = "active";
+      const status: ControlStatus = "active";
       expect(status).toBe("active");
     });
 
     it("should accept deprecated status", () => {
-      const status: Control.ControlStatus.Type = "deprecated";
+      const status: ControlStatus = "deprecated";
       expect(status).toBe("deprecated");
     });
   });
@@ -195,7 +194,7 @@ describe("Control Domain", () => {
         name: "Access Control",
         description: "Control access to systems",
         frameworkId: FrameworkId.make("fwk_test"),
-        status: "active" as Control.ControlStatus.Type,
+        status: "active" as ControlStatus,
         testingFrequency: "quarterly",
         createdAt: new Date("2024-01-01T00:00:00Z"),
         updatedAt: new Date("2024-01-01T00:00:00Z"),
@@ -208,7 +207,7 @@ describe("Control Domain", () => {
         workflowId: WorkflowId.make("wf_test"),
       });
 
-      expect(control.id).toBe("ctr_test");
+      expect(asString(control.id)).toBe("ctr_test");
       expect(control.name).toBe("Access Control");
       expect(control.status).toBe("active");
     });
@@ -220,15 +219,13 @@ describe("Control Domain", () => {
         name: "Access Control",
         description: "Control access",
         frameworkId: FrameworkId.make("fwk_test"),
-        status: "active" as Control.ControlStatus.Type,
+        status: "active" as ControlStatus,
         testingFrequency: "monthly",
       };
 
-      const decoded = Schema.decode(CreateControl)(input);
-      if (decoded._tag === "Right") {
-        expect(decoded.right.name).toBe("Access Control");
-        expect(decoded.right.frameworkId).toBe("fwk_test");
-      }
+      const decoded = Schema.decodeUnknownSync(CreateControl)(input);
+      expect(decoded.name).toBe("Access Control");
+      expect(asString(decoded.frameworkId)).toBe("fwk_test");
     });
   });
 

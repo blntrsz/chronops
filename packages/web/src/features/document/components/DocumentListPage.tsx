@@ -1,14 +1,13 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomValue } from '@effect-atom/atom-react'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "@effect-atom/atom-react";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,21 +15,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 
-import { formatDateTime } from '@/lib/format'
-import { documentListQuery, pageSize } from '@/features/document/atom/document'
-import { DocumentCreateDialog } from '@/features/document/components/DocumentCreateDialog'
+import { formatDateTime } from "@/lib/format";
+import { documentListQuery, pageSize } from "@/features/document/atom/document";
+import { DocumentCreateDialog } from "@/features/document/components/DocumentCreateDialog";
 
 export function DocumentListPage() {
-  const [page, setPage] = React.useState(0)
-  const navigate = useNavigate()
+  const [page, setPage] = React.useState(0);
+  const navigate = useNavigate();
 
-  const list = useAtomValue(documentListQuery(page))
+  const list = useAtomValue(documentListQuery(page));
 
   const onCreated = (documentId: string) => {
-    navigate({ to: '/documents/$documentId', params: { documentId } })
-  }
+    navigate({ to: "/documents/$documentId", params: { documentId } });
+  };
 
   return (
     <Page>
@@ -117,5 +116,5 @@ export function DocumentListPage() {
         </Card>
       </div>
     </Page>
-  )
+  );
 }

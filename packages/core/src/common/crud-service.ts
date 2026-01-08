@@ -2,7 +2,7 @@ import { Effect, Option, Schema } from "effect";
 import type { SqlError } from "@effect/sql/SqlError";
 import type { ParseError } from "effect/ParseResult";
 import { Actor } from "@chronops/domain/actor";
-import { Workflow } from "@chronops/domain";
+import { Workflow, Base } from "@chronops/domain";
 import * as Repository from "./repository";
 
 export interface DomainConfig<
@@ -10,18 +10,18 @@ export interface DomainConfig<
   TModelSchema extends Schema.Schema<any>,
   TCreateInput extends Schema.Schema<any>,
   TUpdateInput extends Schema.Schema<any>,
-  TError extends Schema.Schema<any>,
+  TError,
 > {
   idSchema: TIdSchema;
   modelSchema: TModelSchema;
   tableName: string;
-  entityType: string;
+  entityType: Workflow.WorkflowEntityType;
   createInput: TCreateInput;
   updateInput: TUpdateInput;
-  notFoundError: TError;
-  makeModel: (input: Schema.Schema.Type<TCreateInput>, workflowId: string) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, never>;
-  updateModel: (model: Schema.Schema.Type<TModelSchema>, data: Schema.Schema.Type<TUpdateInput>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, never>;
-  removeModel: (model: Schema.Schema.Type<TModelSchema>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, never>;
+  notFoundError: { fromId: (id: Schema.Schema.Type<TIdSchema>) => TError };
+  makeModel: (input: Schema.Schema.Type<TCreateInput>, workflowId: Base.WorkflowId) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
+  updateModel: (model: Schema.Schema.Type<TModelSchema>, data: Schema.Schema.Type<TUpdateInput>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
+  removeModel: (model: Schema.Schema.Type<TModelSchema>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
 }
 
 export interface CrudService<
@@ -42,7 +42,7 @@ export const makeCrudService = <
   TModelSchema extends Schema.Schema<any>,
   TCreateInput extends Schema.Schema<any>,
   TUpdateInput extends Schema.Schema<any>,
-  TError extends Schema.Schema<any>,
+  TError,
 >(config: DomainConfig<TIdSchema, TModelSchema, TCreateInput, TUpdateInput, TError>) =>
   Effect.gen(function* () {
     const workflowRepository = yield* Repository.make({
@@ -76,7 +76,7 @@ export const makeCrudService = <
     }) {
       const model = yield* repository.getById(id);
       if (Option.isNone(model)) {
-        return yield* config.notFoundError.fromId ? config.notFoundError.fromId(id) : Effect.fail(config.notFoundError);
+        return yield* Effect.fail(config.notFoundError.fromId(id));
       }
 
       const updatedModel = yield* config.updateModel(model.value, data);
@@ -88,7 +88,7 @@ export const makeCrudService = <
     const remove = Effect.fn(function* (id: Schema.Schema.Type<TIdSchema>) {
       const model = yield* repository.getById(id);
       if (Option.isNone(model)) {
-        return yield* config.notFoundError.fromId ? config.notFoundError.fromId(id) : Effect.fail(config.notFoundError);
+        return yield* Effect.fail(config.notFoundError.fromId(id));
       }
 
       const deletedModel = yield* config.removeModel(model.value);

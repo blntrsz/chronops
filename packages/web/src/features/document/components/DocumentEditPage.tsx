@@ -1,22 +1,21 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { Document } from '@chronops/domain'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
+import { Document } from "@chronops/domain";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,105 +25,109 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
 
-import { formatDateTime } from '@/lib/format'
-import { controlListQuery } from '@/features/control/atom/control'
-import { frameworkListQuery } from '@/features/framework/atom/framework'
+import { formatDateTime } from "@/lib/format";
+import { controlListQuery } from "@/features/control/atom/control";
+import { frameworkListQuery } from "@/features/framework/atom/framework";
 import {
   documentByIdQuery,
   documentRemoveMutation,
   documentUpdateMutation,
-} from '@/features/document/atom/document'
+} from "@/features/document/atom/document";
 import {
   DocumentForm,
   toCreateDocumentPayload,
   type DocumentFormValue,
-} from '@/features/document/components/DocumentForm'
+} from "@/features/document/components/DocumentForm";
 
 export function DocumentEditPage({ documentId }: { documentId: string }) {
-  const id = Document.DocumentId.make(documentId)
+  const id = Document.DocumentId.make(documentId);
 
-  const navigate = useNavigate()
-  const [confirmDelete, setConfirmDelete] = React.useState(false)
-  const [pendingSave, setPendingSave] = React.useState(false)
-  const [pendingDelete, setPendingDelete] = React.useState(false)
+  const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [pendingSave, setPendingSave] = React.useState(false);
+  const [pendingDelete, setPendingDelete] = React.useState(false);
 
-  const docResult = useAtomValue(documentByIdQuery(id))
-  const frameworksResult = useAtomValue(frameworkListQuery(0))
+  const docResult = useAtomValue(documentByIdQuery(id));
+  const frameworksResult = useAtomValue(frameworkListQuery(0));
 
-  const updateDocument = useAtomSet(documentUpdateMutation, { mode: 'promise' })
-  const removeDocument = useAtomSet(documentRemoveMutation, { mode: 'promise' })
+  const updateDocument = useAtomSet(documentUpdateMutation, {
+    mode: "promise",
+  });
+  const removeDocument = useAtomSet(documentRemoveMutation, {
+    mode: "promise",
+  });
 
   const frameworks =
-    frameworksResult._tag === 'Success' ? frameworksResult.value : []
+    frameworksResult._tag === "Success" ? frameworksResult.value : [];
 
   const [form, setForm] = React.useState<DocumentFormValue>({
-    name: '',
-    type: 'evidence',
-    url: '',
-    size: '',
-    frameworkId: '',
-    controlId: '',
-  })
+    name: "",
+    type: "evidence",
+    url: "",
+    size: "",
+    frameworkId: "",
+    controlId: "",
+  });
 
   React.useEffect(() => {
-    if (docResult._tag !== 'Success') return
-    const maybe = docResult.value
-    if (maybe._tag !== 'Some') return
+    if (docResult._tag !== "Success") return;
+    const maybe = docResult.value;
+    if (maybe._tag !== "Some") return;
 
-    const doc = maybe.value
+    const doc = maybe.value;
     setForm({
       name: doc.name,
       type: doc.type,
       url: doc.url,
-      size: doc.size !== undefined ? String(doc.size) : '',
-      frameworkId: doc.frameworkId ?? '',
-      controlId: doc.controlId ?? '',
-    })
-  }, [docResult])
+      size: doc.size !== undefined ? String(doc.size) : "",
+      frameworkId: doc.frameworkId ?? "",
+      controlId: doc.controlId ?? "",
+    });
+  }, [docResult]);
 
-  const controlsResult = useAtomValue(controlListQuery(0))
+  const controlsResult = useAtomValue(controlListQuery(0));
 
   const controls =
-    form.frameworkId && controlsResult._tag === 'Success'
+    form.frameworkId && controlsResult._tag === "Success"
       ? controlsResult.value.filter((c) => c.frameworkId === form.frameworkId)
-      : []
+      : [];
 
   const onSave = async () => {
-    if (pendingSave) return
-    setPendingSave(true)
+    if (pendingSave) return;
+    setPendingSave(true);
     try {
       await updateDocument({
         payload: { id, data: toCreateDocumentPayload(form) },
         reactivityKeys: {
-          list: ['document:list', 0],
-          detail: ['document:detail', id],
+          list: ["document:list", 0],
+          detail: ["document:detail", id],
         },
-      })
+      });
     } finally {
-      setPendingSave(false)
+      setPendingSave(false);
     }
-  }
+  };
 
   const onDelete = async () => {
-    if (pendingDelete) return
-    setPendingDelete(true)
+    if (pendingDelete) return;
+    setPendingDelete(true);
     try {
       await removeDocument({
         payload: id,
         reactivityKeys: {
-          list: ['document:list', 0],
-          detail: ['document:detail', id],
+          list: ["document:list", 0],
+          detail: ["document:detail", id],
         },
-      })
-      navigate({ to: '/documents' })
+      });
+      navigate({ to: "/documents" });
     } finally {
-      setPendingDelete(false)
-      setConfirmDelete(false)
+      setPendingDelete(false);
+      setConfirmDelete(false);
     }
-  }
+  };
 
   return (
     <Page>
@@ -147,16 +150,20 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
           <CardContent>
             <ResultView result={docResult}>
               {(maybe) =>
-                maybe._tag === 'Some' ? (
+                maybe._tag === "Some" ? (
                   <div className="grid gap-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="text-lg font-semibold">{maybe.value.name}</div>
+                      <div className="text-lg font-semibold">
+                        {maybe.value.name}
+                      </div>
                       <Badge variant="secondary">{maybe.value.type}</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <div>ID: {maybe.value.id}</div>
                       <div>Workflow: {maybe.value.workflowId}</div>
-                      <div>Updated: {formatDateTime(maybe.value.updatedAt)}</div>
+                      <div>
+                        Updated: {formatDateTime(maybe.value.updatedAt)}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -176,7 +183,10 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
             <DocumentForm
               value={form}
               onChange={setForm}
-              frameworks={frameworks.map((fw) => ({ id: fw.id, name: fw.name }))}
+              frameworks={frameworks.map((fw) => ({
+                id: fw.id,
+                name: fw.name,
+              }))}
               controls={controls.map((c) => ({ id: c.id, name: c.name }))}
             />
 
@@ -190,7 +200,7 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
                     Saving
                   </>
                 ) : (
-                  'Save changes'
+                  "Save changes"
                 )}
               </Button>
 
@@ -225,7 +235,7 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
                           Deleting
                         </>
                       ) : (
-                        'Delete'
+                        "Delete"
                       )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -238,23 +248,27 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
         <Card>
           <CardHeader>
             <CardTitle>Link preview</CardTitle>
-            <CardDescription>Quickly validate what this points to.</CardDescription>
+            <CardDescription>
+              Quickly validate what this points to.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-2 text-sm">
               <div>
-                Framework: <span className="font-mono">{form.frameworkId || '-'}</span>
+                Framework:{" "}
+                <span className="font-mono">{form.frameworkId || "-"}</span>
               </div>
               <div>
-                Control: <span className="font-mono">{form.controlId || '-'}</span>
+                Control:{" "}
+                <span className="font-mono">{form.controlId || "-"}</span>
               </div>
               <div>
-                URL: <span className="font-mono">{form.url || '-'}</span>
+                URL: <span className="font-mono">{form.url || "-"}</span>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
     </Page>
-  )
+  );
 }

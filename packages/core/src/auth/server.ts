@@ -10,13 +10,11 @@ export const auth = betterAuth({
   plugins: [
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        // TODO: implement email sending
         console.log(`[${type}] OTP for ${email}: ${otp}`);
       },
     }),
     organization({
       async sendInvitationEmail(data) {
-        // TODO: implement invitation email
         console.log(
           `Invitation for ${data.email} to ${data.organization.name}`,
         );

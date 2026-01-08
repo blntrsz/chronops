@@ -1,14 +1,13 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomValue } from '@effect-atom/atom-react'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "@effect-atom/atom-react";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,21 +15,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 
-import { formatDateTime } from '@/lib/format'
-import { controlListQuery, pageSize } from '@/features/control/atom/control'
-import { ControlCreateDialog } from '@/features/control/components/ControlCreateDialog'
+import { formatDateTime } from "@/lib/format";
+import { controlListQuery, pageSize } from "@/features/control/atom/control";
+import { ControlCreateDialog } from "@/features/control/components/ControlCreateDialog";
 
 export function ControlListPage() {
-  const [page, setPage] = React.useState(0)
-  const navigate = useNavigate()
+  const [page, setPage] = React.useState(0);
+  const navigate = useNavigate();
 
-  const list = useAtomValue(controlListQuery(page))
+  const list = useAtomValue(controlListQuery(page));
 
   const onCreated = (controlId: string) => {
-    navigate({ to: '/controls/$controlId', params: { controlId } })
-  }
+    navigate({ to: "/controls/$controlId", params: { controlId } });
+  };
 
   return (
     <Page>
@@ -117,5 +116,5 @@ export function ControlListPage() {
         </Card>
       </div>
     </Page>
-  )
+  );
 }

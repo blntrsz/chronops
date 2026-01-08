@@ -1,30 +1,35 @@
-// @ts-nocheck
-import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import { RegistryProvider } from '@effect-atom/atom-react'
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { RegistryProvider } from "@effect-atom/atom-react";
 
-import Header from '@/components/Header'
+import Header from "@/components/Header";
 
-import appCss from '../styles.css?url'
+import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
       {
-        title: 'Chronops',
+        title: "Chronops",
       },
     ],
     links: [
       {
-        rel: 'stylesheet',
+        rel: "stylesheet",
         href: appCss,
       },
     ],
@@ -32,11 +37,15 @@ export const Route = createRootRoute({
 
   component: RootLayout,
   shellComponent: RootDocument,
-})
+});
 
 function RootLayout() {
-  const pathname = useRouterState().location.pathname
-  const hideHeader = pathname === '/' || pathname === '/login' || pathname === '/otp' || pathname.startsWith('/org')
+  const pathname = useRouterState().location.pathname;
+  const hideHeader =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/otp" ||
+    pathname.startsWith("/org");
 
   return (
     <div className="ds-app-bg">
@@ -45,7 +54,7 @@ function RootLayout() {
         <Outlet />
       </RegistryProvider>
     </div>
-  )
+  );
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -58,11 +67,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {children}
         <TanStackDevtools
           config={{
-            position: 'bottom-right',
+            position: "bottom-right",
           }}
           plugins={[
             {
-              name: 'Tanstack Router',
+              name: "Tanstack Router",
               render: <TanStackRouterDevtoolsPanel />,
             },
           ]}
@@ -70,5 +79,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }

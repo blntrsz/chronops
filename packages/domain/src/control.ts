@@ -78,7 +78,7 @@ export const remove = Effect.fn(function* (model: Control) {
 });
 
 export class ControlNotFoundError extends Base.NotFoundError {
-  static fromId(id: ControlId) {
+  static override fromId(id: ControlId) {
     return new ControlNotFoundError({
       message: `Control with id ${id} not found.`,
       entityType: "Control",

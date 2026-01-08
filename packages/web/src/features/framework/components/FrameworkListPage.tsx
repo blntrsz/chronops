@@ -1,13 +1,12 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomValue } from '@effect-atom/atom-react'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "@effect-atom/atom-react";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,21 +14,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
 
-import { formatDateTime } from '@/lib/format'
-import { frameworkListQuery, pageSize } from '@/features/framework/atom/framework'
-import { FrameworkCreateDialog } from '@/features/framework/components/FrameworkCreateDialog'
+import { formatDateTime } from "@/lib/format";
+import {
+  frameworkListQuery,
+  pageSize,
+} from "@/features/framework/atom/framework";
+import { FrameworkCreateDialog } from "@/features/framework/components/FrameworkCreateDialog";
 
 export function FrameworkListPage() {
-  const [page, setPage] = React.useState(0)
-  const navigate = useNavigate()
+  const [page, setPage] = React.useState(0);
+  const navigate = useNavigate();
 
-  const list = useAtomValue(frameworkListQuery(page))
+  const list = useAtomValue(frameworkListQuery(page));
 
   const onCreated = (frameworkId: string) => {
-    navigate({ to: '/frameworks/$frameworkId', params: { frameworkId } })
-  }
+    navigate({ to: "/frameworks/$frameworkId", params: { frameworkId } });
+  };
 
   return (
     <Page>
@@ -112,5 +114,5 @@ export function FrameworkListPage() {
         </Card>
       </div>
     </Page>
-  )
+  );
 }

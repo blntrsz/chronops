@@ -1,8 +1,10 @@
-import { Effect } from "effect";
-import { Document, Workflow } from "@chronops/domain";
+import { Effect, Schema } from "effect";
+import { Document } from "@chronops/domain";
 import { Actor } from "@chronops/domain/actor";
-import { SqlClient } from "@effect/sql";
+import { SqlClient, SqlSchema } from "@effect/sql";
 import * as CrudService from "../common/crud-service";
+
+const CountResult = Schema.Struct({ count: Schema.Number });
 
 export class DocumentService extends Effect.Service<DocumentService>()(
   "DocumentService",
@@ -25,10 +27,16 @@ export class DocumentService extends Effect.Service<DocumentService>()(
 
       const count = Effect.fn(function* () {
         const actor = yield* Actor;
-        const result = yield* sql`SELECT COUNT(*) as count FROM ${sql("document")} WHERE ${sql.and([
-          sql`org_id = ${actor.orgId}`,
-          sql`deleted_at IS NULL`,
-        ])}`;
+        const result = yield* SqlSchema.findAll({
+          Request: Schema.Void,
+          Result: CountResult,
+          execute() {
+            return sql`SELECT COUNT(*) as count FROM ${sql("document")} WHERE ${sql.and([
+              sql`org_id = ${actor.orgId}`,
+              sql`deleted_at IS NULL`,
+            ])}`;
+          },
+        })(undefined);
         return result[0]?.count ?? 0;
       });
 

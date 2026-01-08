@@ -1,45 +1,46 @@
-import { Link, createFileRoute, redirect } from '@tanstack/react-router'
-import { BookOpen, FileText, ListChecks, Plus, Users } from 'lucide-react'
-import { useAtomValue } from '@effect-atom/atom-react'
-import { authClient } from '@/lib/auth'
-import { Button } from '@/components/ui/button'
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { BookOpen, FileText, ListChecks, Plus, Users } from "lucide-react";
+import { Result, useAtomValue } from "@effect-atom/atom-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { frameworkCountQuery } from '@/features/framework/atom/framework'
-import { controlCountQuery } from '@/features/control/atom/control'
-import { documentCountQuery } from '@/features/document/atom/document'
+} from "@/components/ui/card";
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { frameworkCountQuery } from "@/features/framework/atom/framework";
+import { controlCountQuery } from "@/features/control/atom/control";
+import { documentCountQuery } from "@/features/document/atom/document";
+import { getSession } from "@/features/auth/server";
+import { authClient } from "@/lib/auth";
 
-export const Route = createFileRoute('/dashboard')({
+export const Route = createFileRoute("/dashboard")({
   beforeLoad: async () => {
-    const session = await authClient.getSession()
-    if (!session.data?.user) {
-      throw redirect({ to: '/login' })
+    const session = await getSession();
+    if (!session?.user) {
+      throw redirect({ to: "/login" });
     }
-    if (!session.data.session?.activeOrganizationId) {
-      throw redirect({ to: '/org/switcher' })
+    if (!session.session?.activeOrganizationId) {
+      throw redirect({ to: "/org/switcher" });
     }
   },
   component: DashboardPage,
-})
+});
 
 function DashboardPage() {
-  const session = authClient.useSession()
-  const activeOrg = authClient.useActiveOrganization()
+  const session = authClient.useSession();
+  const activeOrg = authClient.useActiveOrganization();
 
-  const frameworkCount = useAtomValue(frameworkCountQuery())
-  const controlCount = useAtomValue(controlCountQuery())
-  const documentCount = useAtomValue(documentCountQuery())
+  const frameworkCount = useAtomValue(frameworkCountQuery());
+  const controlCount = useAtomValue(controlCountQuery());
+  const documentCount = useAtomValue(documentCountQuery());
 
-  const frameworks = frameworkCount.data ?? 0
-  const controls = controlCount.data ?? 0
-  const documents = documentCount.data ?? 0
+  const frameworks = Result.getOrElse(frameworkCount, () => 0);
+  const controls = Result.getOrElse(controlCount, () => 0);
+  const documents = Result.getOrElse(documentCount, () => 0);
 
   return (
     <Page>
@@ -51,11 +52,14 @@ function DashboardPage() {
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600">
             <span className="text-lg font-semibold text-white">
-              {session.data?.user?.name?.[0] || session.data?.user?.email?.[0]?.toUpperCase()}
+              {session.data?.user?.name?.[0] ||
+                session.data?.user?.email?.[0]?.toUpperCase()}
             </span>
           </div>
           <div className="text-sm">
-            <p className="font-medium text-white">{session.data?.user?.name || 'User'}</p>
+            <p className="font-medium text-white">
+              {session.data?.user?.name || "User"}
+            </p>
             <p className="text-slate-400">{session.data?.user?.email}</p>
           </div>
         </div>
@@ -64,7 +68,9 @@ function DashboardPage() {
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Frameworks</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Frameworks
+            </CardTitle>
             <BookOpen className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
@@ -75,7 +81,9 @@ function DashboardPage() {
 
         <Card className="border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Controls</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Controls
+            </CardTitle>
             <ListChecks className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
@@ -86,7 +94,9 @@ function DashboardPage() {
 
         <Card className="border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Documents</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Documents
+            </CardTitle>
             <FileText className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
@@ -97,7 +107,9 @@ function DashboardPage() {
 
         <Card className="border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-300">Team Members</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Team Members
+            </CardTitle>
             <Users className="h-4 w-4 text-cyan-400" />
           </CardHeader>
           <CardContent>
@@ -116,19 +128,30 @@ function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button asChild className="w-full justify-start bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700">
+            <Button
+              asChild
+              className="w-full justify-start bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700"
+            >
               <Link to="/frameworks">
                 <Plus className="mr-2 h-4 w-4" />
                 Create New Framework
               </Link>
             </Button>
-            <Button asChild variant="outline" className="w-full justify-start text-slate-300">
+            <Button
+              asChild
+              variant="outline"
+              className="w-full justify-start text-slate-300"
+            >
               <Link to="/controls">
                 <Plus className="mr-2 h-4 w-4" />
                 Add New Control
               </Link>
             </Button>
-            <Button asChild variant="outline" className="w-full justify-start text-slate-300">
+            <Button
+              asChild
+              variant="outline"
+              className="w-full justify-start text-slate-300"
+            >
               <Link to="/documents">
                 <Plus className="mr-2 h-4 w-4" />
                 Upload Document
@@ -152,7 +175,10 @@ function DashboardPage() {
                   <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
+                  <div
+                    className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600"
+                    style={{ width: "0%" }}
+                  />
                 </div>
               </div>
               <div>
@@ -161,7 +187,10 @@ function DashboardPage() {
                   <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
+                  <div
+                    className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600"
+                    style={{ width: "0%" }}
+                  />
                 </div>
               </div>
               <div>
@@ -170,7 +199,10 @@ function DashboardPage() {
                   <span className="text-sm font-medium text-cyan-400">--%</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-700">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" style={{ width: '0%' }} />
+                  <div
+                    className="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600"
+                    style={{ width: "0%" }}
+                  />
                 </div>
               </div>
             </div>
@@ -222,5 +254,5 @@ function DashboardPage() {
         </Card>
       </div>
     </Page>
-  )
+  );
 }

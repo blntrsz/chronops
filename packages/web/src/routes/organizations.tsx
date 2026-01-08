@@ -1,13 +1,12 @@
-// @ts-nocheck
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { authClient } from '@/lib/auth'
+import { getSession } from "@/features/auth/server";
 
-export const Route = createFileRoute('/organizations')({
+export const Route = createFileRoute("/organizations")({
   beforeLoad: async () => {
-    const session = await authClient.getSession()
-    if (!session.data?.user) throw redirect({ to: '/login' })
-    throw redirect({ to: '/org/switcher' })
+    const session = await getSession();
+    if (!session?.user) throw redirect({ to: "/login" });
+    throw redirect({ to: "/org/switcher" });
   },
   component: () => null,
-})
+});

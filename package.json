@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev": "bun --filter '*' dev",
     "typecheck": "bun --filter '*' typecheck",
     "lint": "biome check --write .",
     "lint:check": "biome check ."

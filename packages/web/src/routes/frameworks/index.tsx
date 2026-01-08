@@ -1,18 +1,17 @@
-// @ts-nocheck
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { FrameworkListPage } from '@/features/framework/components/FrameworkListPage'
-import { authClient } from '@/lib/auth'
+import { FrameworkListPage } from "@/features/framework/components/FrameworkListPage";
+import { getSession } from "@/features/auth/server";
 
-export const Route = createFileRoute('/frameworks/')({
+export const Route = createFileRoute("/frameworks/")({
   beforeLoad: async () => {
-    const session = await authClient.getSession()
-    if (!session.data?.user) {
-      throw redirect({ to: '/login' })
+    const session = await getSession();
+    if (!session?.user) {
+      throw redirect({ to: "/login" });
     }
-    if (!session.data.session?.activeOrganizationId) {
-      throw redirect({ to: '/org/switcher' })
+    if (!session.session?.activeOrganizationId) {
+      throw redirect({ to: "/org/switcher" });
     }
   },
   component: FrameworkListPage,
-})
+});

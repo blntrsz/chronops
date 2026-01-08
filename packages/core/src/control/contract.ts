@@ -4,7 +4,7 @@ import { Schema } from "effect";
 import { SqlError } from "@effect/sql";
 import { ParseError } from "effect/ParseResult";
 import { Pagination } from "../common/repository";
-import { AuthMiddleware } from "../auth/middleware";
+import { AuthMiddleware } from "../auth/middleware-interface";
 
 export class ControlContract extends RpcGroup.make(
   Rpc.make("ControlCreate", {

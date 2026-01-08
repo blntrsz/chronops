@@ -105,7 +105,7 @@ export type UpdateWorkflow = typeof UpdateWorkflow.Type;
 export const make = Effect.fn(function* (input: CreateWorkflow) {
   const id = yield* workflowId();
   const template = templateForEntity(input.entityType);
-  const base = yield* Base.make({ workflowId: id });
+  const base = yield* Base.makeBase({ workflowId: id });
 
   return Workflow.make({
     id,
@@ -116,7 +116,7 @@ export const make = Effect.fn(function* (input: CreateWorkflow) {
 });
 
 export const updateStatus = Effect.fn(function* (model: Workflow, status: WorkflowStatus) {
-  const base = yield* Base.update();
+  const base = yield* Base.updateBase();
 
   return Workflow.make({
     ...model,

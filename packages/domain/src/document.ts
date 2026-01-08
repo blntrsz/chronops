@@ -74,7 +74,7 @@ export const remove = Effect.fn(function* (model: Document) {
 });
 
 export class DocumentNotFoundError extends Base.NotFoundError {
-  static fromId(id: DocumentId) {
+  static override fromId(id: DocumentId) {
     return new DocumentNotFoundError({
       message: `Document with id ${id} not found.`,
       entityType: "Document",

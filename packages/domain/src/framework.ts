@@ -63,7 +63,7 @@ export const remove = Effect.fn(function* (model: Framework) {
 });
 
 export class FrameworkNotFoundError extends Base.NotFoundError {
-  static fromId(id: FrameworkId) {
+  static override fromId(id: FrameworkId) {
     return new FrameworkNotFoundError({
       message: `Framework with id ${id} not found.`,
       entityType: "Framework",

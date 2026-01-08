@@ -1,22 +1,21 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { Control } from '@chronops/domain'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
+import { Control } from "@chronops/domain";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,96 +25,96 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
 
-import { formatDateTime } from '@/lib/format'
+import { formatDateTime } from "@/lib/format";
 import {
   controlByIdQuery,
   controlRemoveMutation,
   controlUpdateMutation,
-} from '@/features/control/atom/control'
-import { frameworkListQuery } from '@/features/framework/atom/framework'
+} from "@/features/control/atom/control";
+import { frameworkListQuery } from "@/features/framework/atom/framework";
 import {
   ControlForm,
   toCreateControlPayload,
   type ControlFormValue,
-} from '@/features/control/components/ControlForm'
+} from "@/features/control/components/ControlForm";
 
 export function ControlEditPage({ controlId }: { controlId: string }) {
-  const id = Control.ControlId.make(controlId)
+  const id = Control.ControlId.make(controlId);
 
-  const navigate = useNavigate()
-  const [confirmDelete, setConfirmDelete] = React.useState(false)
-  const [pendingSave, setPendingSave] = React.useState(false)
-  const [pendingDelete, setPendingDelete] = React.useState(false)
+  const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [pendingSave, setPendingSave] = React.useState(false);
+  const [pendingDelete, setPendingDelete] = React.useState(false);
 
-  const controlResult = useAtomValue(controlByIdQuery(id))
-  const frameworksResult = useAtomValue(frameworkListQuery(0))
+  const controlResult = useAtomValue(controlByIdQuery(id));
+  const frameworksResult = useAtomValue(frameworkListQuery(0));
 
-  const updateControl = useAtomSet(controlUpdateMutation, { mode: 'promise' })
-  const removeControl = useAtomSet(controlRemoveMutation, { mode: 'promise' })
+  const updateControl = useAtomSet(controlUpdateMutation, { mode: "promise" });
+  const removeControl = useAtomSet(controlRemoveMutation, { mode: "promise" });
 
   const frameworks =
-    frameworksResult._tag === 'Success' ? frameworksResult.value : []
+    frameworksResult._tag === "Success" ? frameworksResult.value : [];
 
   const [form, setForm] = React.useState<ControlFormValue>({
-    name: '',
-    description: '',
-    frameworkId: '',
-    status: 'draft',
-    testingFrequency: '',
-  })
+    name: "",
+    description: "",
+    frameworkId: "",
+    status: "draft",
+    testingFrequency: "",
+  });
 
   React.useEffect(() => {
-    if (controlResult._tag !== 'Success') return
-    const maybe = controlResult.value
-    if (maybe._tag !== 'Some') return
+    if (controlResult._tag !== "Success") return;
+    const maybe = controlResult.value;
+    if (maybe._tag !== "Some") return;
 
-    const ctrl = maybe.value
+    const ctrl = maybe.value;
     setForm({
       name: ctrl.name,
-      description: ctrl.description ?? '',
+      description: ctrl.description ?? "",
       frameworkId: ctrl.frameworkId,
       status: ctrl.status,
-      testingFrequency: ctrl.testingFrequency ?? '',
-    })
-  }, [controlResult])
+      testingFrequency: ctrl.testingFrequency ?? "",
+    });
+  }, [controlResult]);
 
   const onSave = async () => {
-    if (pendingSave) return
-    setPendingSave(true)
+    if (pendingSave) return;
+    setPendingSave(true);
     try {
       await updateControl({
         payload: { id, data: toCreateControlPayload(form) },
         reactivityKeys: {
-          list: ['control:list', 0],
-          detail: ['control:detail', id],
-          byFramework: ['control:byFramework', form.frameworkId],
+          list: ["control:list", 0],
+          detail: ["control:detail", id],
+          byFramework: ["control:byFramework", form.frameworkId],
         },
-      })
+      });
     } finally {
-      setPendingSave(false)
+      setPendingSave(false);
     }
-  }
+  };
 
   const onDelete = async () => {
-    if (pendingDelete) return
-    setPendingDelete(true)
+    if (pendingDelete) return;
+    setPendingDelete(true);
     try {
       await removeControl({
         payload: id,
         reactivityKeys: {
-          list: ['control:list', 0],
-          detail: ['control:detail', id],
+          list: ["control:list", 0],
+          detail: ["control:detail", id],
         },
-      })
-      navigate({ to: '/controls' })
+      });
+      navigate({ to: "/controls" });
     } finally {
-      setPendingDelete(false)
-      setConfirmDelete(false)
+      setPendingDelete(false);
+      setConfirmDelete(false);
     }
-  }
+  };
 
   return (
     <Page>
@@ -138,17 +137,21 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
           <CardContent>
             <ResultView result={controlResult}>
               {(maybe) =>
-                maybe._tag === 'Some' ? (
+                maybe._tag === "Some" ? (
                   <div className="grid gap-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="text-lg font-semibold">{maybe.value.name}</div>
+                      <div className="text-lg font-semibold">
+                        {maybe.value.name}
+                      </div>
                       <Badge variant="secondary">{maybe.value.status}</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <div>ID: {maybe.value.id}</div>
                       <div>Framework: {maybe.value.frameworkId}</div>
                       <div>Workflow: {maybe.value.workflowId}</div>
-                      <div>Updated: {formatDateTime(maybe.value.updatedAt)}</div>
+                      <div>
+                        Updated: {formatDateTime(maybe.value.updatedAt)}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -168,7 +171,10 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
             <ControlForm
               value={form}
               onChange={setForm}
-              frameworks={frameworks.map((fw) => ({ id: fw.id, name: fw.name }))}
+              frameworks={frameworks.map((fw) => ({
+                id: fw.id,
+                name: fw.name,
+              }))}
             />
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -179,7 +185,7 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
                     Saving
                   </>
                 ) : (
-                  'Save changes'
+                  "Save changes"
                 )}
               </Button>
 
@@ -214,7 +220,7 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
                           Deleting
                         </>
                       ) : (
-                        'Delete'
+                        "Delete"
                       )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -231,5 +237,5 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
         </Card>
       </div>
     </Page>
-  )
+  );
 }

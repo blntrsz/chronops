@@ -1,54 +1,12 @@
-import { RpcMiddleware } from "@effect/rpc";
-import { Effect, Layer, Schema } from "effect";
-import { Actor, MemberId, OrgId } from "@chronops/domain/actor";
+import { Effect, Layer } from "effect";
+import { MemberId, OrgId } from "@chronops/domain/actor";
 import { auth } from "./server";
-
-// --- Auth Errors ---
-
-export class Unauthorized extends Schema.TaggedError<Unauthorized>()(
-  "Unauthorized",
-  {
-    message: Schema.optionalWith(Schema.String, {
-      default: () => "Unauthorized",
-    }),
-  },
-) {}
-
-export class NoActiveOrganization extends Schema.TaggedError<NoActiveOrganization>()(
-  "NoActiveOrganization",
-  {
-    message: Schema.optionalWith(Schema.String, {
-      default: () => "No active organization selected",
-    }),
-  },
-) {}
-
-export class MemberNotFound extends Schema.TaggedError<MemberNotFound>()(
-  "MemberNotFound",
-  {
-    message: Schema.optionalWith(Schema.String, {
-      default: () => "Member not found in organization",
-    }),
-  },
-) {}
-
-export const AuthError = Schema.Union(
-  Unauthorized,
-  NoActiveOrganization,
+import {
+  AuthMiddleware,
   MemberNotFound,
-);
-export type AuthError = typeof AuthError.Type;
-
-// --- Auth Middleware ---
-
-export class AuthMiddleware extends RpcMiddleware.Tag<AuthMiddleware>()(
-  "AuthMiddleware",
-  {
-    provides: Actor,
-    failure: AuthError,
-    requiredForClient: false,
-  },
-) {}
+  NoActiveOrganization,
+  Unauthorized,
+} from "./middleware-interface";
 
 export const AuthMiddlewareLive = Layer.effect(
   AuthMiddleware,

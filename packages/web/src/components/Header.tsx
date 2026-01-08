@@ -1,11 +1,10 @@
-// @ts-nocheck
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router";
 
-import { useState } from 'react'
-import { BookOpen, FileText, Home, ListChecks, Menu, X } from 'lucide-react'
+import { useState } from "react";
+import { BookOpen, FileText, Home, ListChecks, Menu, X } from "lucide-react";
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -30,7 +29,7 @@ export default function Header() {
 
       <aside
         className={`fixed left-0 top-0 z-50 flex h-full w-80 transform flex-col bg-gray-900 text-white shadow-2xl transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between border-b border-gray-700 p-4">
@@ -51,7 +50,7 @@ export default function Header() {
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
               className:
-                'mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700',
+                "mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700",
             }}
           >
             <Home size={20} />
@@ -64,7 +63,7 @@ export default function Header() {
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
               className:
-                'mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700',
+                "mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700",
             }}
           >
             <BookOpen size={20} />
@@ -77,7 +76,7 @@ export default function Header() {
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
               className:
-                'mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700',
+                "mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700",
             }}
           >
             <ListChecks size={20} />
@@ -90,7 +89,7 @@ export default function Header() {
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
               className:
-                'mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700',
+                "mb-2 flex items-center gap-3 rounded-lg bg-cyan-600 p-3 transition-colors hover:bg-cyan-700",
             }}
           >
             <FileText size={20} />
@@ -99,5 +98,5 @@ export default function Header() {
         </nav>
       </aside>
     </>
-  )
+  );
 }

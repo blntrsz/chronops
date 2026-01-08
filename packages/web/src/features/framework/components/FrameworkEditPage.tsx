@@ -1,22 +1,21 @@
-// @ts-nocheck
-import * as React from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { useAtomSet, useAtomValue } from '@effect-atom/atom-react'
-import { Framework } from '@chronops/domain'
+import * as React from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
+import { Framework } from "@chronops/domain";
 
-import { Page } from '@/components/Page'
-import { PageHeader } from '@/components/PageHeader'
-import { ResultView } from '@/components/ResultView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Page } from "@/components/Page";
+import { PageHeader } from "@/components/PageHeader";
+import { ResultView } from "@/components/ResultView";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,90 +25,94 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from "@/components/ui/alert-dialog";
+import { Spinner } from "@/components/ui/spinner";
 
-import { formatDateTime } from '@/lib/format'
-import { controlsByFrameworkQuery } from '@/features/control/atom/control'
-import { ControlListInline } from '@/features/control/components/ControlListInline'
+import { formatDateTime } from "@/lib/format";
+import { controlsByFrameworkQuery } from "@/features/control/atom/control";
+import { ControlListInline } from "@/features/control/components/ControlListInline";
 import {
   frameworkByIdQuery,
   frameworkRemoveMutation,
   frameworkUpdateMutation,
-} from '@/features/framework/atom/framework'
+} from "@/features/framework/atom/framework";
 import {
   FrameworkForm,
   toCreateFrameworkPayload,
   type FrameworkFormValue,
-} from '@/features/framework/components/FrameworkForm'
+} from "@/features/framework/components/FrameworkForm";
 
 export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
-  const id = Framework.FrameworkId.make(frameworkId)
+  const id = Framework.FrameworkId.make(frameworkId);
 
-  const navigate = useNavigate()
-  const [confirmDelete, setConfirmDelete] = React.useState(false)
-  const [pendingSave, setPendingSave] = React.useState(false)
-  const [pendingDelete, setPendingDelete] = React.useState(false)
+  const navigate = useNavigate();
+  const [confirmDelete, setConfirmDelete] = React.useState(false);
+  const [pendingSave, setPendingSave] = React.useState(false);
+  const [pendingDelete, setPendingDelete] = React.useState(false);
 
-  const frameworkResult = useAtomValue(frameworkByIdQuery(id))
-  const controlsResult = useAtomValue(controlsByFrameworkQuery(id))
+  const frameworkResult = useAtomValue(frameworkByIdQuery(id));
+  const controlsResult = useAtomValue(controlsByFrameworkQuery(id));
 
-  const updateFramework = useAtomSet(frameworkUpdateMutation, { mode: 'promise' })
-  const removeFramework = useAtomSet(frameworkRemoveMutation, { mode: 'promise' })
+  const updateFramework = useAtomSet(frameworkUpdateMutation, {
+    mode: "promise",
+  });
+  const removeFramework = useAtomSet(frameworkRemoveMutation, {
+    mode: "promise",
+  });
 
   const [form, setForm] = React.useState<FrameworkFormValue>({
-    name: '',
-    description: '',
-    version: '',
-    sourceUrl: '',
-  })
+    name: "",
+    description: "",
+    version: "",
+    sourceUrl: "",
+  });
 
   React.useEffect(() => {
-    if (frameworkResult._tag !== 'Success') return
-    const fw = frameworkResult.value
-    if (fw._tag !== 'Some') return
+    if (frameworkResult._tag !== "Success") return;
+    const fw = frameworkResult.value;
+    if (fw._tag !== "Some") return;
 
     setForm({
       name: fw.value.name,
-      description: fw.value.description ?? '',
-      version: fw.value.version ?? '',
-      sourceUrl: fw.value.sourceUrl ?? '',
-    })
-  }, [frameworkResult])
+      description: fw.value.description ?? "",
+      version: fw.value.version ?? "",
+      sourceUrl: fw.value.sourceUrl ?? "",
+    });
+  }, [frameworkResult]);
 
   const onSave = async () => {
-    if (pendingSave) return
-    setPendingSave(true)
+    if (pendingSave) return;
+    setPendingSave(true);
     try {
       await updateFramework({
         payload: { id, data: toCreateFrameworkPayload(form) },
         reactivityKeys: {
-          list: ['framework:list', 0],
-          detail: ['framework:detail', id],
+          list: ["framework:list", 0],
+          detail: ["framework:detail", id],
         },
-      })
+      });
     } finally {
-      setPendingSave(false)
+      setPendingSave(false);
     }
-  }
+  };
 
   const onDelete = async () => {
-    if (pendingDelete) return
-    setPendingDelete(true)
+    if (pendingDelete) return;
+    setPendingDelete(true);
     try {
       await removeFramework({
         payload: id,
         reactivityKeys: {
-          list: ['framework:list', 0],
-          detail: ['framework:detail', id],
+          list: ["framework:list", 0],
+          detail: ["framework:detail", id],
         },
-      })
-      navigate({ to: '/frameworks' })
+      });
+      navigate({ to: "/frameworks" });
     } finally {
-      setPendingDelete(false)
-      setConfirmDelete(false)
+      setPendingDelete(false);
+      setConfirmDelete(false);
     }
-  }
+  };
 
   return (
     <Page>
@@ -132,16 +135,20 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
           <CardContent>
             <ResultView result={frameworkResult}>
               {(maybe) =>
-                maybe._tag === 'Some' ? (
+                maybe._tag === "Some" ? (
                   <div className="grid gap-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="text-lg font-semibold">{maybe.value.name}</div>
+                      <div className="text-lg font-semibold">
+                        {maybe.value.name}
+                      </div>
                       <Badge variant="secondary">framework</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <div>ID: {maybe.value.id}</div>
                       <div>Workflow: {maybe.value.workflowId}</div>
-                      <div>Updated: {formatDateTime(maybe.value.updatedAt)}</div>
+                      <div>
+                        Updated: {formatDateTime(maybe.value.updatedAt)}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -168,7 +175,7 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
                     Saving
                   </>
                 ) : (
-                  'Save changes'
+                  "Save changes"
                 )}
               </Button>
 
@@ -185,7 +192,8 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete framework?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This marks the framework as deleted. Controls stay but lose linkage.
+                      This marks the framework as deleted. Controls stay but
+                      lose linkage.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -203,7 +211,7 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
                           Deleting
                         </>
                       ) : (
-                        'Delete'
+                        "Delete"
                       )}
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -222,5 +230,5 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
         />
       </div>
     </Page>
-  )
+  );
 }

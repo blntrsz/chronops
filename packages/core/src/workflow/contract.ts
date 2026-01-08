@@ -4,7 +4,7 @@ import { Workflow } from "@chronops/domain";
 import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
 
-import { AuthMiddleware } from "../auth/middleware";
+import { AuthMiddleware } from "../auth/middleware-interface";
 import { Pagination } from "../common/repository";
 
 export class WorkflowContract extends RpcGroup.make(

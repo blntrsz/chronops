@@ -1,46 +1,60 @@
-// @ts-nocheck
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
-import { Shield } from 'lucide-react'
-import { useState } from 'react'
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
+import { Shield } from "lucide-react";
+import { useState } from "react";
 
-import { authClient } from '@/lib/auth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { authClient } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   beforeLoad: async () => {
-    const session = await authClient.getSession()
+    const session = await authClient.getSession();
     if (session.data?.user) {
-      if (session.data.session?.activeOrganizationId) throw redirect({ to: '/dashboard' })
-      throw redirect({ to: '/org/switcher' })
+      if (session.data.session?.activeOrganizationId)
+        throw redirect({ to: "/dashboard" });
+      throw redirect({ to: "/org/switcher" });
     }
   },
   component: LoginPage,
-})
+});
 
 function LoginPage() {
-  const navigate = useNavigate({ from: '/login' })
+  const navigate = useNavigate({ from: "/login" });
 
-  const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage(null)
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage(null);
 
     try {
-      await authClient.emailOtp.sendVerificationOtp({ email, type: 'sign-in' })
-      await navigate({ to: '/otp', search: { email } })
+      await authClient.emailOtp.sendVerificationOtp({ email, type: "sign-in" });
+      await navigate({ to: "/otp", search: { email } });
     } catch {
-      setMessage({ type: 'error', text: 'OTP send failed. Retry.' })
+      setMessage({ type: "error", text: "OTP send failed. Retry." });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
@@ -64,7 +78,10 @@ function LoginPage() {
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-slate-300">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-slate-300"
+                >
                   Email
                 </label>
                 <Input
@@ -79,7 +96,11 @@ function LoginPage() {
               </div>
 
               {message ? (
-                <Alert variant={message.type === 'success' ? 'default' : 'destructive'}>
+                <Alert
+                  variant={
+                    message.type === "success" ? "default" : "destructive"
+                  }
+                >
                   <AlertDescription>{message.text}</AlertDescription>
                 </Alert>
               ) : null}
@@ -89,7 +110,7 @@ function LoginPage() {
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700"
                 disabled={isLoading}
               >
-                {isLoading ? 'Sending…' : 'Send code'}
+                {isLoading ? "Sending…" : "Send code"}
               </Button>
 
               <p className="text-center text-xs text-slate-500">
@@ -100,5 +121,5 @@ function LoginPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
