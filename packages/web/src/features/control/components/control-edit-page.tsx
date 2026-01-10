@@ -33,8 +33,8 @@ import {
   controlByIdQuery,
   controlRemoveMutation,
   controlUpdateMutation,
-} from "@/features/control/atom/control";
-import { frameworkListQuery } from "@/features/framework/atom/framework";
+} from "@/features/control/atom";
+import { frameworkListQuery } from "@/features/framework/atom";
 import { ControlForm } from "@/features/control/components/control-form";
 import {
   toCreateControlPayload,

@@ -17,10 +17,7 @@ import {
 } from "@/components/ui/table";
 
 import { formatDateTime } from "@/lib/format";
-import {
-  frameworkListQuery,
-  pageSize,
-} from "@/features/framework/atom/framework";
+import { frameworkListQuery, pageSize } from "@/features/framework/atom";
 import { FrameworkCreateDialog } from "@/features/framework/components/framework-create-dialog";
 
 export function FrameworkListPage() {
@@ -30,7 +27,10 @@ export function FrameworkListPage() {
   const list = useAtomValue(frameworkListQuery(page));
 
   const onCreated = (frameworkId: string) => {
-    navigate({ to: "/org/$slug/framework/$id", params: { slug: "-", id: frameworkId } });
+    navigate({
+      to: "/org/$slug/framework/$id",
+      params: { slug: "-", id: frameworkId },
+    });
   };
 
   return (
@@ -70,8 +70,8 @@ export function FrameworkListPage() {
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                  to="/org/$slug/framework/$id"
-                                  params={{ slug: "-", id: fw.id }}
+                                to="/org/$slug/framework/$id"
+                                params={{ slug: "-", id: fw.id }}
                               >
                                 View
                               </Link>

@@ -29,15 +29,18 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 
 import { formatDateTime } from "@/lib/format";
-import { controlsByFrameworkQuery } from "@/features/control/atom/control";
+import { controlsByFrameworkQuery } from "@/features/control/atom";
 import { ControlListInline } from "@/features/control/components/control-list-inline";
 import {
   frameworkByIdQuery,
   frameworkRemoveMutation,
   frameworkUpdateMutation,
-} from "@/features/framework/atom/framework";
+} from "@/features/framework/atom";
 import { FrameworkForm } from "@/features/framework/components/framework-form";
-import { toCreateFrameworkPayload, type FrameworkFormValue } from "@/features/framework/components/framework-form";
+import {
+  toCreateFrameworkPayload,
+  type FrameworkFormValue,
+} from "@/features/framework/components/framework-form";
 
 export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
   const id = Framework.FrameworkId.make(frameworkId);

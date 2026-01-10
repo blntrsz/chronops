@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Page } from "@/components/page";
 import { PageHeader } from "@/components/page-header";
-import { frameworkCountQuery } from "@/features/framework/atom/framework";
-import { controlCountQuery } from "@/features/control/atom/control";
-import { documentCountQuery } from "@/features/document/atom/document";
+import { frameworkCountQuery } from "@/features/framework/atom";
+import { controlCountQuery } from "@/features/control/atom";
+import { documentCountQuery } from "@/features/document/atom";
 import { authClient } from "@/lib/auth";
 
 export const Route = createFileRoute("/org/$slug/")({

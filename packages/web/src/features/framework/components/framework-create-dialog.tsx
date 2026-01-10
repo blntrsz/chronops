@@ -1,7 +1,7 @@
-import * as React from 'react'
-import { useAtomSet } from '@effect-atom/atom-react'
+import * as React from "react";
+import { useAtomSet } from "@effect-atom/atom-react";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,51 +9,53 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 
-import { frameworkCreateMutation } from '@/features/framework/atom/framework'
+import { frameworkCreateMutation } from "@/features/framework/atom";
 import {
   FrameworkForm,
   toCreateFrameworkPayload,
   type FrameworkFormValue,
-} from '@/features/framework/components/framework-form'
+} from "@/features/framework/components/framework-form";
 
 export function FrameworkCreateDialog({
   onCreated,
 }: {
-  onCreated: (frameworkId: string) => void
+  onCreated: (frameworkId: string) => void;
 }) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState<FrameworkFormValue>({
-    name: '',
-    description: '',
-    version: '',
-    sourceUrl: '',
-  })
-  const [pending, setPending] = React.useState(false)
+    name: "",
+    description: "",
+    version: "",
+    sourceUrl: "",
+  });
+  const [pending, setPending] = React.useState(false);
 
-  const createFramework = useAtomSet(frameworkCreateMutation, { mode: 'promise' })
+  const createFramework = useAtomSet(frameworkCreateMutation, {
+    mode: "promise",
+  });
 
-  const canSubmit = form.name.trim().length > 0
+  const canSubmit = form.name.trim().length > 0;
 
   const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!canSubmit || pending) return
+    event.preventDefault();
+    if (!canSubmit || pending) return;
 
-    setPending(true)
+    setPending(true);
     try {
       const created = await createFramework({
         payload: toCreateFrameworkPayload(form),
-        reactivityKeys: { list: ['framework:list', 0] },
-      })
-      setOpen(false)
-      setForm({ name: '', description: '', version: '', sourceUrl: '' })
-      onCreated(created.id)
+        reactivityKeys: { list: ["framework:list", 0] },
+      });
+      setOpen(false);
+      setForm({ name: "", description: "", version: "", sourceUrl: "" });
+      onCreated(created.id);
     } finally {
-      setPending(false)
+      setPending(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -88,12 +90,12 @@ export function FrameworkCreateDialog({
                   Creating
                 </>
               ) : (
-                'Create'
+                "Create"
               )}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

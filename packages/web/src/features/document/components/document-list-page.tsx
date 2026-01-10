@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 
 import { formatDateTime } from "@/lib/format";
-import { documentListQuery, pageSize } from "@/features/document/atom/document";
+import { documentListQuery, pageSize } from "@/features/document/atom";
 import { DocumentCreateDialog } from "@/features/document/components/document-create-dialog";
 
 export function DocumentListPage() {
@@ -28,7 +28,10 @@ export function DocumentListPage() {
   const list = useAtomValue(documentListQuery(page));
 
   const onCreated = (documentId: string) => {
-    navigate({ to: "/org/$slug/document/$id", params: { slug: "-", id: documentId } });
+    navigate({
+      to: "/org/$slug/document/$id",
+      params: { slug: "-", id: documentId },
+    });
   };
 
   return (
@@ -72,8 +75,8 @@ export function DocumentListPage() {
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                  to="/org/$slug/document/$id"
-                                  params={{ slug: "-", id: doc.id }}
+                                to="/org/$slug/document/$id"
+                                params={{ slug: "-", id: doc.id }}
                               >
                                 View
                               </Link>

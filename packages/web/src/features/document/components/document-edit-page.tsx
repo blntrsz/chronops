@@ -29,13 +29,13 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 
 import { formatDateTime } from "@/lib/format";
-import { controlListQuery } from "@/features/control/atom/control";
-import { frameworkListQuery } from "@/features/framework/atom/framework";
+import { controlListQuery } from "@/features/control/atom";
+import { frameworkListQuery } from "@/features/framework/atom";
 import {
   documentByIdQuery,
   documentRemoveMutation,
   documentUpdateMutation,
-} from "@/features/document/atom/document";
+} from "@/features/document/atom";
 import { DocumentForm } from "@/features/document/components/document-form";
 import {
   toCreateDocumentPayload,

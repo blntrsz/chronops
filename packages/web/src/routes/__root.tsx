@@ -12,6 +12,7 @@ import { RegistryProvider } from "@effect-atom/atom-react";
 import Header from "@/components/header";
 
 import appCss from "../styles.css?url";
+import { getActor } from "@/features/auth/server";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -34,6 +35,10 @@ export const Route = createRootRoute({
       },
     ],
   }),
+
+  loader() {
+    return getActor();
+  },
 
   component: RootLayout,
   shellComponent: RootDocument,

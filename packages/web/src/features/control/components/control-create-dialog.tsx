@@ -1,7 +1,7 @@
-import * as React from 'react'
-import { useAtomSet, useAtomValue } from '@effect-atom/atom-react'
+import * as React from "react";
+import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,68 +9,68 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Spinner } from '@/components/ui/spinner'
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 
-import { frameworkListQuery } from '@/features/framework/atom/framework'
-import { controlCreateMutation } from '@/features/control/atom/control'
+import { frameworkListQuery } from "@/features/framework/atom";
+import { controlCreateMutation } from "@/features/control/atom";
 import {
   ControlForm,
   toCreateControlPayload,
   type ControlFormValue,
-} from '@/features/control/components/control-form'
+} from "@/features/control/components/control-form";
 
 export function ControlCreateDialog({
   onCreated,
 }: {
-  onCreated: (controlId: string) => void
+  onCreated: (controlId: string) => void;
 }) {
-  const [open, setOpen] = React.useState(false)
-  const [pending, setPending] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  const [pending, setPending] = React.useState(false);
 
-  const frameworksResult = useAtomValue(frameworkListQuery(0))
-  const createControl = useAtomSet(controlCreateMutation, { mode: 'promise' })
+  const frameworksResult = useAtomValue(frameworkListQuery(0));
+  const createControl = useAtomSet(controlCreateMutation, { mode: "promise" });
 
   const frameworks =
-    frameworksResult._tag === 'Success' ? frameworksResult.value : []
+    frameworksResult._tag === "Success" ? frameworksResult.value : [];
 
   const [form, setForm] = React.useState<ControlFormValue>({
-    name: '',
-    description: '',
-    frameworkId: '',
-    status: 'draft',
-    testingFrequency: '',
-  })
+    name: "",
+    description: "",
+    frameworkId: "",
+    status: "draft",
+    testingFrequency: "",
+  });
 
   const canSubmit =
-    form.name.trim().length > 0 && form.frameworkId.trim().length > 0
+    form.name.trim().length > 0 && form.frameworkId.trim().length > 0;
 
   const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault()
-    if (!canSubmit || pending) return
+    event.preventDefault();
+    if (!canSubmit || pending) return;
 
-    setPending(true)
+    setPending(true);
     try {
       const created = await createControl({
         payload: toCreateControlPayload(form),
         reactivityKeys: {
-          list: ['control:list', 0],
-          byFramework: ['control:byFramework', form.frameworkId],
+          list: ["control:list", 0],
+          byFramework: ["control:byFramework", form.frameworkId],
         },
-      })
-      setOpen(false)
+      });
+      setOpen(false);
       setForm({
-        name: '',
-        description: '',
-        frameworkId: '',
-        status: 'draft',
-        testingFrequency: '',
-      })
-      onCreated(created.id)
+        name: "",
+        description: "",
+        frameworkId: "",
+        status: "draft",
+        testingFrequency: "",
+      });
+      onCreated(created.id);
     } finally {
-      setPending(false)
+      setPending(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -109,12 +109,12 @@ export function ControlCreateDialog({
                   Creating
                 </>
               ) : (
-                'Create'
+                "Create"
               )}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
