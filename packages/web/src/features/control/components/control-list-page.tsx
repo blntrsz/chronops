@@ -2,9 +2,9 @@ import * as React from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "@effect-atom/atom-react";
 
-import { Page } from "@/components/Page";
-import { PageHeader } from "@/components/PageHeader";
-import { ResultView } from "@/components/ResultView";
+import { Page } from "@/components/page";
+import { PageHeader } from "@/components/page-header";
+import { ResultView } from "@/components/result-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,62 +18,62 @@ import {
 } from "@/components/ui/table";
 
 import { formatDateTime } from "@/lib/format";
-import { documentListQuery, pageSize } from "@/features/document/atom/document";
-import { DocumentCreateDialog } from "@/features/document/components/DocumentCreateDialog";
+import { controlListQuery, pageSize } from "@/features/control/atom/control";
+import { ControlCreateDialog } from "@/features/control/components/control-create-dialog";
 
-export function DocumentListPage() {
+export function ControlListPage() {
   const [page, setPage] = React.useState(0);
   const navigate = useNavigate();
 
-  const list = useAtomValue(documentListQuery(page));
+  const list = useAtomValue(controlListQuery(page));
 
-  const onCreated = (documentId: string) => {
-    navigate({ to: "/documents/$documentId", params: { documentId } });
+  const onCreated = (controlId: string) => {
+    navigate({ to: "/controls/$controlId", params: { controlId } });
   };
 
   return (
     <Page>
       <PageHeader
-        title="Documents"
-        description="Evidence and requirements. Link to controls."
-        right={<DocumentCreateDialog onCreated={onCreated} />}
+        title="Controls"
+        description="Track controls. Link them to a framework."
+        right={<ControlCreateDialog onCreated={onCreated} />}
       />
 
       <div className="mt-6 grid gap-4">
         <Card>
           <CardContent className="pt-6">
             <ResultView result={list}>
-              {(documents) => (
+              {(controls) => (
                 <>
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Name</TableHead>
-                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Updated</TableHead>
                         <TableHead className="w-[120px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {documents.map((doc) => (
-                        <TableRow key={doc.id}>
+                      {controls.map((ctrl) => (
+                        <TableRow key={ctrl.id}>
                           <TableCell>
-                            <div className="font-medium">{doc.name}</div>
+                            <div className="font-medium">{ctrl.name}</div>
                             <div className="text-xs text-muted-foreground">
-                              {doc.id}
+                              {ctrl.id}
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="secondary">{doc.type}</Badge>
+                            <Badge variant="secondary">{ctrl.status}</Badge>
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
-                            {formatDateTime(doc.updatedAt)}
+                            {formatDateTime(ctrl.updatedAt)}
                           </TableCell>
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                to="/documents/$documentId"
-                                params={{ documentId: doc.id }}
+                                to="/controls/$controlId"
+                                params={{ controlId: ctrl.id }}
                               >
                                 View
                               </Link>
@@ -103,7 +103,7 @@ export function DocumentListPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => setPage((p) => p + 1)}
-                        disabled={documents.length < pageSize}
+                        disabled={controls.length < pageSize}
                       >
                         Next
                       </Button>

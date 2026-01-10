@@ -17,7 +17,7 @@ import {
   FrameworkForm,
   toCreateFrameworkPayload,
   type FrameworkFormValue,
-} from '@/features/framework/components/FrameworkForm'
+} from '@/features/framework/components/framework-form'
 
 export function FrameworkCreateDialog({
   onCreated,

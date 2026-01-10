@@ -12,46 +12,38 @@ import {
 } from '@/components/ui/dialog'
 import { Spinner } from '@/components/ui/spinner'
 
-import { documentCreateMutation } from '@/features/document/atom/document'
-import { controlListQuery } from '@/features/control/atom/control'
 import { frameworkListQuery } from '@/features/framework/atom/framework'
+import { controlCreateMutation } from '@/features/control/atom/control'
 import {
-  DocumentForm,
-  toCreateDocumentPayload,
-  type DocumentFormValue,
-} from '@/features/document/components/DocumentForm'
+  ControlForm,
+  toCreateControlPayload,
+  type ControlFormValue,
+} from '@/features/control/components/control-form'
 
-export function DocumentCreateDialog({
+export function ControlCreateDialog({
   onCreated,
 }: {
-  onCreated: (documentId: string) => void
+  onCreated: (controlId: string) => void
 }) {
   const [open, setOpen] = React.useState(false)
   const [pending, setPending] = React.useState(false)
 
   const frameworksResult = useAtomValue(frameworkListQuery(0))
+  const createControl = useAtomSet(controlCreateMutation, { mode: 'promise' })
+
   const frameworks =
     frameworksResult._tag === 'Success' ? frameworksResult.value : []
 
-  const [form, setForm] = React.useState<DocumentFormValue>({
+  const [form, setForm] = React.useState<ControlFormValue>({
     name: '',
-    type: 'evidence',
-    url: '',
-    size: '',
+    description: '',
     frameworkId: '',
-    controlId: '',
+    status: 'draft',
+    testingFrequency: '',
   })
 
-  const controlsResult = useAtomValue(controlListQuery(0))
-
-  const controls =
-    form.frameworkId && controlsResult._tag === 'Success'
-      ? controlsResult.value.filter((c) => c.frameworkId === form.frameworkId)
-      : []
-
-  const createDocument = useAtomSet(documentCreateMutation, { mode: 'promise' })
-
-  const canSubmit = form.name.trim().length > 0 && form.url.trim().length > 0
+  const canSubmit =
+    form.name.trim().length > 0 && form.frameworkId.trim().length > 0
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -59,20 +51,20 @@ export function DocumentCreateDialog({
 
     setPending(true)
     try {
-      const created = await createDocument({
-        payload: toCreateDocumentPayload(form),
+      const created = await createControl({
+        payload: toCreateControlPayload(form),
         reactivityKeys: {
-          list: ['document:list', 0],
+          list: ['control:list', 0],
+          byFramework: ['control:byFramework', form.frameworkId],
         },
       })
       setOpen(false)
       setForm({
         name: '',
-        type: 'evidence',
-        url: '',
-        size: '',
+        description: '',
         frameworkId: '',
-        controlId: '',
+        status: 'draft',
+        testingFrequency: '',
       })
       onCreated(created.id)
     } finally {
@@ -83,23 +75,22 @@ export function DocumentCreateDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Button type="button" onClick={() => setOpen(true)}>
-        New document
+        New control
       </Button>
 
       <DialogContent>
         <form onSubmit={onSubmit} className="grid gap-6">
           <DialogHeader>
-            <DialogTitle>Create document</DialogTitle>
+            <DialogTitle>Create control</DialogTitle>
             <DialogDescription>
-              Add evidence, clauses, or requirements. Link to a control.
+              Controls are the units you test and attach evidence to.
             </DialogDescription>
           </DialogHeader>
 
-          <DocumentForm
+          <ControlForm
             value={form}
             onChange={setForm}
             frameworks={frameworks.map((fw) => ({ id: fw.id, name: fw.name }))}
-            controls={controls.map((c) => ({ id: c.id, name: c.name }))}
           />
 
           <DialogFooter>

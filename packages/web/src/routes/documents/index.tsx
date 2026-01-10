@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { DocumentListPage } from "@/features/document/components/DocumentListPage";
+import { DocumentListPage } from "@/features/document/components/document-list-page";
 import { getSession } from "@/features/auth/server";
 
 export const Route = createFileRoute("/documents/")({

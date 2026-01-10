@@ -21,7 +21,7 @@ export class ControlContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Control.ControlId,
+    payload: { id: Control.ControlId },
   }),
   Rpc.make("ControlList", {
     success: Schema.Array(Control.Control),
@@ -50,7 +50,7 @@ export class ControlContract extends RpcGroup.make(
       Schema.instanceOf(ParseError),
       Control.ControlNotFoundError,
     ),
-    payload: Control.ControlId,
+    payload: { id: Control.ControlId },
   }),
   Rpc.make("ControlByFramework", {
     success: Schema.Array(Control.Control),
@@ -58,7 +58,7 @@ export class ControlContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Framework.FrameworkId,
+    payload: { frameworkId: Framework.FrameworkId },
   }),
   Rpc.make("ControlCount", {
     success: Schema.Number,

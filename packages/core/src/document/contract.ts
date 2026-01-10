@@ -21,7 +21,7 @@ export class DocumentContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Document.DocumentId,
+    payload: { id: Document.DocumentId },
   }),
   Rpc.make("DocumentList", {
     success: Schema.Array(Document.Document),
@@ -50,7 +50,7 @@ export class DocumentContract extends RpcGroup.make(
       Schema.instanceOf(ParseError),
       Document.DocumentNotFoundError,
     ),
-    payload: Document.DocumentId,
+    payload: { id: Document.DocumentId },
   }),
   Rpc.make("DocumentCount", {
     success: Schema.Number,

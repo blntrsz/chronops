@@ -1,28 +1,30 @@
-import { Control, Framework } from '@chronops/domain'
+import { Control, Framework } from "@chronops/domain";
 
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export type ControlFormValue = {
-  name: string
-  description: string
-  frameworkId: string
-  status: Control.ControlStatus
-  testingFrequency: string
-}
+  name: string;
+  description: string;
+  frameworkId: string;
+  status: Control.ControlStatus;
+  testingFrequency: string;
+};
 
-export function toCreateControlPayload(value: ControlFormValue): Control.CreateControl {
+export function toCreateControlPayload(
+  value: ControlFormValue,
+): Control.CreateControl {
   return {
     name: value.name.trim(),
-    description: value.description.trim() ? value.description.trim() : undefined,
+    description: value.description.trim() ? value.description.trim() : null,
     frameworkId: Framework.FrameworkId.make(value.frameworkId),
     status: value.status,
     testingFrequency: value.testingFrequency.trim()
       ? value.testingFrequency.trim()
-      : undefined,
-  }
+      : null,
+  };
 }
 
 export function ControlForm({
@@ -30,9 +32,9 @@ export function ControlForm({
   onChange,
   frameworks,
 }: {
-  value: ControlFormValue
-  onChange: (value: ControlFormValue) => void
-  frameworks: ReadonlyArray<{ id: string; name: string }>
+  value: ControlFormValue;
+  onChange: (value: ControlFormValue) => void;
+  frameworks: ReadonlyArray<{ id: string; name: string }>;
 }) {
   return (
     <div className="grid gap-4">
@@ -72,7 +74,10 @@ export function ControlForm({
           id="status"
           value={value.status}
           onChange={(e) =>
-            onChange({ ...value, status: e.currentTarget.value as Control.ControlStatus })
+            onChange({
+              ...value,
+              status: e.currentTarget.value as Control.ControlStatus,
+            })
           }
         >
           <option value="draft">draft</option>
@@ -105,5 +110,5 @@ export function ControlForm({
         />
       </div>
     </div>
-  )
+  );
 }

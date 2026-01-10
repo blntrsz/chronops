@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { FrameworkListPage } from "@/features/framework/components/FrameworkListPage";
+import { FrameworkListPage } from "@/features/framework/components/framework-list-page";
 import { getSession } from "@/features/auth/server";
 
 export const Route = createFileRoute("/frameworks/")({

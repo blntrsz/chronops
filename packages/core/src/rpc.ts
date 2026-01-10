@@ -12,6 +12,7 @@ import { Base } from "@chronops/domain";
 import { SqlLayer } from "./common/sql";
 import { RpcContract } from "./contract";
 import { AuthMiddlewareLive } from "./auth/middleware";
+import { RpcLoggerLayer } from "./logger";
 
 const HandlersLayer = Layer.mergeAll(
   FrameworkHandler,
@@ -35,6 +36,7 @@ const RpcRouter = RpcServer.layerHttpRouter({
 }).pipe(
   Layer.provide(HandlersLayer),
   Layer.provide(AuthMiddlewareLive),
+  Layer.provide(RpcLoggerLayer),
   Layer.provide(RpcSerialization.layerNdjson),
 );
 

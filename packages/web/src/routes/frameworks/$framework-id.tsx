@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { FrameworkEditPage } from "@/features/framework/components/FrameworkEditPage";
+import { FrameworkEditPage } from "@/features/framework/components/framework-edit-page";
 
 export const Route = createFileRoute("/frameworks/$frameworkId")({
   component: FrameworkEditRoute,

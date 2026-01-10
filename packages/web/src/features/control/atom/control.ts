@@ -11,12 +11,12 @@ export const controlListQuery = (page: number) =>
   )
 
 export const controlByIdQuery = (id: Control.ControlId) =>
-  Client.query('ControlById', id, {
+  Client.query('ControlById', { id }, {
     reactivityKeys: { detail: ['control:detail', id] },
   })
 
 export const controlsByFrameworkQuery = (frameworkId: Framework.FrameworkId) =>
-  Client.query('ControlByFramework', frameworkId, {
+  Client.query('ControlByFramework', { frameworkId }, {
     reactivityKeys: { byFramework: ['control:byFramework', frameworkId] },
   })
 

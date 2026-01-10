@@ -1,11 +1,14 @@
 import { describe, it, expect } from "bun:test";
-import { Schema } from "effect";
+import { DateTime, Schema } from "effect";
 import { MemberId, OrgId, WorkflowId, Hash, Base, NotFoundError, ULID, ULIDLayer } from "../base";
 import { FrameworkId, Framework, CreateFramework, UpdateFramework, FrameworkNotFoundError } from "../framework";
 import { ControlId, ControlStatus, Control, CreateControl, ControlNotFoundError } from "../control";
 
 // Helper to compare branded types
 const asString = (value: unknown) => value as string;
+
+// Helper to create DateTime.Utc from ISO string
+const dt = (iso: string) => DateTime.unsafeMake(new Date(iso));
 
 describe("Base Domain", () => {
   describe("MemberId", () => {
@@ -54,9 +57,10 @@ describe("Base Domain", () => {
 
   describe("Base Schema", () => {
     it("should have all required fields", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
       const base = Base.make({
-        createdAt: new Date("2024-01-01T00:00:00Z"),
-        updatedAt: new Date("2024-01-01T00:00:00Z"),
+        createdAt: testDate,
+        updatedAt: testDate,
         deletedAt: undefined,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
@@ -66,8 +70,8 @@ describe("Base Domain", () => {
         workflowId: WorkflowId.make("wf_test"),
       });
 
-      expect(base.createdAt).toEqual(new Date("2024-01-01T00:00:00Z"));
-      expect(base.updatedAt).toEqual(new Date("2024-01-01T00:00:00Z"));
+      expect(base.createdAt).toEqual(testDate);
+      expect(base.updatedAt).toEqual(testDate);
       expect(asString(base.orgId)).toBe("org_test");
       expect(asString(base.workflowId)).toBe("wf_test");
     });
@@ -84,14 +88,15 @@ describe("Framework Domain", () => {
 
   describe("Framework Schema", () => {
     it("should create a valid Framework", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
       const framework = Framework.make({
         id: FrameworkId.make("fwk_test"),
         name: "SOC 2",
         description: "SOC 2 Compliance Framework",
         version: "2024",
         sourceUrl: "https://example.com/soc2",
-        createdAt: new Date("2024-01-01T00:00:00Z"),
-        updatedAt: new Date("2024-01-01T00:00:00Z"),
+        createdAt: testDate,
+        updatedAt: testDate,
         deletedAt: undefined,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
@@ -107,11 +112,12 @@ describe("Framework Domain", () => {
     });
 
     it("should allow optional fields to be undefined", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
       const framework = Framework.make({
         id: FrameworkId.make("fwk_test"),
         name: "ISO 27001",
-        createdAt: new Date("2024-01-01T00:00:00Z"),
-        updatedAt: new Date("2024-01-01T00:00:00Z"),
+        createdAt: testDate,
+        updatedAt: testDate,
         deletedAt: undefined,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
@@ -189,6 +195,7 @@ describe("Control Domain", () => {
 
   describe("Control Schema", () => {
     it("should create a valid Control", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
       const control = Control.make({
         id: ControlId.make("ctr_test"),
         name: "Access Control",
@@ -196,8 +203,8 @@ describe("Control Domain", () => {
         frameworkId: FrameworkId.make("fwk_test"),
         status: "active" as ControlStatus,
         testingFrequency: "quarterly",
-        createdAt: new Date("2024-01-01T00:00:00Z"),
-        updatedAt: new Date("2024-01-01T00:00:00Z"),
+        createdAt: testDate,
+        updatedAt: testDate,
         deletedAt: undefined,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),

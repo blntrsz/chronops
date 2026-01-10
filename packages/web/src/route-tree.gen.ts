@@ -8,7 +8,7 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
+import { Route as rootRouteImport } from './routes/root'
 import { Route as OtpRouteImport } from './routes/otp'
 import { Route as OrganizationsRouteImport } from './routes/organizations'
 import { Route as LoginRouteImport } from './routes/login'
@@ -19,9 +19,9 @@ import { Route as DocumentsIndexRouteImport } from './routes/documents/index'
 import { Route as ControlsIndexRouteImport } from './routes/controls/index'
 import { Route as OrgSwitcherRouteImport } from './routes/org/switcher'
 import { Route as OrgCreateRouteImport } from './routes/org/create'
-import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks/$frameworkId'
-import { Route as DocumentsDocumentIdRouteImport } from './routes/documents/$documentId'
-import { Route as ControlsControlIdRouteImport } from './routes/controls/$controlId'
+import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks/$framework-id'
+import { Route as DocumentsDocumentIdRouteImport } from './routes/documents/$document-id'
+import { Route as ControlsControlIdRouteImport } from './routes/controls/$control-id'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -189,7 +189,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
   id:
-    | '__root__'
+    | '/routes/root'
     | '/'
     | '/dashboard'
     | '/login'

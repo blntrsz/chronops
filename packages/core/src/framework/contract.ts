@@ -21,7 +21,7 @@ export class FrameworkContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
     ),
-    payload: Framework.FrameworkId,
+    payload: { id: Framework.FrameworkId },
   }),
   Rpc.make("FrameworkList", {
     success: Schema.Array(Framework.Framework),
@@ -50,7 +50,7 @@ export class FrameworkContract extends RpcGroup.make(
       Schema.instanceOf(ParseError),
       Framework.FrameworkNotFoundError,
     ),
-    payload: Framework.FrameworkId,
+    payload: { id: Framework.FrameworkId },
   }),
   Rpc.make("FrameworkCount", {
     success: Schema.Number,

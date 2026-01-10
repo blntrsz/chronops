@@ -22,10 +22,10 @@ export type ControlStatus = typeof ControlStatus.Type;
 export class Control extends Base.Base.extend<Control>("Control")({
   id: ControlId,
   name: Schema.String,
-  description: Schema.optional(Schema.String),
+  description: Schema.NullOr(Schema.String),
   frameworkId: FrameworkId,
   status: ControlStatus,
-  testingFrequency: Schema.optional(Schema.String),
+  testingFrequency: Schema.NullOr(Schema.String),
 }) {}
 
 export const CreateControl = Control.pipe(

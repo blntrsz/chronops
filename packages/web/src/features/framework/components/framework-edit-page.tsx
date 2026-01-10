@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
-import { Control } from "@chronops/domain";
+import { Framework } from "@chronops/domain";
 
-import { Page } from "@/components/Page";
-import { PageHeader } from "@/components/PageHeader";
-import { ResultView } from "@/components/ResultView";
+import { Page } from "@/components/page";
+import { PageHeader } from "@/components/page-header";
+import { ResultView } from "@/components/result-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,68 +29,50 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 
 import { formatDateTime } from "@/lib/format";
+import { controlsByFrameworkQuery } from "@/features/control/atom/control";
+import { ControlListInline } from "@/features/control/components/control-list-inline";
 import {
-  controlByIdQuery,
-  controlRemoveMutation,
-  controlUpdateMutation,
-} from "@/features/control/atom/control";
-import { frameworkListQuery } from "@/features/framework/atom/framework";
-import {
-  ControlForm,
-  toCreateControlPayload,
-  type ControlFormValue,
-} from "@/features/control/components/ControlForm";
+  frameworkByIdQuery,
+  frameworkRemoveMutation,
+  frameworkUpdateMutation,
+} from "@/features/framework/atom/framework";
+import { FrameworkForm } from "@/features/framework/components/framework-form";
+import { toCreateFrameworkPayload, type FrameworkFormValue } from "@/features/framework/components/framework-form";
 
-export function ControlEditPage({ controlId }: { controlId: string }) {
-  const id = Control.ControlId.make(controlId);
+export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
+  const id = Framework.FrameworkId.make(frameworkId);
 
   const navigate = useNavigate();
   const [confirmDelete, setConfirmDelete] = React.useState(false);
   const [pendingSave, setPendingSave] = React.useState(false);
   const [pendingDelete, setPendingDelete] = React.useState(false);
 
-  const controlResult = useAtomValue(controlByIdQuery(id));
-  const frameworksResult = useAtomValue(frameworkListQuery(0));
+  const frameworkResult = useAtomValue(frameworkByIdQuery(id));
+  const controlsResult = useAtomValue(controlsByFrameworkQuery(id));
 
-  const updateControl = useAtomSet(controlUpdateMutation, { mode: "promise" });
-  const removeControl = useAtomSet(controlRemoveMutation, { mode: "promise" });
-
-  const frameworks =
-    frameworksResult._tag === "Success" ? frameworksResult.value : [];
-
-  const [form, setForm] = React.useState<ControlFormValue>({
-    name: "",
-    description: "",
-    frameworkId: "",
-    status: "draft",
-    testingFrequency: "",
+  const updateFramework = useAtomSet(frameworkUpdateMutation, {
+    mode: "promise",
+  });
+  const removeFramework = useAtomSet(frameworkRemoveMutation, {
+    mode: "promise",
   });
 
-  React.useEffect(() => {
-    if (controlResult._tag !== "Success") return;
-    const maybe = controlResult.value;
-    if (maybe._tag !== "Some") return;
-
-    const ctrl = maybe.value;
-    setForm({
-      name: ctrl.name,
-      description: ctrl.description ?? "",
-      frameworkId: ctrl.frameworkId,
-      status: ctrl.status,
-      testingFrequency: ctrl.testingFrequency ?? "",
-    });
-  }, [controlResult]);
+  const [form, setForm] = React.useState<FrameworkFormValue>({
+    name: "",
+    description: "",
+    version: "",
+    sourceUrl: "",
+  });
 
   const onSave = async () => {
     if (pendingSave) return;
     setPendingSave(true);
     try {
-      await updateControl({
-        payload: { id, data: toCreateControlPayload(form) },
+      await updateFramework({
+        payload: { id, data: toCreateFrameworkPayload(form) },
         reactivityKeys: {
-          list: ["control:list", 0],
-          detail: ["control:detail", id],
-          byFramework: ["control:byFramework", form.frameworkId],
+          list: ["framework", 0],
+          detail: ["framework", id],
         },
       });
     } finally {
@@ -102,14 +84,14 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
     if (pendingDelete) return;
     setPendingDelete(true);
     try {
-      await removeControl({
-        payload: id,
+      await removeFramework({
+        payload: { id },
         reactivityKeys: {
-          list: ["control:list", 0],
-          detail: ["control:detail", id],
+          list: ["framework", 0],
+          detail: ["framework", id],
         },
       });
-      navigate({ to: "/controls" });
+      navigate({ to: "/frameworks" });
     } finally {
       setPendingDelete(false);
       setConfirmDelete(false);
@@ -119,11 +101,11 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
   return (
     <Page>
       <PageHeader
-        title="Control"
-        description={controlId}
+        title="Framework"
+        description={frameworkId}
         right={
           <Button asChild variant="outline">
-            <Link to="/controls">Back</Link>
+            <Link to="/frameworks">Back</Link>
           </Button>
         }
       />
@@ -132,10 +114,10 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
         <Card>
           <CardHeader>
             <CardTitle>Details</CardTitle>
-            <CardDescription>Review identity and base fields.</CardDescription>
+            <CardDescription>Review base fields and identity.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ResultView result={controlResult}>
+            <ResultView result={frameworkResult}>
               {(maybe) =>
                 maybe._tag === "Some" ? (
                   <div className="grid gap-3">
@@ -143,11 +125,10 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
                       <div className="text-lg font-semibold">
                         {maybe.value.name}
                       </div>
-                      <Badge variant="secondary">{maybe.value.status}</Badge>
+                      <Badge variant="secondary">framework</Badge>
                     </div>
                     <div className="text-sm text-muted-foreground">
                       <div>ID: {maybe.value.id}</div>
-                      <div>Framework: {maybe.value.frameworkId}</div>
                       <div>Workflow: {maybe.value.workflowId}</div>
                       <div>
                         Updated: {formatDateTime(maybe.value.updatedAt)}
@@ -168,14 +149,7 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
             <CardDescription>Update fields then save.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ControlForm
-              value={form}
-              onChange={setForm}
-              frameworks={frameworks.map((fw) => ({
-                id: fw.id,
-                name: fw.name,
-              }))}
-            />
+            <FrameworkForm value={form} onChange={setForm} />
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <Button type="button" onClick={onSave} disabled={pendingSave}>
@@ -200,9 +174,10 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
 
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete control?</AlertDialogTitle>
+                    <AlertDialogTitle>Delete framework?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This marks the control as deleted.
+                      This marks the framework as deleted. Controls stay but
+                      lose linkage.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -227,14 +202,16 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-
-            <Separator className="my-6" />
-
-            <div className="text-sm text-muted-foreground">
-              Tip: documents can link to a control, but live under Documents.
-            </div>
           </CardContent>
         </Card>
+
+        <Separator />
+
+        <ControlListInline
+          title="Controls"
+          description="Controls linked to this framework."
+          listResult={controlsResult}
+        />
       </div>
     </Page>
   );

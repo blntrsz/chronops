@@ -3,9 +3,9 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { Document } from "@chronops/domain";
 
-import { Page } from "@/components/Page";
-import { PageHeader } from "@/components/PageHeader";
-import { ResultView } from "@/components/ResultView";
+import { Page } from "@/components/page";
+import { PageHeader } from "@/components/page-header";
+import { ResultView } from "@/components/result-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,11 +36,11 @@ import {
   documentRemoveMutation,
   documentUpdateMutation,
 } from "@/features/document/atom/document";
+import { DocumentForm } from "@/features/document/components/document-form";
 import {
-  DocumentForm,
   toCreateDocumentPayload,
   type DocumentFormValue,
-} from "@/features/document/components/DocumentForm";
+} from "@/features/document/components/document-form";
 
 export function DocumentEditPage({ documentId }: { documentId: string }) {
   const id = Document.DocumentId.make(documentId);
@@ -116,7 +116,7 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
     setPendingDelete(true);
     try {
       await removeDocument({
-        payload: id,
+        payload: { id },
         reactivityKeys: {
           list: ["document:list", 0],
           detail: ["document:detail", id],

@@ -11,7 +11,7 @@ export const documentListQuery = (page: number) =>
   )
 
 export const documentByIdQuery = (id: Document.DocumentId) =>
-  Client.query('DocumentById', id, {
+  Client.query('DocumentById', { id }, {
     reactivityKeys: { detail: ['document:detail', id] },
   })
 

@@ -7,12 +7,13 @@ export const ControlHandler = ControlContract.toLayer(
     const service = yield* ControlService;
 
     return {
-      ControlById: service.getById,
+      ControlById: ({ id }) => service.getById(id),
       ControlCreate: service.insert,
       ControlList: service.list,
       ControlUpdate: service.update,
-      ControlRemove: service.remove,
-      ControlByFramework: service.getByFramework,
+      ControlRemove: ({ id }) => service.remove(id),
+      ControlByFramework: ({ frameworkId }) =>
+        service.getByFramework(frameworkId),
       ControlCount: service.count,
     };
   }),

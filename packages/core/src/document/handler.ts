@@ -7,11 +7,11 @@ export const DocumentHandler = DocumentContract.toLayer(
     const service = yield* DocumentService;
 
     return {
-      DocumentById: service.getById,
+      DocumentById: ({ id }) => service.getById(id),
       DocumentCreate: service.insert,
       DocumentList: service.list,
       DocumentUpdate: service.update,
-      DocumentRemove: service.remove,
+      DocumentRemove: ({ id }) => service.remove(id),
       DocumentCount: service.count,
     };
   }),

@@ -9,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Page } from "@/components/Page";
-import { PageHeader } from "@/components/PageHeader";
+import { Page } from "@/components/page";
+import { PageHeader } from "@/components/page-header";
 import { frameworkCountQuery } from "@/features/framework/atom/framework";
 import { controlCountQuery } from "@/features/control/atom/control";
 import { documentCountQuery } from "@/features/document/atom/document";

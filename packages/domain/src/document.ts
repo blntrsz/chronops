@@ -25,9 +25,9 @@ export class Document extends Base.Base.extend<Document>("Document")({
   name: Schema.String,
   type: DocumentType,
   url: Schema.String,
-  size: Schema.optional(Schema.Number),
-  frameworkId: Schema.optional(FrameworkId),
-  controlId: Schema.optional(ControlId),
+  size: Schema.NullOr(Schema.Number),
+  frameworkId: Schema.NullOr(FrameworkId),
+  controlId: Schema.NullOr(ControlId),
 }) {}
 
 export const CreateDocument = Document.pipe(

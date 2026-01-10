@@ -9,7 +9,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { RegistryProvider } from "@effect-atom/atom-react";
 
-import Header from "@/components/Header";
+import Header from "@/components/header";
 
 import appCss from "../styles.css?url";
 
@@ -49,7 +49,7 @@ function RootLayout() {
 
   return (
     <div className="ds-app-bg">
-      <RegistryProvider>
+      <RegistryProvider defaultIdleTTL={5 * 60 * 1000}>
         {!hideHeader && <Header />}
         <Outlet />
       </RegistryProvider>

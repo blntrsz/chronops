@@ -2,9 +2,9 @@ import * as React from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "@effect-atom/atom-react";
 
-import { Page } from "@/components/Page";
-import { PageHeader } from "@/components/PageHeader";
-import { ResultView } from "@/components/ResultView";
+import { Page } from "@/components/page";
+import { PageHeader } from "@/components/page-header";
+import { ResultView } from "@/components/result-view";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,7 +21,7 @@ import {
   frameworkListQuery,
   pageSize,
 } from "@/features/framework/atom/framework";
-import { FrameworkCreateDialog } from "@/features/framework/components/FrameworkCreateDialog";
+import { FrameworkCreateDialog } from "@/features/framework/components/framework-create-dialog";
 
 export function FrameworkListPage() {
   const [page, setPage] = React.useState(0);

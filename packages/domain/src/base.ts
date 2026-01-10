@@ -15,13 +15,13 @@ export const Hash = Schema.String.pipe(Schema.brand("Hash"));
 export type Hash = typeof Hash.Type;
 
 export class Base extends Schema.Class<Base>("BaseSchema")({
-  createdAt: Schema.Date,
-  updatedAt: Schema.Date,
-  deletedAt: Schema.optional(Schema.Date),
+  createdAt: Schema.DateTimeUtc,
+  updatedAt: Schema.DateTimeUtc,
+  deletedAt: Schema.NullOr(Schema.DateTimeUtc),
 
   createdBy: MemberId,
   updatedBy: MemberId,
-  deletedBy: Schema.optional(MemberId),
+  deletedBy: Schema.NullOr(MemberId),
 
   hash: Hash,
   orgId: OrgId,
@@ -68,16 +68,16 @@ export const makeBase = Effect.fn(function* ({
   workflowId: WorkflowId;
 }) {
   const ulid = yield* ULID;
-  const now = yield* DateTime.nowAsDate;
+  const now = yield* DateTime.now;
   const actor = yield* Actor;
 
   return Base.make({
     createdAt: now,
     updatedAt: now,
-    deletedAt: undefined,
+    deletedAt: null,
     createdBy: actor.memberId,
     updatedBy: actor.memberId,
-    deletedBy: undefined,
+    deletedBy: null,
     hash: Hash.make(ulid.createId()),
     orgId: actor.orgId,
     workflowId,
@@ -86,7 +86,7 @@ export const makeBase = Effect.fn(function* ({
 
 export const updateBase = Effect.fn(function* () {
   const ulid = yield* ULID;
-  const now = yield* DateTime.nowAsDate;
+  const now = yield* DateTime.now;
   const actor = yield* Actor;
 
   return {
@@ -98,7 +98,7 @@ export const updateBase = Effect.fn(function* () {
 
 export const removeBase = Effect.fn(function* () {
   const ulid = yield* ULID;
-  const now = yield* DateTime.nowAsDate;
+  const now = yield* DateTime.now;
   const actor = yield* Actor;
 
   return {

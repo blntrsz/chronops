@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import { ControlListPage } from "@/features/control/components/ControlListPage";
+import { ControlListPage } from "@/features/control/components/control-list-page";
 import { getSession } from "@/features/auth/server";
 
 export const Route = createFileRoute("/controls/")({

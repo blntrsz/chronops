@@ -164,7 +164,7 @@ export type FrameworkId = typeof FrameworkId.Type;
 
 - Use Effect's error channel for typed errors
 - Prefer `Option` for nullable returns over null/undefined
-- Use `Schema.optional` for optional fields in schemas
+- Use `Schema.NullOr` for optional fields in schemas
 
 ### Base Schema Pattern
 
@@ -174,10 +174,10 @@ Domain models should extend or include BaseSchema fields:
 export class BaseSchema extends Schema.Class<BaseSchema>("BaseSchema")({
   createdAt: Schema.Date,
   updatedAt: Schema.Date,
-  deletedAt: Schema.optional(Schema.Date),
+  deletedAt: Schema.NullOr(Schema.Date),
   createdBy: Schema.String,
   updatedBy: Schema.String,
-  deletedBy: Schema.optional(Schema.String),
+  deletedBy: Schema.NullOr(Schema.String),
   organizationId: Schema.String,
 }) {}
 ```
