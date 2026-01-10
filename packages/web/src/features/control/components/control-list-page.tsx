@@ -28,7 +28,7 @@ export function ControlListPage() {
   const list = useAtomValue(controlListQuery(page));
 
   const onCreated = (controlId: string) => {
-    navigate({ to: "/controls/$controlId", params: { controlId } });
+    navigate({ to: "/org/$slug/control/$id", params: { slug: "-", id: controlId } });
   };
 
   return (
@@ -72,8 +72,8 @@ export function ControlListPage() {
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                to="/controls/$controlId"
-                                params={{ controlId: ctrl.id }}
+                                  to="/org/$slug/control/$id"
+                                  params={{ slug: "-", id: ctrl.id }}
                               >
                                 View
                               </Link>

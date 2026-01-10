@@ -111,7 +111,7 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
           detail: ["control:detail", id],
         },
       });
-      navigate({ to: "/controls" });
+      navigate({ to: "/org/$slug/control", params: { slug: "-" } });
     } finally {
       setPendingDelete(false);
       setConfirmDelete(false);
@@ -125,7 +125,9 @@ export function ControlEditPage({ controlId }: { controlId: string }) {
         description={controlId}
         right={
           <Button asChild variant="outline">
-            <Link to="/controls">Back</Link>
+            <Link to="/org/$slug/control" params={{ slug: "-" }}>
+              Back
+            </Link>
           </Button>
         }
       />

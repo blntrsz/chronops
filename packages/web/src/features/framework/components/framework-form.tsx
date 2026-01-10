@@ -16,9 +16,9 @@ export function toCreateFrameworkPayload(
 ): Framework.CreateFramework {
   return {
     name: value.name.trim(),
-    description: value.description.trim() ? value.description.trim() : undefined,
-    version: value.version.trim() ? value.version.trim() : undefined,
-    sourceUrl: value.sourceUrl.trim() ? value.sourceUrl.trim() : undefined,
+    description: value.description.trim() ? value.description.trim() : null,
+    version: value.version.trim() ? value.version.trim() : null,
+    sourceUrl: value.sourceUrl.trim() ? value.sourceUrl.trim() : null,
   }
 }
 

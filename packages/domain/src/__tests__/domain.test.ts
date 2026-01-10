@@ -61,10 +61,10 @@ describe("Base Domain", () => {
       const base = Base.make({
         createdAt: testDate,
         updatedAt: testDate,
-        deletedAt: undefined,
+        deletedAt: null,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
-        deletedBy: undefined,
+        deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
         workflowId: WorkflowId.make("wf_test"),
@@ -97,10 +97,10 @@ describe("Framework Domain", () => {
         sourceUrl: "https://example.com/soc2",
         createdAt: testDate,
         updatedAt: testDate,
-        deletedAt: undefined,
+        deletedAt: null,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
-        deletedBy: undefined,
+        deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
         workflowId: WorkflowId.make("wf_test"),
@@ -116,19 +116,22 @@ describe("Framework Domain", () => {
       const framework = Framework.make({
         id: FrameworkId.make("fwk_test"),
         name: "ISO 27001",
+        description: null,
+        version: null,
+        sourceUrl: null,
         createdAt: testDate,
         updatedAt: testDate,
-        deletedAt: undefined,
+        deletedAt: null,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
-        deletedBy: undefined,
+        deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
         workflowId: WorkflowId.make("wf_test"),
       });
 
-      expect(framework.version).toBeUndefined();
-      expect(framework.sourceUrl).toBeUndefined();
+      expect(framework.version).toBeNull();
+      expect(framework.sourceUrl).toBeNull();
     });
   });
 
@@ -205,10 +208,10 @@ describe("Control Domain", () => {
         testingFrequency: "quarterly",
         createdAt: testDate,
         updatedAt: testDate,
-        deletedAt: undefined,
+        deletedAt: null,
         createdBy: MemberId.make("mem_test"),
         updatedBy: MemberId.make("mem_test"),
-        deletedBy: undefined,
+        deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
         workflowId: WorkflowId.make("wf_test"),

@@ -91,7 +91,7 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
           detail: ["framework", id],
         },
       });
-      navigate({ to: "/frameworks" });
+      navigate({ to: "/org/$slug/framework", params: { slug: "-" } });
     } finally {
       setPendingDelete(false);
       setConfirmDelete(false);
@@ -105,7 +105,9 @@ export function FrameworkEditPage({ frameworkId }: { frameworkId: string }) {
         description={frameworkId}
         right={
           <Button asChild variant="outline">
-            <Link to="/frameworks">Back</Link>
+            <Link to="/org/$slug/framework" params={{ slug: "-" }}>
+              Back
+            </Link>
           </Button>
         }
       />

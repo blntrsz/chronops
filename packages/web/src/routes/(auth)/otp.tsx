@@ -23,7 +23,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-export const Route = createFileRoute("/otp")({
+export const Route = createFileRoute("/(auth)/otp")({
   validateSearch: (search) => {
     const email = typeof search.email === "string" ? search.email : "";
     return { email };
@@ -33,8 +33,10 @@ export const Route = createFileRoute("/otp")({
 
     const session = await authClient.getSession();
     if (session.data?.user) {
-      if (session.data.session?.activeOrganizationId)
-        throw redirect({ to: "/dashboard" });
+      if (session.data.session?.activeOrganizationId) {
+        const slug = session.data.session.activeOrganizationId;
+        throw redirect({ to: "/org/$slug", params: { slug } });
+      }
       throw redirect({ to: "/org/switcher" });
     }
   },
@@ -67,7 +69,8 @@ function OtpPage() {
     try {
       await authClient.signIn.emailOtp({ email, otp });
       if (session.data?.session?.activeOrganizationId) {
-        await navigate({ to: "/dashboard" });
+        const slug = session.data.session.activeOrganizationId;
+        await navigate({ to: "/org/$slug", params: { slug } });
       } else {
         await navigate({ to: "/org/switcher" });
       }

@@ -122,7 +122,7 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
           detail: ["document:detail", id],
         },
       });
-      navigate({ to: "/documents" });
+      navigate({ to: "/org/$slug/document", params: { slug: "-" } });
     } finally {
       setPendingDelete(false);
       setConfirmDelete(false);
@@ -136,7 +136,9 @@ export function DocumentEditPage({ documentId }: { documentId: string }) {
         description={documentId}
         right={
           <Button asChild variant="outline">
-            <Link to="/documents">Back</Link>
+            <Link to="/org/$slug/document" params={{ slug: "-" }}>
+              Back
+            </Link>
           </Button>
         }
       />

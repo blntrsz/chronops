@@ -20,13 +20,13 @@ export function toCreateDocumentPayload(
     name: value.name.trim(),
     type: value.type,
     url: value.url.trim(),
-    size: value.size.trim() ? Number(value.size) : undefined,
+    size: value.size.trim() ? Number(value.size) : null,
     frameworkId: value.frameworkId.trim()
       ? Framework.FrameworkId.make(value.frameworkId)
-      : undefined,
+      : null,
     controlId: value.controlId.trim()
       ? Control.ControlId.make(value.controlId)
-      : undefined,
+      : null,
   }
 }
 

@@ -84,7 +84,10 @@ export function ControlListInline({
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
-                    <Link to="/controls/$controlId" params={{ controlId: ctrl.id }}>
+                    <Link
+                      to="/org/$slug/control/$id"
+                      params={{ slug: "-", id: ctrl.id }}
+                    >
                       View
                     </Link>
                   </Button>

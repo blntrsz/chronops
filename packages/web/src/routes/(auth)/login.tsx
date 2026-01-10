@@ -19,12 +19,15 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/(auth)/login")({
   beforeLoad: async () => {
     const session = await authClient.getSession();
     if (session.data?.user) {
       if (session.data.session?.activeOrganizationId)
-        throw redirect({ to: "/dashboard" });
+        throw redirect({
+          to: "/org/$slug",
+          params: { slug: session.data.session.activeOrganizationId },
+        });
       throw redirect({ to: "/org/switcher" });
     }
   },

@@ -28,7 +28,7 @@ export function DocumentListPage() {
   const list = useAtomValue(documentListQuery(page));
 
   const onCreated = (documentId: string) => {
-    navigate({ to: "/documents/$documentId", params: { documentId } });
+    navigate({ to: "/org/$slug/document/$id", params: { slug: "-", id: documentId } });
   };
 
   return (
@@ -72,8 +72,8 @@ export function DocumentListPage() {
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                to="/documents/$documentId"
-                                params={{ documentId: doc.id }}
+                                  to="/org/$slug/document/$id"
+                                  params={{ slug: "-", id: doc.id }}
                               >
                                 View
                               </Link>

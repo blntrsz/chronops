@@ -30,7 +30,7 @@ export function FrameworkListPage() {
   const list = useAtomValue(frameworkListQuery(page));
 
   const onCreated = (frameworkId: string) => {
-    navigate({ to: "/frameworks/$frameworkId", params: { frameworkId } });
+    navigate({ to: "/org/$slug/framework/$id", params: { slug: "-", id: frameworkId } });
   };
 
   return (
@@ -70,8 +70,8 @@ export function FrameworkListPage() {
                           <TableCell>
                             <Button asChild variant="outline" size="sm">
                               <Link
-                                to="/frameworks/$frameworkId"
-                                params={{ frameworkId: fw.id }}
+                                  to="/org/$slug/framework/$id"
+                                  params={{ slug: "-", id: fw.id }}
                               >
                                 View
                               </Link>

@@ -31,7 +31,10 @@ export const Route = createFileRoute("/org/switcher")({
     const session = await getSession();
     if (!session.data?.user) throw redirect({ to: "/login" });
     if (session.data.session?.activeOrganizationId)
-      throw redirect({ to: "/dashboard" });
+      throw redirect({
+        to: "/org/$slug",
+        params: { slug: session.data.session.activeOrganizationId },
+      });
   },
   component: OrgSwitcherPage,
 });

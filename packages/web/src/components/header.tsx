@@ -1,10 +1,14 @@
 import { Link } from "@tanstack/react-router";
 
 import { useState } from "react";
+
+import { authClient } from "@/lib/auth";
 import { BookOpen, FileText, Home, ListChecks, Menu, X } from "lucide-react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const activeOrg = authClient.useActiveOrganization();
+  const orgSlug = activeOrg.data?.slug;
 
   return (
     <>
@@ -44,8 +48,9 @@ export default function Header() {
         </div>
 
         <nav className="flex-1 overflow-y-auto p-4">
-          <Link
-            to="/"
+            <Link
+              to={orgSlug ? "/org/$slug" : ("/org/switcher" as const)}
+              params={orgSlug ? { slug: orgSlug } : undefined}
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
@@ -57,8 +62,9 @@ export default function Header() {
             <span className="font-medium">Home</span>
           </Link>
 
-          <Link
-            to="/frameworks"
+            <Link
+              to={orgSlug ? "/org/$slug/framework" : ("/org/switcher" as const)}
+              params={orgSlug ? { slug: orgSlug } : undefined}
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
@@ -70,8 +76,9 @@ export default function Header() {
             <span className="font-medium">Frameworks</span>
           </Link>
 
-          <Link
-            to="/controls"
+            <Link
+              to={orgSlug ? "/org/$slug/control" : ("/org/switcher" as const)}
+              params={orgSlug ? { slug: orgSlug } : undefined}
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{
@@ -83,8 +90,9 @@ export default function Header() {
             <span className="font-medium">Controls</span>
           </Link>
 
-          <Link
-            to="/documents"
+            <Link
+              to={orgSlug ? "/org/$slug/document" : ("/org/switcher" as const)}
+              params={orgSlug ? { slug: orgSlug } : undefined}
             onClick={() => setIsOpen(false)}
             className="mb-2 flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-gray-800"
             activeProps={{

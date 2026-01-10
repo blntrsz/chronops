@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
     const session = await getSession();
     if (session?.user) {
       const activeOrgId = session.session?.activeOrganizationId;
-      if (activeOrgId) throw redirect({ to: "/dashboard" });
+      if (activeOrgId) throw redirect({ to: "/org/switcher" });
       throw redirect({ to: "/org/switcher" });
     }
   },

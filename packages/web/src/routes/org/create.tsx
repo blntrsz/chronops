@@ -25,7 +25,10 @@ export const Route = createFileRoute("/org/create")({
     const session = await getSession();
     if (!session?.user) throw redirect({ to: "/login" });
     if (session.session?.activeOrganizationId)
-      throw redirect({ to: "/dashboard" });
+      throw redirect({
+        to: "/org/$slug",
+        params: { slug: session.session.activeOrganizationId },
+      });
   },
   component: OrgCreatePage,
 });
@@ -57,7 +60,7 @@ function OrgCreatePage() {
         await authClient.organization.setActive({
           organizationId: createdOrgId,
         });
-      await navigate({ to: "/dashboard" });
+      await navigate({ to: "/org/$slug", params: { slug: createdOrgId! } });
     } catch {
       setMessage({ type: "error", text: "Org create failed. Retry." });
     } finally {
