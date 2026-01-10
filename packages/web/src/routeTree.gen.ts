@@ -9,68 +9,148 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OrgRouteRouteImport } from './routes/org/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as OrgSwitcherRouteImport } from './routes/org/switcher'
+import { Route as OrgIndexRouteImport } from './routes/org/index'
 import { Route as OrgCreateRouteImport } from './routes/org/create'
+import { Route as authOtpRouteImport } from './routes/(auth)/otp'
+import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as OrgSlugIndexRouteImport } from './routes/org/$slug/index'
+import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const OrgRouteRoute = OrgRouteRouteImport.update({
+  id: '/org',
+  path: '/org',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OrgSwitcherRoute = OrgSwitcherRouteImport.update({
-  id: '/org/switcher',
-  path: '/org/switcher',
-  getParentRoute: () => rootRouteImport,
+const OrgIndexRoute = OrgIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgRouteRoute,
 } as any)
 const OrgCreateRoute = OrgCreateRouteImport.update({
-  id: '/org/create',
-  path: '/org/create',
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
+const authOtpRoute = authOtpRouteImport.update({
+  id: '/(auth)/otp',
+  path: '/otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authLoginRoute = authLoginRouteImport.update({
+  id: '/(auth)/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrgSlugIndexRoute = OrgSlugIndexRouteImport.update({
-  id: '/org/$slug/',
-  path: '/org/$slug/',
+  id: '/$slug/',
+  path: '/$slug/',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
+const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
+  id: '/api/rpc/$',
+  path: '/api/rpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
+  '/login': typeof authLoginRoute
+  '/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org/switcher': typeof OrgSwitcherRoute
+  '/org/': typeof OrgIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof authLoginRoute
+  '/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org/switcher': typeof OrgSwitcherRoute
+  '/org': typeof OrgIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
+  '/(auth)/login': typeof authLoginRoute
+  '/(auth)/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org/switcher': typeof OrgSwitcherRoute
+  '/org/': typeof OrgIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/org/create' | '/org/switcher' | '/org/$slug'
+  fullPaths:
+    | '/'
+    | '/org'
+    | '/login'
+    | '/otp'
+    | '/org/create'
+    | '/org/'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/org/create' | '/org/switcher' | '/org/$slug'
-  id: '__root__' | '/' | '/org/create' | '/org/switcher' | '/org/$slug/'
+  to:
+    | '/'
+    | '/login'
+    | '/otp'
+    | '/org/create'
+    | '/org'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/org'
+    | '/(auth)/login'
+    | '/(auth)/otp'
+    | '/org/create'
+    | '/org/'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  OrgCreateRoute: typeof OrgCreateRoute
-  OrgSwitcherRoute: typeof OrgSwitcherRoute
-  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgRouteRoute: typeof OrgRouteRouteWithChildren
+  authLoginRoute: typeof authLoginRoute
+  authOtpRoute: typeof authOtpRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/org': {
+      id: '/org'
+      path: '/org'
+      fullPath: '/org'
+      preLoaderRoute: typeof OrgRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -78,35 +158,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/org/switcher': {
-      id: '/org/switcher'
-      path: '/org/switcher'
-      fullPath: '/org/switcher'
-      preLoaderRoute: typeof OrgSwitcherRouteImport
-      parentRoute: typeof rootRouteImport
+    '/org/': {
+      id: '/org/'
+      path: '/'
+      fullPath: '/org/'
+      preLoaderRoute: typeof OrgIndexRouteImport
+      parentRoute: typeof OrgRouteRoute
     }
     '/org/create': {
       id: '/org/create'
-      path: '/org/create'
+      path: '/create'
       fullPath: '/org/create'
       preLoaderRoute: typeof OrgCreateRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
+    '/(auth)/otp': {
+      id: '/(auth)/otp'
+      path: '/otp'
+      fullPath: '/otp'
+      preLoaderRoute: typeof authOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/login': {
+      id: '/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/org/$slug/': {
       id: '/org/$slug/'
-      path: '/org/$slug'
+      path: '/$slug'
       fullPath: '/org/$slug'
       preLoaderRoute: typeof OrgSlugIndexRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
+    '/api/rpc/$': {
+      id: '/api/rpc/$'
+      path: '/api/rpc/$'
+      fullPath: '/api/rpc/$'
+      preLoaderRoute: typeof ApiRpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
+interface OrgRouteRouteChildren {
+  OrgCreateRoute: typeof OrgCreateRoute
+  OrgIndexRoute: typeof OrgIndexRoute
+  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+}
+
+const OrgRouteRouteChildren: OrgRouteRouteChildren = {
+  OrgCreateRoute: OrgCreateRoute,
+  OrgIndexRoute: OrgIndexRoute,
+  OrgSlugIndexRoute: OrgSlugIndexRoute,
+}
+
+const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(
+  OrgRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  OrgCreateRoute: OrgCreateRoute,
-  OrgSwitcherRoute: OrgSwitcherRoute,
-  OrgSlugIndexRoute: OrgSlugIndexRoute,
+  OrgRouteRoute: OrgRouteRouteWithChildren,
+  authLoginRoute: authLoginRoute,
+  authOtpRoute: authOtpRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
