@@ -10,6 +10,8 @@
   "framework": "react-cra",
   "chosenAddOns": [
     "shadcn",
-    "start"
+    "start",
+    "compiler",
+    "form"
   ]
 }

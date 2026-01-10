@@ -6,6 +6,7 @@ import { RpcContract } from "@chronops/core/contract";
 
 // SSR requires absolute URL; browser fetch resolves relative URLs
 const baseUrl =
+  // @ts-ignore -- window is not defined
   typeof window === "undefined"
     ? process.env.API_BASE_URL || "http://localhost:3000"
     : "";

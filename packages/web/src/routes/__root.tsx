@@ -1,18 +1,8 @@
-import {
-  HeadContent,
-  Outlet,
-  Scripts,
-  createRootRoute,
-  useRouterState,
-} from "@tanstack/react-router";
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { RegistryProvider } from "@effect-atom/atom-react";
-
-import Header from "@/components/header";
 
 import appCss from "../styles.css?url";
-import { getActor } from "@/features/auth/server";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -25,7 +15,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Chronops",
+        title: "TanStack Start Starter",
       },
     ],
     links: [
@@ -36,39 +26,16 @@ export const Route = createRootRoute({
     ],
   }),
 
-  loader() {
-    return getActor();
-  },
-
-  component: RootLayout,
   shellComponent: RootDocument,
 });
 
-function RootLayout() {
-  const pathname = useRouterState().location.pathname;
-  const hideHeader =
-    pathname === "/" ||
-    pathname === "/login" ||
-    pathname === "/otp" ||
-    pathname.startsWith("/org");
-
-  return (
-    <div className="ds-app-bg">
-      <RegistryProvider defaultIdleTTL={5 * 60 * 1000}>
-        {!hideHeader && <Header />}
-        <Outlet />
-      </RegistryProvider>
-    </div>
-  );
-}
-
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="antialiased">
+      <body>
         {children}
         <TanStackDevtools
           config={{
