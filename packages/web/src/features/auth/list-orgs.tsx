@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FieldDescription, FieldGroup } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
@@ -26,7 +27,16 @@ export function ListOrgs({ className, ...props }: React.ComponentProps<"div">) {
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
         {orgs.isPending ? (
-          <FieldDescription>Loading…</FieldDescription>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <Card key={idx}>
+                <CardHeader>
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-4 w-1/2" />
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
         ) : orgs.error ? (
           <FieldDescription>Failed loading orgs</FieldDescription>
         ) : (orgs.data?.length ?? 0) === 0 ? (

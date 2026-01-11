@@ -18,6 +18,7 @@ import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as OrgSlugIndexRouteImport } from './routes/org/$slug/index'
 import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as OrgSlugFrameworkIndexRouteImport } from './routes/org/$slug/framework/index'
 
 const OrgRouteRoute = OrgRouteRouteImport.update({
   id: '/org',
@@ -64,6 +65,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrgSlugFrameworkIndexRoute = OrgSlugFrameworkIndexRouteImport.update({
+  id: '/$slug/framework/',
+  path: '/$slug/framework/',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
+    | '/org/$slug/framework'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
+    | '/org/$slug/framework'
   id:
     | '__root__'
     | '/'
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
+    | '/org/$slug/framework/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -207,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/org/$slug/framework/': {
+      id: '/org/$slug/framework/'
+      path: '/$slug/framework'
+      fullPath: '/org/$slug/framework'
+      preLoaderRoute: typeof OrgSlugFrameworkIndexRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
   }
 }
 
@@ -214,12 +233,14 @@ interface OrgRouteRouteChildren {
   OrgCreateRoute: typeof OrgCreateRoute
   OrgIndexRoute: typeof OrgIndexRoute
   OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgSlugFrameworkIndexRoute: typeof OrgSlugFrameworkIndexRoute
 }
 
 const OrgRouteRouteChildren: OrgRouteRouteChildren = {
   OrgCreateRoute: OrgCreateRoute,
   OrgIndexRoute: OrgIndexRoute,
   OrgSlugIndexRoute: OrgSlugIndexRoute,
+  OrgSlugFrameworkIndexRoute: OrgSlugFrameworkIndexRoute,
 }
 
 const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(
