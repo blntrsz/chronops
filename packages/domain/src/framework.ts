@@ -16,11 +16,10 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
   version: Schema.NullOr(Schema.String),
-  sourceUrl: Schema.NullOr(Schema.String),
 }) {}
 
 export const CreateFramework = Framework.pipe(
-  Schema.pick("name", "description", "version", "sourceUrl"),
+  Schema.pick("name", "description", "version"),
 );
 export type CreateFramework = typeof CreateFramework.Type;
 

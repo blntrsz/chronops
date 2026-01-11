@@ -94,7 +94,6 @@ describe("Framework Domain", () => {
         name: "SOC 2",
         description: "SOC 2 Compliance Framework",
         version: "2024",
-        sourceUrl: "https://example.com/soc2",
         createdAt: testDate,
         updatedAt: testDate,
         deletedAt: null,
@@ -118,7 +117,6 @@ describe("Framework Domain", () => {
         name: "ISO 27001",
         description: null,
         version: null,
-        sourceUrl: null,
         createdAt: testDate,
         updatedAt: testDate,
         deletedAt: null,
@@ -131,7 +129,6 @@ describe("Framework Domain", () => {
       });
 
       expect(framework.version).toBeNull();
-      expect(framework.sourceUrl).toBeNull();
     });
   });
 
@@ -141,7 +138,6 @@ describe("Framework Domain", () => {
         name: "GDPR",
         description: "Data Protection",
         version: "2024",
-        sourceUrl: "https://example.com/gdpr",
       };
 
       const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
