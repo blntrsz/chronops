@@ -93,7 +93,7 @@ describe("Framework Domain", () => {
         id: FrameworkId.make("fwk_test"),
         name: "SOC 2",
         description: "SOC 2 Compliance Framework",
-        version: "2024",
+        version: 2024,
         createdAt: testDate,
         updatedAt: testDate,
         deletedAt: null,

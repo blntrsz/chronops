@@ -21,7 +21,11 @@ import {
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { CreateFramework } from "@/features/framework/create-framework";
 import { countFrameworks, listFrameworks } from "@/features/framework/_atom";
+import { Result, useAtomValue } from "@effect-atom/atom-react";
+import { Link, useParams } from "@tanstack/react-router";
+
 import React from "react";
 
 const pageSize = 50;
@@ -37,13 +41,17 @@ function FrameworkCardSkeleton() {
   );
 }
 
-export function ListFrameworks({ className, ...props }: React.ComponentProps<"div">) {
+export function ListFrameworks({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const [page, setPage] = React.useState(1);
+  const { slug } = useParams({ from: "/org/$slug/framework/" });
 
-  const list = listFrameworks(page);
-  const count = countFrameworks();
+  const list = useAtomValue(listFrameworks(page));
+  const count = useAtomValue(countFrameworks());
 
-  const total = count.data ?? 0;
+  const total = Result.getOrElse(count, () => 0);
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
   function prev() {
@@ -56,40 +64,53 @@ export function ListFrameworks({ className, ...props }: React.ComponentProps<"di
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-row justify-end">
+        <CreateFramework />
+      </div>
+
       <FieldGroup>
-        {list.isPending || count.isPending ? (
+        {list._tag === "Initial" || count._tag === "Initial" ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, idx) => (
               <FrameworkCardSkeleton key={idx} />
-            ))}
-          </div>
-        ) : list.error || count.error ? (
+                ))}
+             </div>
+        ) : Result.isFailure(list) || Result.isFailure(count) ? (
           <FieldDescription>Failed loading frameworks</FieldDescription>
-        ) : (list.data?.length ?? 0) === 0 ? (
+        ) : (Result.getOrElse(list, () => []).length ?? 0) === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyTitle>No frameworks</EmptyTitle>
-              <EmptyDescription>Create first framework to start</EmptyDescription>
+              <EmptyDescription>
+                Create first framework to start
+              </EmptyDescription>
             </EmptyHeader>
           </Empty>
         ) : (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {list.data!.map((fwk) => (
-                <Card key={fwk.id}>
-                  <CardHeader>
-                    <CardTitle className="line-clamp-1">{fwk.name}</CardTitle>
-                    <CardDescription className="space-y-1">
-                      {fwk.version ? (
-                        <div className="line-clamp-1">v{fwk.version}</div>
-                      ) : null}
-                      {fwk.description ? (
-                        <div className="line-clamp-2">{fwk.description}</div>
-                      ) : null}
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
+           <>
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {Result.getOrElse(list, () => []).map((fwk) => (
+                <Link
+                  key={fwk.id}
+                  to={"/org/$slug/framework/$id"}
+                  params={{ slug, id: fwk.id }}
+                  className="block"
+                >
+                   <Card>
+                     <CardHeader>
+                       <CardTitle className="line-clamp-1">{fwk.name}</CardTitle>
+                        <CardDescription className="space-y-1">
+                          {fwk.version ? (
+                            <div className="line-clamp-1">v{fwk.version}</div>
+                          ) : null}
+                          {fwk.description ? (
+                            <div className="line-clamp-2">{fwk.description}</div>
+                          ) : null}
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                ))}
             </div>
 
             {pages > 1 ? (
@@ -105,23 +126,25 @@ export function ListFrameworks({ className, ...props }: React.ComponentProps<"di
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: pages }).slice(0, 7).map((_, idx) => {
-                    const p = idx + 1;
-                    return (
-                      <PaginationItem key={p}>
-                        <PaginationLink
-                          href="#"
-                          isActive={p === page}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setPage(p);
-                          }}
-                        >
-                          {p}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
+                  {Array.from({ length: pages })
+                    .slice(0, 7)
+                    .map((_, idx) => {
+                      const p = idx + 1;
+                      return (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            href="#"
+                            isActive={p === page}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setPage(p);
+                            }}
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
 
                   <PaginationItem>
                     <PaginationNext

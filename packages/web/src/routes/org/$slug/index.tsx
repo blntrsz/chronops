@@ -14,14 +14,25 @@ function RouteComponent() {
   const { slug } = Route.useParams();
   return (
     <div>
-      <Link to="/org/$slug/framework" params={{ slug }}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Frameworks</CardTitle>
-            <CardDescription>Manage frameworks</CardDescription>
-          </CardHeader>
-        </Card>
-      </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Link to="/org/$slug/framework" params={{ slug }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Frameworks</CardTitle>
+              <CardDescription>Manage frameworks</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link to="/org/$slug/control" params={{ slug }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Controls</CardTitle>
+              <CardDescription>Manage controls</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+      </div>
     </div>
   );
 }

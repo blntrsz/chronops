@@ -15,7 +15,7 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   id: FrameworkId,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
-  version: Schema.NullOr(Schema.String),
+  version: Schema.NullOr(Schema.Union(Schema.Number, Schema.NumberFromString)),
 }) {}
 
 export const CreateFramework = Framework.pipe(

@@ -88,7 +88,7 @@ export const make = Effect.fn(function* <
               sql`org_id = ${actor.orgId}`,
               sql`deleted_at IS NULL`,
             ])}
-            LIMIT ${req.size} OFFSET ${req.page * req.size}`;
+            LIMIT ${req.size} OFFSET ${(req.page - 1) * req.size}`;
         },
       })(request);
     })) as (

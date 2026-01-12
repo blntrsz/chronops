@@ -4,7 +4,7 @@ import { Actor } from "@chronops/domain/actor";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import * as CrudService from "../common/crud-service";
 
-const CountResult = Schema.Struct({ count: Schema.Number });
+const CountResult = Schema.Struct({ count: Schema.NumberFromString });
 
 export class FrameworkService extends Effect.Service<FrameworkService>()(
   "FrameworkService",
@@ -31,10 +31,9 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
           Request: Schema.Void,
           Result: CountResult,
           execute() {
-            return sql`SELECT COUNT(*) as count FROM ${sql("framework")} WHERE ${sql.and([
-              sql`org_id = ${actor.orgId}`,
-              sql`deleted_at IS NULL`,
-            ])}`;
+            return sql`SELECT COUNT(*) as count FROM ${sql("framework")} WHERE ${sql.and(
+              [sql`org_id = ${actor.orgId}`, sql`deleted_at IS NULL`],
+            )}`;
           },
         })(undefined);
         return result[0]?.count ?? 0;

@@ -4,7 +4,7 @@ import { Control } from "@chronops/domain";
 import { Actor } from "@chronops/domain/actor";
 import * as CrudService from "../common/crud-service";
 
-const CountResult = Schema.Struct({ count: Schema.Number });
+const CountResult = Schema.Struct({ count: Schema.NumberFromString });
 
 export class ControlService extends Effect.Service<ControlService>()(
   "ControlService",
