@@ -10,6 +10,7 @@ import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
+import { Link, useParams } from "@tanstack/react-router";
 
 import { DataTable } from "@/features/control/data-table";
 import { DataTableColumnHeader } from "@/features/control/data-table-column-header";
@@ -26,7 +27,7 @@ type ControlRow = {
   updatedAt: string;
 };
 
-const columns: ColumnDef<ControlRow>[] = [
+const columns = (slug: string): ColumnDef<ControlRow>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
@@ -42,9 +43,13 @@ const columns: ColumnDef<ControlRow>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => (
-      <div className="max-w-[520px] truncate font-medium">
+      <Link
+        to="/org/$slug/control/$id"
+        params={{ slug, id: row.getValue("id") as string }}
+        className="block max-w-[520px] truncate font-medium hover:underline"
+      >
         {row.getValue("name")}
-      </div>
+      </Link>
     ),
   },
   {
@@ -85,6 +90,21 @@ const columns: ColumnDef<ControlRow>[] = [
       <div className="w-[160px] truncate">{row.getValue("updatedAt")}</div>
     ),
   },
+  {
+    id: "open",
+    header: () => null,
+    cell: ({ row }) => (
+      <Link
+        to="/org/$slug/control/$id"
+        params={{ slug, id: row.getValue("id") as string }}
+        className="text-sm text-muted-foreground hover:underline"
+      >
+        Open
+      </Link>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
 ];
 
 function LoadingSkeleton() {
@@ -101,10 +121,12 @@ export function ListControl({
   className,
   ...props
 }: React.ComponentProps<"div"> & { frameworkId?: string }) {
+  const { slug } = useParams({ from: "/org/$slug/control/" });
   const list = useAtomValue(listControls(1));
   const count = useAtomValue(countControls());
 
   const total = Result.getOrElse(count, () => 0);
+  const cols = React.useMemo(() => columns(slug), [slug]);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -127,7 +149,7 @@ export function ListControl({
           </div>
 
           <DataTable<ControlRow, unknown>
-            columns={columns}
+            columns={cols}
             data={Result.getOrElse(list, () => []).map((c) => ({
               id: c.id,
               name: c.name,

@@ -21,6 +21,7 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as OrgSlugFrameworkIndexRouteImport } from './routes/org/$slug/framework/index'
 import { Route as OrgSlugControlIndexRouteImport } from './routes/org/$slug/control/index'
 import { Route as OrgSlugFrameworkIdRouteImport } from './routes/org/$slug/framework/$id'
+import { Route as OrgSlugControlIdRouteImport } from './routes/org/$slug/control/$id'
 
 const OrgRouteRoute = OrgRouteRouteImport.update({
   id: '/org',
@@ -82,6 +83,11 @@ const OrgSlugFrameworkIdRoute = OrgSlugFrameworkIdRouteImport.update({
   path: '/$slug/framework/$id',
   getParentRoute: () => OrgRouteRoute,
 } as any)
+const OrgSlugControlIdRoute = OrgSlugControlIdRouteImport.update({
+  id: '/$slug/control/$id',
+  path: '/$slug/control/$id',
+  getParentRoute: () => OrgRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/control': typeof OrgSlugControlIndexRoute
   '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/control': typeof OrgSlugControlIndexRoute
   '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/control/': typeof OrgSlugControlIndexRoute
   '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
+    | '/org/$slug/control/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/control'
     | '/org/$slug/framework'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
+    | '/org/$slug/control/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/control'
     | '/org/$slug/framework'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
+    | '/org/$slug/control/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/control/'
     | '/org/$slug/framework/'
@@ -264,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugFrameworkIdRouteImport
       parentRoute: typeof OrgRouteRoute
     }
+    '/org/$slug/control/$id': {
+      id: '/org/$slug/control/$id'
+      path: '/$slug/control/$id'
+      fullPath: '/org/$slug/control/$id'
+      preLoaderRoute: typeof OrgSlugControlIdRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
   }
 }
 
@@ -271,6 +290,7 @@ interface OrgRouteRouteChildren {
   OrgCreateRoute: typeof OrgCreateRoute
   OrgIndexRoute: typeof OrgIndexRoute
   OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgSlugControlIdRoute: typeof OrgSlugControlIdRoute
   OrgSlugFrameworkIdRoute: typeof OrgSlugFrameworkIdRoute
   OrgSlugControlIndexRoute: typeof OrgSlugControlIndexRoute
   OrgSlugFrameworkIndexRoute: typeof OrgSlugFrameworkIndexRoute
@@ -280,6 +300,7 @@ const OrgRouteRouteChildren: OrgRouteRouteChildren = {
   OrgCreateRoute: OrgCreateRoute,
   OrgIndexRoute: OrgIndexRoute,
   OrgSlugIndexRoute: OrgSlugIndexRoute,
+  OrgSlugControlIdRoute: OrgSlugControlIdRoute,
   OrgSlugFrameworkIdRoute: OrgSlugFrameworkIdRoute,
   OrgSlugControlIndexRoute: OrgSlugControlIndexRoute,
   OrgSlugFrameworkIndexRoute: OrgSlugFrameworkIndexRoute,

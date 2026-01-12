@@ -1,9 +1,31 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ListControl } from "@/features/control/list-control";
 import { getFrameworkById } from "@/features/framework/_atom";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
+
+function FrameworkSkeleton() {
+  return (
+    <div className="flex flex-col gap-6">
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-7 w-1/2" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </CardHeader>
+      </Card>
+
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/org/$slug/framework/$id")({
   component: RouteComponent,
@@ -14,7 +36,7 @@ function RouteComponent() {
   const fwk = useAtomValue(getFrameworkById(id as any));
 
   if (fwk._tag === "Initial") {
-    return <FieldDescription>Loading...</FieldDescription>;
+    return <FrameworkSkeleton />;
   }
 
   if (Result.isFailure(fwk)) {
