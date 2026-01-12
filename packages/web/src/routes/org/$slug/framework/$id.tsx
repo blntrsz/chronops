@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
-import { ControlListPage } from "@/features/control/control-list-page";
+import { ListControl } from "@/features/control/list-control";
 import { getFrameworkById } from "@/features/framework/_atom";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
@@ -40,7 +40,7 @@ function RouteComponent() {
         </CardHeader>
       </Card>
 
-      <ControlListPage frameworkId={id} />
+      <ListControl frameworkId={id} />
     </div>
   );
 }
