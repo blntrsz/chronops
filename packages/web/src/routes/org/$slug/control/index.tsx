@@ -13,7 +13,7 @@ export const Route = createFileRoute("/org/$slug/control/")({
 
 function RouteComponent() {
   const { frameworkId } = Route.useSearch();
+  const { slug } = Route.useParams();
 
-  return <ListControl frameworkId={frameworkId} />;
+  return <ListControl slug={slug} frameworkId={frameworkId} />;
 }
-

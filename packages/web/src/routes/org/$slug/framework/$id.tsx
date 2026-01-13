@@ -1,4 +1,9 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListControl } from "@/features/control/list-control";
@@ -34,6 +39,7 @@ export const Route = createFileRoute("/org/$slug/framework/$id")({
 function RouteComponent() {
   const { id } = Route.useParams();
   const fwk = useAtomValue(getFrameworkById(id as any));
+  const { slug } = Route.useParams();
 
   if (fwk._tag === "Initial") {
     return <FrameworkSkeleton />;
@@ -62,7 +68,7 @@ function RouteComponent() {
         </CardHeader>
       </Card>
 
-      <ListControl frameworkId={id} />
+      <ListControl slug={slug} frameworkId={id} />
     </div>
   );
 }

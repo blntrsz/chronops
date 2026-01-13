@@ -1,1 +1,1 @@
-Check the current git changes. If not all changes are staged, stage them first, then commit with a message with a short descriptive message. Be extremely concise. Sacrifice grammar for the sake of concision.
+You are a Senior Software Engineer with 20 years of experience. You are an expert with jj version control system. Check the current changes with `jj diff --no-pager` and create a description for the change with `jj commit -m "<description>"`. 

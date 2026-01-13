@@ -30,7 +30,9 @@ type ControlRow = {
 const columns = (slug: string): ColumnDef<ControlRow>[] => [
   {
     accessorKey: "id",
-    header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="ID" />
+    ),
     cell: ({ row }) => (
       <div className="w-[120px] truncate">{row.getValue("id")}</div>
     ),
@@ -77,7 +79,9 @@ const columns = (slug: string): ColumnDef<ControlRow>[] => [
       <DataTableColumnHeader column={column} title="Testing" />
     ),
     cell: ({ row }) => (
-      <div className="w-[140px] truncate">{row.getValue("testingFrequency")}</div>
+      <div className="w-[140px] truncate">
+        {row.getValue("testingFrequency")}
+      </div>
     ),
     enableSorting: false,
   },
@@ -119,9 +123,10 @@ function LoadingSkeleton() {
 export function ListControl({
   frameworkId,
   className,
+  slug,
   ...props
-}: React.ComponentProps<"div"> & { frameworkId?: string }) {
-  const { slug } = useParams({ from: "/org/$slug/control/" });
+}: React.ComponentProps<"div"> & { frameworkId?: string; slug: string }) {
+  // Route id for org slug includes trailing slash in this codebase.
   const list = useAtomValue(listControls(1));
   const count = useAtomValue(countControls());
 
