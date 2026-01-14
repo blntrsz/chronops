@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "@tanstack/react-router";
-import { authClient } from "@chronops/core/auth/client";
 import React from "react";
+import { authClient } from "./client";
 
 export function LoginForm({
   className,

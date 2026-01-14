@@ -2,7 +2,6 @@ import { LandingHeader } from "@/widgets/header/landing-header";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { authClient } from "@chronops/core/auth/client";
 import {
   Card,
   CardContent,
@@ -19,6 +18,7 @@ import {
   ArrowRight,
   Lock,
 } from "lucide-react";
+import { authClient } from "@/features/auth/client";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -165,7 +165,7 @@ function App() {
               Join engineering teams building trust with Chronops. Start your
               journey to effortless compliance today.
             </p>
-             <Button asChild size="lg" className="h-12 px-8 text-base">
+            <Button asChild size="lg" className="h-12 px-8 text-base">
               <Link to={getStartedTo}>Get Started Now</Link>
             </Button>
           </div>

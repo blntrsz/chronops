@@ -1,7 +1,7 @@
 import { Effect, Option, Schema } from "effect";
 import type { SqlError } from "@effect/sql/SqlError";
 import type { ParseError } from "effect/ParseResult";
-import { Actor } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import { Workflow, Base } from "@chronops/domain";
 import * as Repository from "./repository";
 
@@ -15,13 +15,33 @@ export interface DomainConfig<
   idSchema: TIdSchema;
   modelSchema: TModelSchema;
   tableName: string;
-  entityType: Workflow.WorkflowEntityType;
+  entityType: string;
   createInput: TCreateInput;
   updateInput: TUpdateInput;
   notFoundError: { fromId: (id: Schema.Schema.Type<TIdSchema>) => TError };
-  makeModel: (input: Schema.Schema.Type<TCreateInput>, workflowId: Base.WorkflowId) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
-  updateModel: (model: Schema.Schema.Type<TModelSchema>, data: Schema.Schema.Type<TUpdateInput>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
-  removeModel: (model: Schema.Schema.Type<TModelSchema>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, never, Actor | Base.ULID>;
+  makeModel: (
+    input: Schema.Schema.Type<TCreateInput>,
+    workflowId: Base.WorkflowId,
+  ) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>,
+    never,
+    Actor.Actor | Base.ULID
+  >;
+  updateModel: (
+    model: Schema.Schema.Type<TModelSchema>,
+    data: Schema.Schema.Type<TUpdateInput>,
+  ) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>,
+    never,
+    Actor.Actor | Base.ULID
+  >;
+  removeModel: (
+    model: Schema.Schema.Type<TModelSchema>,
+  ) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>,
+    never,
+    Actor.Actor | Base.ULID
+  >;
 }
 
 export interface CrudService<
@@ -29,12 +49,41 @@ export interface CrudService<
   TModelSchema extends Schema.Schema<any>,
   TCreateInput extends Schema.Schema<any>,
   TUpdateInput extends Schema.Schema<any>,
+  TError,
 > {
-  getById: (id: Schema.Schema.Type<TIdSchema>) => Effect.Effect<Option.Option<Schema.Schema.Type<TModelSchema>>, SqlError | ParseError, Actor>;
-  list: (pagination: { page: number; size: number }) => Effect.Effect<Schema.Schema.Type<TModelSchema>[], SqlError | ParseError, Actor>;
-  insert: (input: Schema.Schema.Type<TCreateInput>) => Effect.Effect<Schema.Schema.Type<TModelSchema>, SqlError | ParseError, Actor>;
-  update: (input: { id: Schema.Schema.Type<TIdSchema>; data: Schema.Schema.Type<TUpdateInput> }) => Effect.Effect<Schema.Schema.Type<TModelSchema>, SqlError | ParseError | Schema.Schema.Type<TUpdateInput extends Schema.Schema<any, infer E> ? E : never>, Actor>;
-  remove: (id: Schema.Schema.Type<TIdSchema>) => Effect.Effect<void, SqlError | ParseError | Schema.Schema.Type<TUpdateInput extends Schema.Schema<any, infer E> ? E : never>, Actor>;
+  getById: (
+    id: Schema.Schema.Type<TIdSchema>,
+  ) => Effect.Effect<
+    Option.Option<Schema.Schema.Type<TModelSchema>>,
+    SqlError | ParseError,
+    Actor.Actor
+  >;
+  list: (pagination: {
+    page: number;
+    size: number;
+  }) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>[],
+    SqlError | ParseError,
+    Actor.Actor
+  >;
+  insert: (
+    input: Schema.Schema.Type<TCreateInput>,
+  ) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>,
+    SqlError | ParseError,
+    Actor.Actor
+  >;
+  update: (input: {
+    id: Schema.Schema.Type<TIdSchema>;
+    data: Schema.Schema.Type<TUpdateInput>;
+  }) => Effect.Effect<
+    Schema.Schema.Type<TModelSchema>,
+    SqlError | ParseError | TError,
+    Actor.Actor
+  >;
+  remove: (
+    id: Schema.Schema.Type<TIdSchema>,
+  ) => Effect.Effect<void, SqlError | ParseError | TError, Actor.Actor>;
 }
 
 export const makeCrudService = <
@@ -43,8 +92,17 @@ export const makeCrudService = <
   TCreateInput extends Schema.Schema<any>,
   TUpdateInput extends Schema.Schema<any>,
   TError,
->(config: DomainConfig<TIdSchema, TModelSchema, TCreateInput, TUpdateInput, TError>) =>
+>(
+  config: DomainConfig<TIdSchema, TModelSchema, TCreateInput, TUpdateInput, TError>,
+) =>
   Effect.gen(function* () {
+    type Service = CrudService<
+      TIdSchema,
+      TModelSchema,
+      TCreateInput,
+      TUpdateInput,
+      TError
+    >;
     const workflowRepository = yield* Repository.make({
       id: Workflow.WorkflowId,
       model: Workflow.Workflow,
@@ -57,8 +115,14 @@ export const makeCrudService = <
       tableName: config.tableName,
     });
 
-    const insert = Effect.fn(function* (input: Schema.Schema.Type<TCreateInput>) {
-      const workflow = yield* Workflow.make({ entityType: config.entityType });
+    const insert = Effect.fn(function* (
+      input: Schema.Schema.Type<TCreateInput>,
+    ) {
+      const workflow = yield* Workflow.make({
+        entityType: config.entityType,
+        initial: "created",
+        transitions: { created: {} },
+      });
       yield* workflowRepository.save(workflow);
 
       const model = yield* config.makeModel(input, workflow.id);
@@ -101,5 +165,5 @@ export const makeCrudService = <
       insert,
       update,
       remove,
-    } as CrudService<TIdSchema, TModelSchema, TCreateInput, TUpdateInput>;
+    } as Service;
   });

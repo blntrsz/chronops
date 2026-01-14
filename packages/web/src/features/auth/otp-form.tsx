@@ -1,5 +1,4 @@
 import { useNavigate } from "@tanstack/react-router";
-import { authClient } from "@chronops/core/auth/client";
 import React from "react";
 import {
   InputOTP,
@@ -10,6 +9,7 @@ import {
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { GalleryVerticalEnd } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { authClient } from "./client";
 
 export function OtpForm({ email }: { email: string }) {
   const navigate = useNavigate();

@@ -1,130 +1,94 @@
-import { Effect, Option } from "effect";
+import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 
 import * as Base from "./base";
 
-// --- Id ---
-
 export const WorkflowId = Base.WorkflowId;
 export type WorkflowId = typeof WorkflowId.Type;
 
+/**
+ * Generate a new WorkflowId
+ * @since 1.0.0
+ */
 export const workflowId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
 
   return WorkflowId.make(`wfl_${createId()}`);
 });
 
-// --- Template ---
-
-export const WorkflowEntityType = Schema.Union(
-  Schema.Literal("framework"),
-  Schema.Literal("control"),
-  Schema.Literal("document"),
-);
-export type WorkflowEntityType = typeof WorkflowEntityType.Type;
-
-export const WorkflowStatus = Schema.Union(
-  Schema.Literal("draft"),
-  Schema.Literal("under_review"),
-  Schema.Literal("uploaded"),
-  Schema.Literal("approved"),
-  Schema.Literal("active"),
-  Schema.Literal("archived"),
-  Schema.Literal("deprecated"),
-);
-export type WorkflowStatus = typeof WorkflowStatus.Type;
-
-export const WorkflowEvent = Schema.String.pipe(Schema.brand("WorkflowEvent"));
-export type WorkflowEvent = typeof WorkflowEvent.Type;
-
-export interface WorkflowTemplate {
-  entityType: WorkflowEntityType;
-  initial: WorkflowStatus;
-  transitions: Record<string, Record<string, WorkflowStatus>>;
-}
-
-export const FrameworkWorkflow = {
-  entityType: "framework",
-  initial: "draft",
-  transitions: {
-    draft: { ACTIVATE: "active", ARCHIVE: "archived" },
-    active: { ARCHIVE: "archived" },
-    archived: {},
-  },
-} as const satisfies WorkflowTemplate;
-
-export const ControlWorkflow = {
-  entityType: "control",
-  initial: "draft",
-  transitions: {
-    draft: { SUBMIT: "under_review" },
-    under_review: { APPROVE: "approved", REJECT: "draft" },
-    approved: { DEPRECATE: "deprecated" },
-    deprecated: {},
-  },
-} as const satisfies WorkflowTemplate;
-
-export const DocumentWorkflow = {
-  entityType: "document",
-  initial: "draft",
-  transitions: {
-    draft: { UPLOAD: "uploaded" },
-    uploaded: { APPROVE: "approved", REJECT: "draft" },
-    approved: { ARCHIVE: "archived" },
-    archived: {},
-  },
-} as const satisfies WorkflowTemplate;
-
-export const templateForEntity = (entityType: WorkflowEntityType): WorkflowTemplate => {
-  switch (entityType) {
-    case "framework":
-      return FrameworkWorkflow;
-    case "control":
-      return ControlWorkflow;
-    case "document":
-      return DocumentWorkflow;
-  }
-};
-
-// --- Model ---
-
-export class Workflow extends Base.Base.extend<Workflow>("Workflow")({
+/**
+ * Workflow model
+ * @since 1.0.0
+ * @category models
+ */
+export class Workflow extends Schema.Class<Workflow>("Workflow")({
   id: WorkflowId,
-  entityType: WorkflowEntityType,
-  status: WorkflowStatus,
+  status: Schema.String,
+  transitions: Schema.Record({
+    key: Schema.String,
+    value: Schema.Record({
+      key: Schema.String,
+      value: Schema.String,
+    }),
+  }),
 }) {}
 
-export const CreateWorkflow = Workflow.pipe(Schema.pick("entityType"));
-export type CreateWorkflow = typeof CreateWorkflow.Type;
+/**
+ * Workflow entity types
+ * @since 1.0.0
+ */
+export type WorkflowTemplate<T extends string = string> = {
+  entityType: string;
+  initial: T;
+  transitions: {
+    [K in T]: {
+      [event: string]: T;
+    };
+  };
+};
 
-export const UpdateWorkflow = Workflow.pipe(Schema.pick("status"));
-export type UpdateWorkflow = typeof UpdateWorkflow.Type;
-
-// --- Operations ---
-
-export const make = Effect.fn(function* (input: CreateWorkflow) {
+/**
+ * Create a new Workflow
+ * @since 1.0.0
+ */
+export const make = Effect.fn(function* <T extends string>(
+  input: WorkflowTemplate<T>,
+) {
   const id = yield* workflowId();
-  const template = templateForEntity(input.entityType);
-  const base = yield* Base.makeBase({ workflowId: id });
 
   return Workflow.make({
     id,
-    status: template.initial,
+    status: input.initial,
     ...input,
-    ...base,
   });
 });
 
-export const updateStatus = Effect.fn(function* (model: Workflow, status: WorkflowStatus) {
-  const base = yield* Base.updateBase();
+/**
+ * Transition the workflow to the next status based on the event
+ */
+export const transition = Effect.fn(function* (
+  workflow: Workflow,
+  event: string,
+) {
+  const next = workflow.transitions[workflow.status]?.[event];
+
+  if (!next) {
+    return yield* WorkflowInvalidTransitionError.make({
+      message: `Invalid transition from ${workflow.status} with event ${event}`,
+    });
+  }
 
   return Workflow.make({
-    ...model,
-    status,
-    ...base,
+    ...workflow,
+    status: next,
   });
 });
 
+/**
+ * Workflow not found error
+ * @since 1.0.0
+ * @category errors
+ */
 export class WorkflowNotFoundError extends Schema.TaggedError<WorkflowNotFoundError>(
   "WorkflowNotFoundError",
 )("WorkflowNotFoundError", {
@@ -137,41 +101,13 @@ export class WorkflowNotFoundError extends Schema.TaggedError<WorkflowNotFoundEr
   }
 }
 
+/**
+ * Workflow invalid transition error
+ * @since 1.0.0
+ * @category errors
+ */
 export class WorkflowInvalidTransitionError extends Schema.TaggedError<WorkflowInvalidTransitionError>(
   "WorkflowInvalidTransitionError",
 )("WorkflowInvalidTransitionError", {
-  entityType: WorkflowEntityType,
-  from: WorkflowStatus,
-  event: Schema.String,
   message: Schema.String,
-}) {
-  static from(input: {
-    entityType: WorkflowEntityType;
-    from: WorkflowStatus;
-    event: string;
-  }) {
-    return new WorkflowInvalidTransitionError({
-      ...input,
-      message: `${input.entityType}:${input.from} cannot ${input.event}`,
-    });
-  }
-}
-
-export const transition = (
-  template: WorkflowTemplate,
-  from: WorkflowStatus,
-  event: string,
-): Option.Option<WorkflowStatus> => {
-  const stateTransitions = template.transitions[from];
-  if (stateTransitions === undefined) {
-    return Option.none();
-  }
-
-  return Option.fromNullable(stateTransitions[event]);
-};
-
-export const canTransition = (
-  template: WorkflowTemplate,
-  from: WorkflowStatus,
-  event: string,
-) => Option.isSome(transition(template, from, event));
+}) {}

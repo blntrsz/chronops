@@ -1,8 +1,27 @@
 import { describe, it, expect } from "bun:test";
 import { DateTime, Schema } from "effect";
-import { MemberId, OrgId, WorkflowId, Hash, Base, NotFoundError, ULID, ULIDLayer } from "../base";
-import { FrameworkId, Framework, CreateFramework, UpdateFramework, FrameworkNotFoundError } from "../framework";
-import { ControlId, ControlStatus, Control, CreateControl, ControlNotFoundError } from "../control";
+import {
+  MemberId,
+  OrgId,
+  WorkflowId,
+  Hash,
+  Base,
+  NotFoundError,
+} from "../base";
+import {
+  FrameworkId,
+  Framework,
+  CreateFramework,
+  UpdateFramework,
+  FrameworkNotFoundError,
+} from "../framework";
+import {
+  ControlId,
+  ControlStatus,
+  Control,
+  CreateControl,
+  ControlNotFoundError,
+} from "../control";
 
 // Helper to compare branded types
 const asString = (value: unknown) => value as string;
@@ -94,6 +113,7 @@ describe("Framework Domain", () => {
         name: "SOC 2",
         description: "SOC 2 Compliance Framework",
         version: 2024,
+        status: "draft",
         createdAt: testDate,
         updatedAt: testDate,
         deletedAt: null,
@@ -117,6 +137,7 @@ describe("Framework Domain", () => {
         name: "ISO 27001",
         description: null,
         version: null,
+        status: "draft",
         createdAt: testDate,
         updatedAt: testDate,
         deletedAt: null,
@@ -158,9 +179,7 @@ describe("Framework Domain", () => {
 
   describe("FrameworkNotFoundError", () => {
     it("should create error with entity type", () => {
-      const error = FrameworkNotFoundError.fromId(
-        FrameworkId.make("fwk_123"),
-      );
+      const error = FrameworkNotFoundError.fromId(FrameworkId.make("fwk_123"));
       expect(error.message).toBe("Framework with id fwk_123 not found.");
       expect(error.entityType).toBe("Framework");
     });
@@ -181,9 +200,9 @@ describe("Control Domain", () => {
       expect(status).toBe("draft");
     });
 
-    it("should accept active status", () => {
-      const status: ControlStatus = "active";
-      expect(status).toBe("active");
+    it("should accept under_review status", () => {
+      const status: ControlStatus = "under_review";
+      expect(status).toBe("under_review");
     });
 
     it("should accept deprecated status", () => {
@@ -200,7 +219,7 @@ describe("Control Domain", () => {
         name: "Access Control",
         description: "Control access to systems",
         frameworkId: FrameworkId.make("fwk_test"),
-        status: "active" as ControlStatus,
+        status: "approved" as ControlStatus,
         testingFrequency: "quarterly",
         createdAt: testDate,
         updatedAt: testDate,
@@ -215,7 +234,7 @@ describe("Control Domain", () => {
 
       expect(asString(control.id)).toBe("ctr_test");
       expect(control.name).toBe("Access Control");
-      expect(control.status).toBe("active");
+      expect(control.status).toBe("approved");
     });
   });
 
@@ -225,7 +244,6 @@ describe("Control Domain", () => {
         name: "Access Control",
         description: "Control access",
         frameworkId: FrameworkId.make("fwk_test"),
-        status: "active" as ControlStatus,
         testingFrequency: "monthly",
       };
 
@@ -237,9 +255,7 @@ describe("Control Domain", () => {
 
   describe("ControlNotFoundError", () => {
     it("should create error with entity type", () => {
-      const error = ControlNotFoundError.fromId(
-        ControlId.make("ctr_123"),
-      );
+      const error = ControlNotFoundError.fromId(ControlId.make("ctr_123"));
       expect(error.message).toBe("Control with id ctr_123 not found.");
       expect(error.entityType).toBe("Control");
     });

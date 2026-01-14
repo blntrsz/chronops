@@ -1,4 +1,4 @@
-import { Actor } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import type { SqlError } from "@effect/sql/SqlError";
 import { Effect, Option, Schema } from "effect";
@@ -44,7 +44,7 @@ export const make = Effect.fn(function* <
    */
   const getById = ((request: Schema.Schema.Type<typeof config.id>) =>
     Effect.gen(function* () {
-      const actor = yield* Actor;
+      const actor = yield* Actor.Actor;
       console.log({ actor });
       console.log({ request });
       const result = SqlSchema.findOne({
@@ -70,7 +70,7 @@ export const make = Effect.fn(function* <
   ) => Effect.Effect<
     Option.Option<Schema.Schema.Type<typeof config.model>>,
     SqlError | ParseError,
-    Actor
+    Actor.Actor
   >;
 
   /**
@@ -78,7 +78,7 @@ export const make = Effect.fn(function* <
    */
   const list = ((request: Schema.Schema.Type<typeof Pagination>) =>
     Effect.gen(function* () {
-      const actor = yield* Actor;
+      const actor = yield* Actor.Actor;
       return yield* SqlSchema.findAll({
         Request: Pagination,
         Result: config.model,
@@ -96,7 +96,7 @@ export const make = Effect.fn(function* <
   ) => Effect.Effect<
     Schema.Schema.Type<typeof config.model>[],
     SqlError | ParseError,
-    Actor
+    Actor.Actor
   >;
 
   /**
@@ -104,15 +104,12 @@ export const make = Effect.fn(function* <
    */
   const destroy = ((request: Schema.Schema.Type<typeof config.id>) =>
     Effect.gen(function* () {
-      const actor = yield* Actor;
+      const actor = yield* Actor.Actor;
       return yield* SqlSchema.void({
         Request: config.id,
         execute(req) {
           return sql`DELETE FROM ${sql(config.tableName)} 
-            WHERE ${sql.and([
-              sql`id = ${req}`,
-              sql`org_id = ${actor.orgId}`,
-            ])}`;
+            WHERE ${sql.and([sql`id = ${req}`, sql`org_id = ${actor.orgId}`])}`;
         },
       })(request);
     })) as (

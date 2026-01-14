@@ -1,4 +1,3 @@
-import { authClient } from "@chronops/core/auth/client";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -9,51 +8,39 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { Schema } from "effect";
 import React from "react";
+import { authClient } from "./client";
+import { OrgSlug } from "@chronops/domain/actor";
 
 const CreateOrgSchema = Schema.Struct({
   name: Schema.String.pipe(Schema.minLength(1)),
-  slug: Schema.String.pipe(
-    Schema.minLength(1),
-    Schema.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  ),
+  slug: OrgSlug,
 });
 
 type CreateOrgInput = Schema.Schema.Type<typeof CreateOrgSchema>;
-
-function slugify(input: string) {
-  return input
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 export function CreateOrg({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [slugTouched, setSlugTouched] = React.useState(false);
 
   const form = useForm({
     defaultValues: {
       name: "",
-      slug: "",
+      slug: OrgSlug.make(""),
     } satisfies CreateOrgInput,
     onSubmit: async ({ value }) => {
       const res = await authClient.organization.create({
@@ -69,8 +56,6 @@ export function CreateOrg({
         organizationSlug: nextSlug,
       });
 
-      setOpen(false);
-      setSlugTouched(false);
       form.reset();
       navigate({ to: "/org/$slug", params: { slug: nextSlug } });
     },
@@ -86,36 +71,22 @@ export function CreateOrg({
 
   const isPending = form.state.isSubmitting;
 
-  const name = form.state.values.name;
-
-  React.useEffect(() => {
-    if (slugTouched) return;
-    form.setFieldValue("slug", slugify(name));
-  }, [name, slugTouched, form]);
-
   return (
-    <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button">Create org</Button>
-        </DialogTrigger>
+    <div className={cn(className)} {...props}>
+      <Card>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+        >
+          <CardHeader>
+            <CardTitle>Create organization</CardTitle>
+            <CardDescription>Set org name and unique slug.</CardDescription>
+          </CardHeader>
 
-        <DialogContent>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              form.handleSubmit();
-            }}
-            className="flex flex-col gap-6"
-          >
-            <DialogHeader>
-              <DialogTitle>Create organization</DialogTitle>
-              <DialogDescription>
-                Set org name and unique slug.
-              </DialogDescription>
-            </DialogHeader>
-
+          <CardContent>
             <FieldGroup>
               <form.Field name="name">
                 {(field) => (
@@ -151,12 +122,10 @@ export function CreateOrg({
                       name={field.name}
                       value={field.state.value}
                       onBlur={() => {
-                        setSlugTouched(true);
                         field.handleBlur();
                       }}
                       onChange={(e) => {
-                        setSlugTouched(true);
-                        field.handleChange(e.target.value);
+                        field.handleChange(OrgSlug.make(e.target.value));
                       }}
                       placeholder="acme"
                       disabled={isPending}
@@ -172,22 +141,25 @@ export function CreateOrg({
 
               <FieldError errors={form.state.errors} />
             </FieldGroup>
+          </CardContent>
 
-            <DialogFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? (
-                  <>
-                    <Spinner className="mr-2" />
-                    Creating…
-                  </>
-                ) : (
-                  "Create"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+          <CardFooter className="mt-4 flex gap-2 flex-col">
+            <Button className="w-full" type="submit" disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Spinner className="mr-2" />
+                  Creating…
+                </>
+              ) : (
+                "Create"
+              )}
+            </Button>
+            <Button className="w-full" variant="outline">
+              Cancel
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   );
 }

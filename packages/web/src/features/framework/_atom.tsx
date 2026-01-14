@@ -1,4 +1,4 @@
-import { Client } from "@chronops/core/rpc-client";
+import { Client } from "@/lib/rpc-client";
 import { Framework } from "@chronops/domain";
 
 export const frameworkReactiveKeys = {
@@ -41,10 +41,6 @@ export const updateFramework = () => Client.mutation("FrameworkUpdate");
 export const removeFramework = () => Client.mutation("FrameworkRemove");
 
 export const countFrameworks = () =>
-  Client.query(
-    "FrameworkCount",
-    undefined,
-    {
-      reactivityKeys: [...frameworkReactiveKeys.all, "count"],
-    },
-  );
+  Client.query("FrameworkCount", undefined, {
+    reactivityKeys: [...frameworkReactiveKeys.all, "count"],
+  });

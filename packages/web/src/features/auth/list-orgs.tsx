@@ -1,5 +1,3 @@
-import { authClient } from "@chronops/core/auth/client";
-
 import {
   Card,
   CardDescription,
@@ -11,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
+import { authClient } from "./client";
 
 export function ListOrgs({ className, ...props }: React.ComponentProps<"div">) {
   const orgs = authClient.useListOrganizations();

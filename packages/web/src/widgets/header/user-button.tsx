@@ -8,8 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@chronops/core/auth/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { authClient } from "@/features/auth/client";
 
 export function UserButton() {
   const session = authClient.useSession();

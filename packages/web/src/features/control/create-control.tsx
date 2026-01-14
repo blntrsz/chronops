@@ -14,6 +14,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -25,39 +26,34 @@ import {
 } from "@/components/ui/select";
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { cn } from "@/lib/utils";
-import {
-  countDocuments,
-  createDocument,
-  listDocuments,
-} from "@/features/document/_atom";
+import { countControls, createControl, listControls } from "@/features/control/_atom";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
-import { Document } from "@chronops/domain";
+import { Control } from "@chronops/domain";
 import { Schema } from "effect";
 import React from "react";
 
-const CreateDocumentSchema = Document.CreateDocument;
+const CreateControlSchema = Control.CreateControl;
 
-type CreateDocumentInput = Schema.Schema.Type<typeof CreateDocumentSchema>;
+type CreateControlInput = Schema.Schema.Type<typeof CreateControlSchema>;
 
-const listRefreshAtom = listDocuments(1);
-const countRefreshAtom = countDocuments();
+const listRefreshAtom = listControls(1);
+const countRefreshAtom = countControls();
 
-function CreateDocumentForm() {
+function CreateControlForm() {
   const setActiveDialog = useSetActiveDialog();
-  const mutate = useAtomSet(createDocument(), { mode: "promise" });
+  const mutate = useAtomSet(createControl(), { mode: "promise" });
   const refreshList = useAtomRefresh(listRefreshAtom);
   const refreshCount = useAtomRefresh(countRefreshAtom);
 
   const [formError, setFormError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
 
-  const [values, setValues] = React.useState<CreateDocumentInput>({
+  const [values, setValues] = React.useState<CreateControlInput>({
     name: "",
-    type: "evidence",
-    url: "",
-    size: null,
-    frameworkId: null,
-    controlId: null,
+    description: null,
+    frameworkId: "" as any,
+    status: "draft",
+    testingFrequency: null,
   });
 
   async function onSubmit(e: React.FormEvent) {
@@ -66,7 +62,7 @@ function CreateDocumentForm() {
 
     setFormError(null);
 
-    const validation = Schema.validateEither(CreateDocumentSchema)(values);
+    const validation = Schema.validateEither(CreateControlSchema)(values);
     if (validation._tag === "Left") {
       setFormError(validation.left.message || "Invalid input");
       return;
@@ -77,22 +73,20 @@ function CreateDocumentForm() {
       await mutate({
         payload: {
           name: values.name.trim(),
-          type: values.type,
-          url: values.url.trim(),
-          size: values.size,
-          frameworkId: values.frameworkId,
-          controlId: values.controlId,
+          description: values.description,
+          frameworkId: values.frameworkId as any,
+          status: values.status,
+          testingFrequency: values.testingFrequency,
         },
       });
 
       setActiveDialog(null);
       setValues({
         name: "",
-        type: "evidence",
-        url: "",
-        size: null,
-        frameworkId: null,
-        controlId: null,
+        description: null,
+        frameworkId: "" as any,
+        status: "draft",
+        testingFrequency: null,
       });
       refreshList();
       refreshCount();
@@ -107,79 +101,41 @@ function CreateDocumentForm() {
     <DialogContent>
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <DialogHeader>
-          <DialogTitle>Create document</DialogTitle>
+          <DialogTitle>Create control</DialogTitle>
           <DialogDescription>
-            For now, provide a URL. S3 upload next.
+            Define a security control with framework association.
           </DialogDescription>
         </DialogHeader>
 
         <FieldGroup>
           <Field data-disabled={pending}>
             <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input
+            <GhostInput
               id="name"
               name="name"
               value={values.name}
               onChange={(e) =>
                 setValues((v) => ({ ...v, name: e.target.value }))
               }
-              placeholder="SOC2 evidence"
+              placeholder="Password policy"
               disabled={pending}
               required
             />
           </Field>
 
           <Field data-disabled={pending}>
-            <FieldLabel>Type</FieldLabel>
-            <Select
-              value={values.type}
-              onValueChange={(value) =>
-                setValues((v) => ({
-                  ...v,
-                  type: value as CreateDocumentInput["type"],
-                }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="requirement">requirement</SelectItem>
-                <SelectItem value="evidence">evidence</SelectItem>
-                <SelectItem value="clause">clause</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="url">URL</FieldLabel>
-            <Input
-              id="url"
-              name="url"
-              value={values.url}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, url: e.target.value }))
-              }
-              placeholder="https://..."
-              disabled={pending}
-              required
-            />
-          </Field>
-
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="size">Size (bytes)</FieldLabel>
-            <Input
-              id="size"
-              name="size"
-              type="number"
-              value={values.size ?? ""}
+            <FieldLabel htmlFor="description">Description</FieldLabel>
+            <GhostTextArea
+              id="description"
+              name="description"
+              value={values.description ?? ""}
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
-                  size: e.target.value === "" ? null : Number(e.target.value),
+                  description: e.target.value,
                 }))
               }
-              placeholder="12345"
+              placeholder="Control requirements..."
               disabled={pending}
             />
           </Field>
@@ -189,33 +145,51 @@ function CreateDocumentForm() {
             <Input
               id="frameworkId"
               name="frameworkId"
-              value={values.frameworkId ?? ""}
+              value={values.frameworkId}
               onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  frameworkId:
-                    e.target.value === "" ? null : (e.target.value as any),
-                }))
+                setValues((v) => ({ ...v, frameworkId: e.target.value as any }) as any)
               }
               placeholder="fwk_..."
               disabled={pending}
+              required
             />
           </Field>
 
           <Field data-disabled={pending}>
-            <FieldLabel htmlFor="controlId">Control ID</FieldLabel>
+            <FieldLabel>Status</FieldLabel>
+            <Select
+              value={values.status}
+              onValueChange={(value) =>
+                setValues((v) => ({
+                  ...v,
+                  status: value as CreateControlInput["status"],
+                }))
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">draft</SelectItem>
+                <SelectItem value="active">active</SelectItem>
+                <SelectItem value="deprecated">deprecated</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="testingFrequency">Testing frequency</FieldLabel>
             <Input
-              id="controlId"
-              name="controlId"
-              value={values.controlId ?? ""}
+              id="testingFrequency"
+              name="testingFrequency"
+              value={values.testingFrequency ?? ""}
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
-                  controlId:
-                    e.target.value === "" ? null : (e.target.value as any),
+                  testingFrequency: e.target.value,
                 }))
               }
-              placeholder="ctrl_..."
+              placeholder="quarterly"
               disabled={pending}
             />
           </Field>
@@ -240,7 +214,7 @@ function CreateDocumentForm() {
   );
 }
 
-export function CreateDocument({
+export function CreateControl({
   className,
   trigger,
   ...props
@@ -250,21 +224,20 @@ export function CreateDocument({
   const activeDialog = useActiveDialog();
   const setActiveDialog = useSetActiveDialog();
 
-  const open = activeDialog === "createDocument";
+  const open = activeDialog === "createControl";
 
-  const triggerNode = trigger || <Button type="button">Create document</Button>;
+  const triggerNode = trigger || <Button type="button">Create control</Button>;
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog
-        open={open}
-        onOpenChange={(isOpen) =>
-          setActiveDialog(isOpen ? "createDocument" : null)
-        }
-      >
-        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
+      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createControl" : null)}>
+        {trigger && (
+          <DialogTrigger asChild>
+            {triggerNode}
+          </DialogTrigger>
+        )}
 
-        <CreateDocumentForm />
+        <CreateControlForm />
       </Dialog>
     </div>
   );

@@ -21,18 +21,15 @@ import {
   createFramework,
   listFrameworks,
 } from "@/features/framework/_atom";
+import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { cn } from "@/lib/utils";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
 import { Framework } from "@chronops/domain";
 
-export function CreateFramework({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  const [open, setOpen] = React.useState(false);
-
+function CreateFrameworkForm() {
+  const setActiveDialog = useSetActiveDialog();
   const mutate = useAtomSet(createFramework(), {
     mode: "promise",
   });
@@ -75,7 +72,7 @@ export function CreateFramework({
         },
       });
 
-      setOpen(false);
+      setActiveDialog(null);
       setValues({ name: "", version: 0, description: "" });
 
       refreshList();
@@ -88,92 +85,113 @@ export function CreateFramework({
   }
 
   return (
+    <DialogContent>
+      <form onSubmit={onSubmit} className="flex flex-col gap-6">
+        <DialogHeader>
+          <DialogTitle>Create framework</DialogTitle>
+          <DialogDescription>
+            Name, optional version/description.
+          </DialogDescription>
+        </DialogHeader>
+
+        <FieldGroup>
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
+            <GhostInput
+              id="name"
+              name="name"
+              value={values.name}
+              onChange={(e) =>
+                setValues((v) => ({
+                  ...v,
+                  name: e.target.value,
+                }))
+              }
+              placeholder="React"
+              disabled={pending}
+              required
+            />
+          </Field>
+
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="version">Version</FieldLabel>
+            <GhostInput
+              id="version"
+              name="version"
+              type="number"
+              value={values.version ?? ""}
+              onChange={(e) =>
+                setValues((v) => ({
+                  ...v,
+                  version: Number(e.target.value),
+                }))
+              }
+              placeholder="19"
+              disabled={pending}
+            />
+          </Field>
+
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="description">Description</FieldLabel>
+            <GhostTextArea
+              id="description"
+              name="description"
+              value={values.description ?? ""}
+              onChange={(e) =>
+                setValues((v) => ({
+                  ...v,
+                  description: e.target.value,
+                }))
+              }
+              placeholder="UI framework"
+              disabled={pending}
+            />
+          </Field>
+
+          {formError ? <FieldError>{formError}</FieldError> : null}
+        </FieldGroup>
+
+        <DialogFooter>
+          <Button type="submit" disabled={pending}>
+            {pending ? (
+              <>
+                <Spinner className="mr-2" />
+                Creating...
+              </>
+            ) : (
+              "Create"
+            )}
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  );
+}
+
+export function CreateFramework({
+  className,
+  trigger,
+  ...props
+}: React.ComponentProps<"div"> & {
+  trigger?: React.ReactNode;
+}) {
+  const activeDialog = useActiveDialog();
+  const setActiveDialog = useSetActiveDialog();
+
+  const open = activeDialog === "createFramework";
+
+  const triggerNode = trigger || <Button type="button">Create framework</Button>;
+
+  return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button">Create framework</Button>
-        </DialogTrigger>
+      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createFramework" : null)}>
+        {trigger && (
+          <DialogTrigger asChild>
+            {triggerNode}
+          </DialogTrigger>
+        )}
 
-        <DialogContent>
-          <form onSubmit={onSubmit} className="flex flex-col gap-6">
-            <DialogHeader>
-              <DialogTitle>Create framework</DialogTitle>
-              <DialogDescription>
-                Name, optional version/description.
-              </DialogDescription>
-            </DialogHeader>
-
-            <FieldGroup>
-              <Field data-disabled={pending}>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <GhostInput
-                  id="name"
-                  name="name"
-                  value={values.name}
-                  onChange={(e) =>
-                    setValues((v) => ({
-                      ...v,
-                      name: e.target.value,
-                    }))
-                  }
-                  placeholder="React"
-                  disabled={pending}
-                  required
-                />
-              </Field>
-
-              <Field data-disabled={pending}>
-                <FieldLabel htmlFor="version">Version</FieldLabel>
-                <GhostInput
-                  id="version"
-                  name="version"
-                  type="number"
-                  value={values.version ?? ""}
-                  onChange={(e) =>
-                    setValues((v) => ({
-                      ...v,
-                      version: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="19"
-                  disabled={pending}
-                />
-              </Field>
-
-              <Field data-disabled={pending}>
-                <FieldLabel htmlFor="description">Description</FieldLabel>
-                <GhostTextArea
-                  id="description"
-                  name="description"
-                  value={values.description ?? ""}
-                  onChange={(e) =>
-                    setValues((v) => ({
-                      ...v,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="UI framework"
-                  disabled={pending}
-                />
-              </Field>
-
-              {formError ? <FieldError>{formError}</FieldError> : null}
-            </FieldGroup>
-
-            <DialogFooter>
-              <Button type="submit" disabled={pending}>
-                {pending ? (
-                  <>
-                    <Spinner className="mr-2" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+        <CreateFrameworkForm />
       </Dialog>
     </div>
   );

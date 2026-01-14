@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { ListDocuments } from "@/features/document/list-documents";
+import { useSetActiveDialog } from "@/atoms/dialog-atom";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/org/$slug/document/")({
@@ -6,5 +8,12 @@ export const Route = createFileRoute("/org/$slug/document/")({
 });
 
 function RouteComponent() {
-  return <ListDocuments />;
+  const setActiveDialog = useSetActiveDialog();
+
+  return (
+    <div>
+      <Button onClick={() => setActiveDialog("createDocument")}>Create document</Button>
+      <ListDocuments />
+    </div>
+  );
 }

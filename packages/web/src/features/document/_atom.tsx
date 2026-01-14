@@ -1,9 +1,13 @@
-import { Client } from "@chronops/core/rpc-client";
+import { Client } from "@/lib/rpc-client";
 import { Document } from "@chronops/domain";
 
 export const documentReactiveKeys = {
   all: ["document"],
-  detail: (id: Document.DocumentId) => [...documentReactiveKeys.all, "detail", id],
+  detail: (id: Document.DocumentId) => [
+    ...documentReactiveKeys.all,
+    "detail",
+    id,
+  ],
   details: () => [...documentReactiveKeys.all, "detail"],
   list: (page = 1) => [...documentReactiveKeys.all, "list", page],
   lists: () => [...documentReactiveKeys.all, "list"],

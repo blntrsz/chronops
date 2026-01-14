@@ -1,12 +1,6 @@
 import { Context, DateTime, Effect, Schema } from "effect";
 import { ulid } from "ulid";
-import { Actor } from "./actor";
-
-export const MemberId = Schema.String.pipe(Schema.brand("MemberId"));
-export type MemberId = typeof MemberId.Type;
-
-export const OrgId = Schema.String.pipe(Schema.brand("OrgId"));
-export type OrgId = typeof OrgId.Type;
+import * as Actor from "./actor";
 
 export const WorkflowId = Schema.String.pipe(Schema.brand("WorkflowId"));
 export type WorkflowId = typeof WorkflowId.Type;
@@ -19,12 +13,12 @@ export class Base extends Schema.Class<Base>("BaseSchema")({
   updatedAt: Schema.DateTimeUtc,
   deletedAt: Schema.NullOr(Schema.DateTimeUtc),
 
-  createdBy: MemberId,
-  updatedBy: MemberId,
-  deletedBy: Schema.NullOr(MemberId),
+  createdBy: Actor.MemberId,
+  updatedBy: Actor.MemberId,
+  deletedBy: Schema.NullOr(Actor.MemberId),
 
   hash: Hash,
-  orgId: OrgId,
+  orgId: Actor.OrgId,
   workflowId: WorkflowId,
 }) {}
 
@@ -69,7 +63,7 @@ export const makeBase = Effect.fn(function* ({
 }) {
   const ulid = yield* ULID;
   const now = yield* DateTime.now;
-  const actor = yield* Actor;
+  const actor = yield* Actor.Actor;
 
   return Base.make({
     createdAt: now,
@@ -87,7 +81,7 @@ export const makeBase = Effect.fn(function* ({
 export const updateBase = Effect.fn(function* () {
   const ulid = yield* ULID;
   const now = yield* DateTime.now;
-  const actor = yield* Actor;
+  const actor = yield* Actor.Actor;
 
   return {
     updatedAt: now,
@@ -99,7 +93,7 @@ export const updateBase = Effect.fn(function* () {
 export const removeBase = Effect.fn(function* () {
   const ulid = yield* ULID;
   const now = yield* DateTime.now;
-  const actor = yield* Actor;
+  const actor = yield* Actor.Actor;
 
   return {
     deletedAt: now,

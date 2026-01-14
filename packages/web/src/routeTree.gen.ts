@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OrgRouteRouteImport } from './routes/org/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as OrgIndexRouteImport } from './routes/org/index'
 import { Route as OrgCreateRouteImport } from './routes/org/create'
 import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
@@ -35,11 +34,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const OrgIndexRoute = OrgIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OrgRouteRoute,
 } as any)
 const OrgCreateRoute = OrgCreateRouteImport.update({
   id: '/create',
@@ -114,7 +108,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org/': typeof OrgIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
@@ -127,10 +120,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
   '/login': typeof authLoginRoute
   '/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org': typeof OrgIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
@@ -149,7 +142,6 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/otp': typeof authOtpRoute
   '/org/create': typeof OrgCreateRoute
-  '/org/': typeof OrgIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
@@ -169,7 +161,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/otp'
     | '/org/create'
-    | '/org/'
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
@@ -182,10 +173,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/org'
     | '/login'
     | '/otp'
     | '/org/create'
-    | '/org'
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
@@ -203,7 +194,6 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/otp'
     | '/org/create'
-    | '/org/'
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
@@ -239,13 +229,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/org/': {
-      id: '/org/'
-      path: '/'
-      fullPath: '/org/'
-      preLoaderRoute: typeof OrgIndexRouteImport
-      parentRoute: typeof OrgRouteRoute
     }
     '/org/create': {
       id: '/org/create'
@@ -368,13 +351,11 @@ const OrgSlugRouteRouteWithChildren = OrgSlugRouteRoute._addFileChildren(
 interface OrgRouteRouteChildren {
   OrgSlugRouteRoute: typeof OrgSlugRouteRouteWithChildren
   OrgCreateRoute: typeof OrgCreateRoute
-  OrgIndexRoute: typeof OrgIndexRoute
 }
 
 const OrgRouteRouteChildren: OrgRouteRouteChildren = {
   OrgSlugRouteRoute: OrgSlugRouteRouteWithChildren,
   OrgCreateRoute: OrgCreateRoute,
-  OrgIndexRoute: OrgIndexRoute,
 }
 
 const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(
