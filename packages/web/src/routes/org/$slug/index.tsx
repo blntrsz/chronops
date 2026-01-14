@@ -32,6 +32,15 @@ function RouteComponent() {
             </CardHeader>
           </Card>
         </Link>
+
+        <Link to="/org/$slug/document" params={{ slug }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+              <CardDescription>Manage documents</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
       </div>
     </div>
   );
