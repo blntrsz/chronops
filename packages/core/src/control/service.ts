@@ -1,8 +1,7 @@
 import { SqlClient, SqlSchema } from "@effect/sql";
-import { Effect, Schema } from "effect";
-import { Control } from "@chronops/domain";
-import { Actor } from "@chronops/domain";
-import * as CrudService from "../common/crud-service";
+import { Effect, Option, Schema } from "effect";
+import { Actor, Control } from "@chronops/domain";
+import * as Repository from "../common/repository";
 
 const CountResult = Schema.Struct({ count: Schema.NumberFromString });
 
@@ -12,17 +11,43 @@ export class ControlService extends Effect.Service<ControlService>()(
     effect: Effect.gen(function* () {
       const sql = yield* SqlClient.SqlClient;
 
-      const service = yield* CrudService.makeCrudService({
-        idSchema: Control.ControlId,
-        modelSchema: Control.Control,
+      const repository = yield* Repository.make({
+        id: Control.ControlId,
+        model: Control.Control,
         tableName: "control",
-        entityType: "control",
-        createInput: Control.CreateControl,
-        updateInput: Control.UpdateControl,
-        notFoundError: Control.ControlNotFoundError,
-        makeModel: Control.make,
-        updateModel: Control.update,
-        removeModel: Control.remove,
+      });
+
+      const insert = Effect.fn(function* (input: Schema.Schema.Type<typeof Control.CreateControl>) {
+        const model = yield* Control.make(input);
+        yield* repository.save(model);
+        return model;
+      });
+
+      const update = Effect.fn(function* ({
+        id,
+        data,
+      }: {
+        id: Schema.Schema.Type<typeof Control.ControlId>;
+        data: Schema.Schema.Type<typeof Control.UpdateControl>;
+      }) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Effect.fail(Control.ControlNotFoundError.fromId(id));
+        }
+
+        const updatedModel = yield* Control.update(model.value, data);
+        yield* repository.save(updatedModel);
+        return updatedModel;
+      });
+
+      const remove = Effect.fn(function* (id: Schema.Schema.Type<typeof Control.ControlId>) {
+        const model = yield* repository.getById(id);
+        if (Option.isNone(model)) {
+          return yield* Effect.fail(Control.ControlNotFoundError.fromId(id));
+        }
+
+        const removedModel = yield* Control.remove(model.value);
+        yield* repository.save(removedModel);
       });
 
       const count = Effect.fn(function* () {
@@ -53,11 +78,11 @@ export class ControlService extends Effect.Service<ControlService>()(
         });
 
       return {
-        insert: service.insert,
-        update: service.update,
-        remove: service.remove,
-        getById: service.getById,
-        list: service.list,
+        insert,
+        update,
+        remove,
+        getById: repository.getById,
+        list: repository.list,
         getByFramework,
         count,
       };
