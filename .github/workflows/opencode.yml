@@ -19,7 +19,6 @@ jobs:
       contents: read
       pull-requests: read
       issues: read
-      models: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -31,4 +30,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          model: github-models/openai/gpt-5.2
+          model: github-models/deepseek/deepseek-v3-0324
+
