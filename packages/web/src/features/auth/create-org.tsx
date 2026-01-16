@@ -40,7 +40,7 @@ export function CreateOrg({
   const form = useForm({
     defaultValues: {
       name: "",
-      slug: Actor.OrgSlug.make(""),
+      slug: "" as Actor.OrgSlug,
     } satisfies CreateOrgInput,
     onSubmit: async ({ value }) => {
       const res = await authClient.organization.create({

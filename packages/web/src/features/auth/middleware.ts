@@ -39,7 +39,9 @@ export const organizationMiddleware = createMiddleware().server(
       });
     }
 
-    if (!request.url.startsWith("/org/create")) {
+    const pathname = new URL(request.url).pathname;
+
+    if (pathname !== "/org/create") {
       throw redirect({ to: "/org/create" });
     }
 

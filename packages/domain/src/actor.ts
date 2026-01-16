@@ -7,7 +7,6 @@ export const OrgId = Schema.String.pipe(Schema.brand("OrgId"));
 export type OrgId = typeof OrgId.Type;
 
 export const OrgSlug = Schema.String.pipe(
-  Schema.minLength(3),
   Schema.pattern(/[a-z0-9-]+$/),
   Schema.brand("OrgSlug"),
 );
