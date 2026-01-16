@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Logo } from "./logo";
 import { UserButton } from "./user-button";
-import { authClient } from "@chronops/core/auth/client";
+import { authClient } from "@/features/auth/client";
 
 export function LandingHeader() {
   const session = authClient.useSession();

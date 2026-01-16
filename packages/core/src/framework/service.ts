@@ -1,6 +1,5 @@
-import { Effect, Schema } from "effect";
-import { Framework } from "@chronops/domain";
-import { Actor } from "@chronops/domain/actor";
+import { Effect, Option, pipe, Schema } from "effect";
+import { Framework, Actor } from "@chronops/domain";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import * as CrudService from "../common/crud-service";
 
@@ -26,7 +25,7 @@ export class FrameworkService extends Effect.Service<FrameworkService>()(
       });
 
       const count = Effect.fn(function* () {
-        const actor = yield* Actor;
+        const actor = yield* Actor.Actor;
         const result = yield* SqlSchema.findAll({
           Request: Schema.Void,
           Result: CountResult,

@@ -1,7 +1,6 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
-import * as Workflow from "./workflow";
 
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;
@@ -61,19 +60,23 @@ export const WorkflowTemplate = {
     active: { ARCHIVE: "archived" },
     archived: {},
   },
-} as const satisfies Workflow.WorkflowTemplate<typeof WorkflowStatus.Type>;
+} as const;
+
+export type WorkflowEvent =
+  | keyof (typeof WorkflowTemplate.transitions)["draft"]
+  | keyof (typeof WorkflowTemplate.transitions)["active"]
+  | keyof (typeof WorkflowTemplate.transitions)["archived"];
 
 /**
  * Create a new Framework
  * @since 1.0.0
  */
 export const make = Effect.fn(function* (input: CreateFramework) {
-  const workflow = yield* Workflow.make(WorkflowTemplate);
-  const base = yield* Base.makeBase({ workflowId: workflow.id });
+  const base = yield* Base.makeBase();
 
   return Framework.make({
     id: yield* frameworkId(),
-    status: workflow.status as WorkflowStatus,
+    status: "draft",
     ...input,
     ...base,
   });
@@ -109,33 +112,6 @@ export const remove = Effect.fn(function* (model: Framework) {
   });
 });
 
-/**
- * Convert Framework model to Workflow model
- * @since 1.0.0
- */
-export const toWorkflow = (model: Framework) =>
-  Workflow.Workflow.make({
-    id: model.workflowId,
-    status: model.status,
-    transitions: WorkflowTemplate.transitions,
-  });
-
-/**
- * Update Framework model from Workflow transition
- * @since 1.0.0
- */
-export const fromWorkflowTransition = Effect.fn(function* (
-  model: Framework,
-  workflow: Workflow.Workflow,
-) {
-  const base = yield* Base.updateBase();
-
-  return Framework.make({
-    ...model,
-    ...base,
-    status: workflow.status as WorkflowStatus,
-  });
-});
 
 /**
  * Framework not found error

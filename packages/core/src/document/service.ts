@@ -1,6 +1,6 @@
 import { Effect, Schema } from "effect";
 import { Document } from "@chronops/domain";
-import { Actor } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import * as CrudService from "../common/crud-service";
 
@@ -26,7 +26,7 @@ export class DocumentService extends Effect.Service<DocumentService>()(
       });
 
       const count = Effect.fn(function* () {
-        const actor = yield* Actor;
+        const actor = yield* Actor.Actor;
         const result = yield* SqlSchema.findAll({
           Request: Schema.Void,
           Result: CountResult,

@@ -6,7 +6,6 @@ import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
 import { DocumentHandler } from "./document/handler";
 import { DocumentService } from "./document/service";
-import { WorkflowHandler } from "./workflow/handler";
 import { HttpLayerRouter } from "@effect/platform";
 import { Base } from "@chronops/domain";
 import { SqlLayer } from "./common/sql";
@@ -18,7 +17,6 @@ const HandlersLayer = Layer.mergeAll(
   FrameworkHandler,
   ControlHandler,
   DocumentHandler,
-  WorkflowHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),

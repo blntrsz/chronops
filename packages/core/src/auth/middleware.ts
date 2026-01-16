@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { MemberId, OrgId } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import { auth } from "./server";
 import {
   AuthMiddleware,
@@ -44,8 +44,8 @@ export const AuthMiddlewareLive = Layer.effect(
 
         // 4. Return Actor
         return {
-          memberId: MemberId.make(member.id),
-          orgId: OrgId.make(activeOrgId),
+          memberId: Actor.MemberId.make(member.id),
+          orgId: Actor.OrgId.make(activeOrgId),
         };
       }),
     ),

@@ -1,13 +1,7 @@
 import { describe, it, expect } from "bun:test";
 import { DateTime, Schema } from "effect";
-import {
-  MemberId,
-  OrgId,
-  WorkflowId,
-  Hash,
-  Base,
-  NotFoundError,
-} from "../base";
+import { MemberId, OrgId } from "../actor";
+import { Hash, Base, NotFoundError } from "../base";
 import {
   FrameworkId,
   Framework,
@@ -44,12 +38,6 @@ describe("Base Domain", () => {
     });
   });
 
-  describe("WorkflowId", () => {
-    it("should create a valid WorkflowId", () => {
-      const id = WorkflowId.make("wf_abc123");
-      expect(asString(id)).toBe("wf_abc123");
-    });
-  });
 
   describe("Hash", () => {
     it("should create a valid Hash", () => {
@@ -86,70 +74,11 @@ describe("Base Domain", () => {
         deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
-        workflowId: WorkflowId.make("wf_test"),
       });
 
       expect(base.createdAt).toEqual(testDate);
       expect(base.updatedAt).toEqual(testDate);
       expect(asString(base.orgId)).toBe("org_test");
-      expect(asString(base.workflowId)).toBe("wf_test");
-    });
-  });
-});
-
-describe("Framework Domain", () => {
-  describe("FrameworkId", () => {
-    it("should create a valid FrameworkId", () => {
-      const id = FrameworkId.make("fwk_test");
-      expect(asString(id)).toBe("fwk_test");
-    });
-  });
-
-  describe("Framework Schema", () => {
-    it("should create a valid Framework", () => {
-      const testDate = dt("2024-01-01T00:00:00Z");
-      const framework = Framework.make({
-        id: FrameworkId.make("fwk_test"),
-        name: "SOC 2",
-        description: "SOC 2 Compliance Framework",
-        version: 2024,
-        status: "draft",
-        createdAt: testDate,
-        updatedAt: testDate,
-        deletedAt: null,
-        createdBy: MemberId.make("mem_test"),
-        updatedBy: MemberId.make("mem_test"),
-        deletedBy: null,
-        hash: Hash.make("hash123"),
-        orgId: OrgId.make("org_test"),
-        workflowId: WorkflowId.make("wf_test"),
-      });
-
-      expect(asString(framework.id)).toBe("fwk_test");
-      expect(framework.name).toBe("SOC 2");
-      expect(framework.description).toBe("SOC 2 Compliance Framework");
-    });
-
-    it("should allow optional fields to be undefined", () => {
-      const testDate = dt("2024-01-01T00:00:00Z");
-      const framework = Framework.make({
-        id: FrameworkId.make("fwk_test"),
-        name: "ISO 27001",
-        description: null,
-        version: null,
-        status: "draft",
-        createdAt: testDate,
-        updatedAt: testDate,
-        deletedAt: null,
-        createdBy: MemberId.make("mem_test"),
-        updatedBy: MemberId.make("mem_test"),
-        deletedBy: null,
-        hash: Hash.make("hash123"),
-        orgId: OrgId.make("org_test"),
-        workflowId: WorkflowId.make("wf_test"),
-      });
-
-      expect(framework.version).toBeNull();
     });
   });
 
@@ -229,7 +158,6 @@ describe("Control Domain", () => {
         deletedBy: null,
         hash: Hash.make("hash123"),
         orgId: OrgId.make("org_test"),
-        workflowId: WorkflowId.make("wf_test"),
       });
 
       expect(asString(control.id)).toBe("ctr_test");

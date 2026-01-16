@@ -1,7 +1,7 @@
 import { SqlClient, SqlSchema } from "@effect/sql";
 import { Effect, Schema } from "effect";
 import { Control } from "@chronops/domain";
-import { Actor } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import * as CrudService from "../common/crud-service";
 
 const CountResult = Schema.Struct({ count: Schema.NumberFromString });
@@ -26,15 +26,14 @@ export class ControlService extends Effect.Service<ControlService>()(
       });
 
       const count = Effect.fn(function* () {
-        const actor = yield* Actor;
+        const actor = yield* Actor.Actor;
         const result = yield* SqlSchema.findAll({
           Request: Schema.Void,
           Result: CountResult,
           execute() {
-            return sql`SELECT COUNT(*) as count FROM ${sql("control")} WHERE ${sql.and([
-              sql`org_id = ${actor.orgId}`,
-              sql`deleted_at IS NULL`,
-            ])}`;
+            return sql`SELECT COUNT(*) as count FROM ${sql("control")} WHERE ${sql.and(
+              [sql`org_id = ${actor.orgId}`, sql`deleted_at IS NULL`],
+            )}`;
           },
         })(undefined);
         return result[0]?.count ?? 0;
@@ -42,7 +41,7 @@ export class ControlService extends Effect.Service<ControlService>()(
 
       const getByFramework = (frameworkId: any) =>
         Effect.gen(function* () {
-          const actor = yield* Actor;
+          const actor = yield* Actor.Actor;
           return yield* sql<Control.Control>`
             SELECT * FROM ${sql("control")} 
             WHERE ${sql.and([

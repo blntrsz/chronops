@@ -114,7 +114,7 @@ export const make = Effect.fn(function* <
       })(request);
     })) as (
     request: Schema.Schema.Type<typeof config.id>,
-  ) => Effect.Effect<void, ParseError | SqlError, Actor>;
+  ) => Effect.Effect<void, ParseError | SqlError, Actor.Actor>;
 
   return { save, getById, list, destroy };
 });

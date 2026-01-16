@@ -2,7 +2,7 @@ import { Effect, Option, Schema } from "effect";
 import type { SqlError } from "@effect/sql/SqlError";
 import type { ParseError } from "effect/ParseResult";
 import { Actor } from "@chronops/domain";
-import { Workflow, Base } from "@chronops/domain";
+import { Base } from "@chronops/domain";
 import * as Repository from "./repository";
 
 export interface DomainConfig<
@@ -21,7 +21,6 @@ export interface DomainConfig<
   notFoundError: { fromId: (id: Schema.Schema.Type<TIdSchema>) => TError };
   makeModel: (
     input: Schema.Schema.Type<TCreateInput>,
-    workflowId: Base.WorkflowId,
   ) => Effect.Effect<
     Schema.Schema.Type<TModelSchema>,
     never,
@@ -103,12 +102,6 @@ export const makeCrudService = <
       TUpdateInput,
       TError
     >;
-    const workflowRepository = yield* Repository.make({
-      id: Workflow.WorkflowId,
-      model: Workflow.Workflow,
-      tableName: "workflow",
-    });
-
     const repository = yield* Repository.make({
       id: config.idSchema,
       model: config.modelSchema,
@@ -118,14 +111,7 @@ export const makeCrudService = <
     const insert = Effect.fn(function* (
       input: Schema.Schema.Type<TCreateInput>,
     ) {
-      const workflow = yield* Workflow.make({
-        entityType: config.entityType,
-        initial: "created",
-        transitions: { created: {} },
-      });
-      yield* workflowRepository.save(workflow);
-
-      const model = yield* config.makeModel(input, workflow.id);
+      const model = yield* config.makeModel(input);
       yield* repository.save(model);
 
       return model;

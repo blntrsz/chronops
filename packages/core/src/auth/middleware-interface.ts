@@ -1,4 +1,4 @@
-import { Actor } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 import { RpcMiddleware } from "@effect/rpc";
 import { Schema } from "effect";
 
@@ -41,7 +41,7 @@ export type AuthError = typeof AuthError.Type;
 export class AuthMiddleware extends RpcMiddleware.Tag<AuthMiddleware>()(
   "AuthMiddleware",
   {
-    provides: Actor,
+    provides: Actor.Actor,
     failure: AuthError,
     requiredForClient: false,
   },

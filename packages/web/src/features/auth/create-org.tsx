@@ -22,11 +22,11 @@ import { useForm } from "@tanstack/react-form";
 import { Schema } from "effect";
 import React from "react";
 import { authClient } from "./client";
-import { OrgSlug } from "@chronops/domain/actor";
+import { Actor } from "@chronops/domain";
 
 const CreateOrgSchema = Schema.Struct({
   name: Schema.String.pipe(Schema.minLength(1)),
-  slug: OrgSlug,
+  slug: Actor.OrgSlug,
 });
 
 type CreateOrgInput = Schema.Schema.Type<typeof CreateOrgSchema>;
@@ -40,7 +40,7 @@ export function CreateOrg({
   const form = useForm({
     defaultValues: {
       name: "",
-      slug: OrgSlug.make(""),
+      slug: Actor.OrgSlug.make(""),
     } satisfies CreateOrgInput,
     onSubmit: async ({ value }) => {
       const res = await authClient.organization.create({
@@ -125,7 +125,7 @@ export function CreateOrg({
                         field.handleBlur();
                       }}
                       onChange={(e) => {
-                        field.handleChange(OrgSlug.make(e.target.value));
+                        field.handleChange(Actor.OrgSlug.make(e.target.value));
                       }}
                       placeholder="acme"
                       disabled={isPending}
