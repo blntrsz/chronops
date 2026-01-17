@@ -88,10 +88,42 @@ describe("Base Domain", () => {
         name: "GDPR",
         description: "Data Protection",
         version: "2024",
+        scope: null,
+        owner: null,
       };
 
       const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
       expect(decoded.name).toBe("GDPR");
+    });
+
+    it("should accept scope and owner fields", () => {
+      const input = {
+        name: "GDPR",
+        description: "Data Protection",
+        version: "2024",
+        scope: "EU Region",
+        owner: "Privacy Team",
+      };
+
+      const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
+      expect(decoded.name).toBe("GDPR");
+      expect(decoded.scope).toBe("EU Region");
+      expect(decoded.owner).toBe("Privacy Team");
+    });
+
+    it("should accept null scope and owner fields", () => {
+      const input = {
+        name: "GDPR",
+        description: null,
+        version: null,
+        scope: null,
+        owner: null,
+      };
+
+      const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
+      expect(decoded.name).toBe("GDPR");
+      expect(decoded.scope).toBeNull();
+      expect(decoded.owner).toBeNull();
     });
   });
 
@@ -103,6 +135,17 @@ describe("Base Domain", () => {
 
       const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
       expect(decoded.name).toBe("Updated Name");
+    });
+
+    it("should allow updating scope and owner", () => {
+      const input = {
+        scope: "Global",
+        owner: "Compliance Team",
+      };
+
+      const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
+      expect(decoded.scope).toBe("Global");
+      expect(decoded.owner).toBe("Compliance Team");
     });
   });
 
