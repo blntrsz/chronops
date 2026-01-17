@@ -37,10 +37,12 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   description: Schema.NullOr(Schema.String),
   version: Schema.NullOr(Schema.Union(Schema.Number, Schema.NumberFromString)),
   status: WorkflowStatus,
+  owner: Schema.NullOr(Schema.String),
+  scope: Schema.NullOr(Schema.String),
 }) {}
 
 export const CreateFramework = Framework.pipe(
-  Schema.pick("name", "description", "version"),
+  Schema.pick("name", "description", "version", "owner", "scope"),
 );
 export type CreateFramework = typeof CreateFramework.Type;
 

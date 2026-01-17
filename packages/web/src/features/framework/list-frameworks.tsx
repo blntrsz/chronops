@@ -106,6 +106,12 @@ export function ListFrameworks({
                           {fwk.description ? (
                             <div className="line-clamp-2">{fwk.description}</div>
                           ) : null}
+                          {fwk.owner ? (
+                            <div className="line-clamp-1">Owner: {fwk.owner}</div>
+                          ) : null}
+                          {fwk.scope ? (
+                            <div className="line-clamp-1">Scope: {fwk.scope}</div>
+                          ) : null}
                         </CardDescription>
                       </CardHeader>
                     </Card>

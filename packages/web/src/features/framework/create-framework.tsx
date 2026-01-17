@@ -43,6 +43,8 @@ function CreateFrameworkForm() {
     name: "",
     version: 0,
     description: "",
+    owner: "",
+    scope: "",
   });
 
   async function onSubmit(e: React.FormEvent) {
@@ -55,6 +57,8 @@ function CreateFrameworkForm() {
       name: values.name,
       version: values.version,
       description: values.description,
+      owner: values.owner,
+      scope: values.scope,
     });
 
     if (validation._tag === "Left") {
@@ -69,11 +73,13 @@ function CreateFrameworkForm() {
           name: values.name.trim(),
           version: values.version,
           description: values.description,
+          owner: values.owner,
+          scope: values.scope,
         },
       });
 
       setActiveDialog(null);
-      setValues({ name: "", version: 0, description: "" });
+      setValues({ name: "", version: 0, description: "", owner: "", scope: "" });
 
       refreshList();
       refreshCount();
@@ -144,6 +150,40 @@ function CreateFrameworkForm() {
                 }))
               }
               placeholder="UI framework"
+              disabled={pending}
+            />
+          </Field>
+
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="owner">Owner</FieldLabel>
+            <GhostInput
+              id="owner"
+              name="owner"
+              value={values.owner ?? ""}
+              onChange={(e) =>
+                setValues((v) => ({
+                  ...v,
+                  owner: e.target.value,
+                }))
+              }
+              placeholder="Engineering Team"
+              disabled={pending}
+            />
+          </Field>
+
+          <Field data-disabled={pending}>
+            <FieldLabel htmlFor="scope">Scope</FieldLabel>
+            <GhostInput
+              id="scope"
+              name="scope"
+              value={values.scope ?? ""}
+              onChange={(e) =>
+                setValues((v) => ({
+                  ...v,
+                  scope: e.target.value,
+                }))
+              }
+              placeholder="Global"
               disabled={pending}
             />
           </Field>

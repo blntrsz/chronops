@@ -88,6 +88,8 @@ describe("Base Domain", () => {
         name: "GDPR",
         description: "Data Protection",
         version: "2024",
+        owner: "Compliance Team",
+        scope: "Global",
       };
 
       const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
