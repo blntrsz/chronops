@@ -159,7 +159,7 @@ function CreateFrameworkForm() {
             <GhostInput
               id="owner"
               name="owner"
-              value={values.owner ?? ""}
+              value={values.owner}
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
@@ -176,7 +176,7 @@ function CreateFrameworkForm() {
             <GhostInput
               id="scope"
               name="scope"
-              value={values.scope ?? ""}
+              value={values.scope}
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
