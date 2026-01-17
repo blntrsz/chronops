@@ -64,6 +64,8 @@ function RouteComponent() {
           <CardDescription className="space-y-1">
             {fwkModel.version ? <div>v{fwkModel.version}</div> : null}
             {fwkModel.description ? <div>{fwkModel.description}</div> : null}
+            {fwkModel.owner ? <div>Owner: {fwkModel.owner}</div> : null}
+            {fwkModel.scope ? <div>Scope: {fwkModel.scope}</div> : null}
           </CardDescription>
         </CardHeader>
       </Card>
