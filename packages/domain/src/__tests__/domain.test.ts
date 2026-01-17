@@ -94,6 +94,23 @@ describe("Base Domain", () => {
 
       const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
       expect(decoded.name).toBe("GDPR");
+      expect(decoded.owner).toBe("Compliance Team");
+      expect(decoded.scope).toBe("Global");
+    });
+
+    it("should allow null owner and scope", () => {
+      const input = {
+        name: "ISO 27001",
+        description: null,
+        version: null,
+        owner: null,
+        scope: null,
+      };
+
+      const decoded = Schema.decodeUnknownSync(CreateFramework)(input);
+      expect(decoded.name).toBe("ISO 27001");
+      expect(decoded.owner).toBeNull();
+      expect(decoded.scope).toBeNull();
     });
   });
 
@@ -105,6 +122,24 @@ describe("Base Domain", () => {
 
       const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
       expect(decoded.name).toBe("Updated Name");
+    });
+
+    it("should allow updating only owner", () => {
+      const input = {
+        owner: "New Owner",
+      };
+
+      const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
+      expect(decoded.owner).toBe("New Owner");
+    });
+
+    it("should allow updating only scope", () => {
+      const input = {
+        scope: "Regional",
+      };
+
+      const decoded = Schema.decodeUnknownSync(UpdateFramework)(input);
+      expect(decoded.scope).toBe("Regional");
     });
   });
 
