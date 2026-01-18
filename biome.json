@@ -2,8 +2,8 @@
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "vcs": {
     "enabled": true,
-    "defaultBranch": "main",
-    "provider": "git"
+    "clientKind": "git",
+    "defaultBranch": "main"
   },
   "organizeImports": {
     "enabled": true
@@ -34,7 +34,7 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "trailingComma": "all"
+      "trailingCommas": "all"
     }
   }
 }

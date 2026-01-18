@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/select";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 
-
-import { listFrameworks } from "@/features/framework/_atom";
 import { DataTableViewOptions } from "@/features/control/data-table-view-options";
+import { listFrameworks } from "@/features/framework/_atom";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -35,16 +34,13 @@ export function DataTableToolbar<TData>({
   const frameworkOptions = Result.getOrElse(frameworks, () => []);
   const frameworkIdCol = table.getColumn("frameworkId");
 
-
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center gap-2">
         <Input
           placeholder={placeholder}
           value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(filterColumnId)?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => table.getColumn(filterColumnId)?.setFilterValue(event.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
         />
 

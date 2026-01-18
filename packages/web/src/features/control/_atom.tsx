@@ -1,5 +1,5 @@
 import { Client } from "@/lib/rpc-client";
-import { Control } from "@chronops/domain";
+import type { Control } from "@chronops/domain";
 
 export const controlReactiveKeys = {
   all: ["control"],

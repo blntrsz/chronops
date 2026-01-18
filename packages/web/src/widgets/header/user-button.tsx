@@ -1,5 +1,4 @@
-import { ClientOnly, Link } from "@tanstack/react-router";
-import { LogOut, Settings, User, UserIcon } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +7,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { authClient } from "@/features/auth/client";
+import { ClientOnly, Link } from "@tanstack/react-router";
+import { LogOut, Settings, User, UserIcon } from "lucide-react";
 
 export function UserButton() {
   const session = authClient.useSession();
@@ -43,12 +43,8 @@ export function UserButton() {
         <DropdownMenuContent align="end" className="w-56" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="font-medium text-sm leading-none">
-                {user?.email || "User"}
-              </p>
-              <p className="text-muted-foreground text-xs leading-none">
-                {user?.email}
-              </p>
+              <p className="font-medium text-sm leading-none">{user?.email || "User"}</p>
+              <p className="text-muted-foreground text-xs leading-none">{user?.email}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

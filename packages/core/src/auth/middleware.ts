@@ -1,12 +1,12 @@
-import { Effect, Layer } from "effect";
 import { Actor } from "@chronops/domain";
-import { auth } from "./server";
+import { Effect, Layer } from "effect";
 import {
   AuthMiddleware,
   MemberNotFound,
   NoActiveOrganization,
   Unauthorized,
 } from "./middleware-interface";
+import { auth } from "./server";
 
 export const AuthMiddlewareLive = Layer.effect(
   AuthMiddleware,
@@ -16,14 +16,11 @@ export const AuthMiddlewareLive = Layer.effect(
         // 1. Validate session
         const session = yield* Effect.tryPromise({
           try: () => auth.api.getSession({ headers }),
-          catch: () =>
-            new Unauthorized({ message: "Failed to validate session" }),
+          catch: () => new Unauthorized({ message: "Failed to validate session" }),
         });
 
         if (!session) {
-          return yield* Effect.fail(
-            new Unauthorized({ message: "No valid session" }),
-          );
+          return yield* Effect.fail(new Unauthorized({ message: "No valid session" }));
         }
 
         // 2. Check for active organization

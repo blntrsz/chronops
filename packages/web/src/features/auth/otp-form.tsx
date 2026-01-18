@@ -1,14 +1,14 @@
-import { useNavigate } from "@tanstack/react-router";
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import { useNavigate } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { authClient } from "./client";
 
 export function OtpForm({ email }: { email: string }) {
@@ -36,10 +36,7 @@ export function OtpForm({ email }: { email: string }) {
       >
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
+            <a href="#" className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
@@ -51,12 +48,7 @@ export function OtpForm({ email }: { email: string }) {
             </FieldDescription>
           </div>
           <Field>
-            <InputOTP
-              ref={otpRef}
-              id="otp"
-              maxLength={6}
-              containerClassName="justify-center"
-            >
+            <InputOTP ref={otpRef} id="otp" maxLength={6} containerClassName="justify-center">
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />

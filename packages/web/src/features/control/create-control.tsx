@@ -1,3 +1,5 @@
+import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,15 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { GhostInput, GhostTextArea } from "@/components/ghost-input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -24,11 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
-import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 import { countControls, createControl, listControls } from "@/features/control/_atom";
-import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
+import { cn } from "@/lib/utils";
 import { Control } from "@chronops/domain";
+import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
 
@@ -114,9 +109,7 @@ function CreateControlForm() {
               id="name"
               name="name"
               value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, name: e.target.value }))
-              }
+              onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
               placeholder="Password policy"
               disabled={pending}
               required
@@ -230,12 +223,11 @@ export function CreateControl({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createControl" : null)}>
-        {trigger && (
-          <DialogTrigger asChild>
-            {triggerNode}
-          </DialogTrigger>
-        )}
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createControl" : null)}
+      >
+        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 
         <CreateControlForm />
       </Dialog>

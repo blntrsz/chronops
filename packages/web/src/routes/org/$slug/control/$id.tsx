@@ -64,9 +64,7 @@ function RouteComponent() {
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               {control.status ? <div>Status: {control.status}</div> : null}
-              {control.testingFrequency ? (
-                <div>Testing: {control.testingFrequency}</div>
-              ) : null}
+              {control.testingFrequency ? <div>Testing: {control.testingFrequency}</div> : null}
             </div>
           </CardDescription>
         </CardHeader>

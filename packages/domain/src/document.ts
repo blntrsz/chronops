@@ -1,8 +1,8 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
-import { FrameworkId } from "./framework";
 import { ControlId } from "./control";
+import { FrameworkId } from "./framework";
 
 export const DocumentId = Schema.String.pipe(Schema.brand("DocumentId"));
 export type DocumentId = typeof DocumentId.Type;
@@ -71,10 +71,7 @@ export const make = Effect.fn(function* (input: CreateDocument) {
  * Update an existing Document
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (
-  model: Document,
-  input: UpdateDocument,
-) {
+export const update = Effect.fn(function* (model: Document, input: UpdateDocument) {
   const base = yield* Base.updateBase();
 
   return Document.make({
@@ -96,7 +93,6 @@ export const remove = Effect.fn(function* (model: Document) {
     ...base,
   });
 });
-
 
 /**
  * Document not found error

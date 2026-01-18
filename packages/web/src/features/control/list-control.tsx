@@ -1,20 +1,15 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { Link, useParams } from "@tanstack/react-router";
 
+import { countControls, listControls } from "@/features/control/_atom";
 import { DataTable } from "@/features/control/data-table";
 import { DataTableColumnHeader } from "@/features/control/data-table-column-header";
-import { countControls, listControls } from "@/features/control/_atom";
 
 import React from "react";
 
@@ -30,20 +25,14 @@ type ControlRow = {
 const columns = (slug: string): ColumnDef<ControlRow>[] => [
   {
     accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[120px] truncate">{row.getValue("id")}</div>
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
+    cell: ({ row }) => <div className="w-[120px] truncate">{row.getValue("id")}</div>,
     enableSorting: false,
     enableHiding: false,
   },
   {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     cell: ({ row }) => (
       <Link
         to="/org/$slug/control/$id"
@@ -56,43 +45,25 @@ const columns = (slug: string): ColumnDef<ControlRow>[] => [
   },
   {
     accessorKey: "frameworkId",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Framework" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[160px] truncate">{row.getValue("frameworkId")}</div>
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Framework" />,
+    cell: ({ row }) => <div className="w-[160px] truncate">{row.getValue("frameworkId")}</div>,
     enableSorting: false,
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[120px] truncate">{row.getValue("status")}</div>
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+    cell: ({ row }) => <div className="w-[120px] truncate">{row.getValue("status")}</div>,
   },
   {
     accessorKey: "testingFrequency",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Testing" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[140px] truncate">
-        {row.getValue("testingFrequency")}
-      </div>
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Testing" />,
+    cell: ({ row }) => <div className="w-[140px] truncate">{row.getValue("testingFrequency")}</div>,
     enableSorting: false,
   },
   {
     accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updated" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[160px] truncate">{row.getValue("updatedAt")}</div>
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Updated" />,
+    cell: ({ row }) => <div className="w-[160px] truncate">{row.getValue("updatedAt")}</div>,
   },
   {
     id: "open",

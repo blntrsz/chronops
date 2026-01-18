@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/features/auth/client";
+import { Link } from "@tanstack/react-router";
 import { Logo } from "./logo";
 import { UserButton } from "./user-button";
-import { authClient } from "@/features/auth/client";
 
 export function LandingHeader() {
   const session = authClient.useSession();

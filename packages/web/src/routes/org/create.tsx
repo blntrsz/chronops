@@ -18,19 +18,14 @@ function RouteComponent() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="/"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
+            <a href="/" className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
               <span className="sr-only">Chronops</span>
             </a>
             <h1 className="text-xl font-bold">Create organization</h1>
-            <FieldDescription>
-              Create an org to start using the app.
-            </FieldDescription>
+            <FieldDescription>Create an org to start using the app.</FieldDescription>
           </div>
 
           <CreateOrg />

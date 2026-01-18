@@ -1,3 +1,4 @@
+import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,14 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import {
   Select,
   SelectContent,
@@ -23,15 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { Spinner } from "@/components/ui/spinner";
+import { countDocuments, createDocument, listDocuments } from "@/features/document/_atom";
 import { cn } from "@/lib/utils";
-import {
-  countDocuments,
-  createDocument,
-  listDocuments,
-} from "@/features/document/_atom";
-import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Document } from "@chronops/domain";
+import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
 
@@ -108,9 +99,7 @@ function CreateDocumentForm() {
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <DialogHeader>
           <DialogTitle>Create document</DialogTitle>
-          <DialogDescription>
-            For now, provide a URL. S3 upload next.
-          </DialogDescription>
+          <DialogDescription>For now, provide a URL. S3 upload next.</DialogDescription>
         </DialogHeader>
 
         <FieldGroup>
@@ -120,9 +109,7 @@ function CreateDocumentForm() {
               id="name"
               name="name"
               value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, name: e.target.value }))
-              }
+              onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
               placeholder="SOC2 evidence"
               disabled={pending}
               required
@@ -157,9 +144,7 @@ function CreateDocumentForm() {
               id="url"
               name="url"
               value={values.url}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, url: e.target.value }))
-              }
+              onChange={(e) => setValues((v) => ({ ...v, url: e.target.value }))}
               placeholder="https://..."
               disabled={pending}
               required
@@ -193,8 +178,7 @@ function CreateDocumentForm() {
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
-                  frameworkId:
-                    e.target.value === "" ? null : (e.target.value as any),
+                  frameworkId: e.target.value === "" ? null : (e.target.value as any),
                 }))
               }
               placeholder="fwk_..."
@@ -211,8 +195,7 @@ function CreateDocumentForm() {
               onChange={(e) =>
                 setValues((v) => ({
                   ...v,
-                  controlId:
-                    e.target.value === "" ? null : (e.target.value as any),
+                  controlId: e.target.value === "" ? null : (e.target.value as any),
                 }))
               }
               placeholder="ctrl_..."
@@ -258,9 +241,7 @@ export function CreateDocument({
     <div className={cn("flex", className)} {...props}>
       <Dialog
         open={open}
-        onOpenChange={(isOpen) =>
-          setActiveDialog(isOpen ? "createDocument" : null)
-        }
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createDocument" : null)}
       >
         {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 

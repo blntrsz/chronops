@@ -29,13 +29,14 @@ export const ULIDLayer = ULID.of({
   createId: ulid,
 });
 
-export class NotFoundError extends Schema.TaggedError<NotFoundError>(
+export class NotFoundError extends Schema.TaggedError<NotFoundError>("NotFoundError")(
   "NotFoundError",
-)("NotFoundError", {
-  message: Schema.String,
-  entityType: Schema.String,
-  entityId: Schema.optional(Schema.String),
-}) {
+  {
+    message: Schema.String,
+    entityType: Schema.String,
+    entityId: Schema.optional(Schema.String),
+  },
+) {
   static fromId(entityType: string, id: string) {
     return new NotFoundError({
       message: `${entityType} with id ${id} not found.`,
@@ -53,7 +54,6 @@ export class NotFoundError extends Schema.TaggedError<NotFoundError>(
 }
 
 export const makeBase = Effect.fn(function* () {
-
   const ulid = yield* ULID;
   const now = yield* DateTime.now;
   const actor = yield* Actor.Actor;

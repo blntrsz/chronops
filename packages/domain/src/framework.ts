@@ -39,9 +39,7 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   status: WorkflowStatus,
 }) {}
 
-export const CreateFramework = Framework.pipe(
-  Schema.pick("name", "description", "version"),
-);
+export const CreateFramework = Framework.pipe(Schema.pick("name", "description", "version"));
 export type CreateFramework = typeof CreateFramework.Type;
 
 export const UpdateFramework = CreateFramework.pipe(Schema.partial);
@@ -86,10 +84,7 @@ export const make = Effect.fn(function* (input: CreateFramework) {
  * Update an existing Framework
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (
-  model: Framework,
-  input: UpdateFramework,
-) {
+export const update = Effect.fn(function* (model: Framework, input: UpdateFramework) {
   const base = yield* Base.updateBase();
 
   return Framework.make({
@@ -111,7 +106,6 @@ export const remove = Effect.fn(function* (model: Framework) {
     ...base,
   });
 });
-
 
 /**
  * Framework not found error

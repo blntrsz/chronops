@@ -1,21 +1,32 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { DateTime, Schema } from "effect";
 import { MemberId, OrgId } from "../actor";
-import { Hash, Base, NotFoundError } from "../base";
+import { Base, Hash, NotFoundError } from "../base";
 import {
-  FrameworkId,
-  Framework,
+  Control,
+  ControlId,
+  ControlNotFoundError,
+  type ControlStatus,
+  CreateControl,
+} from "../control";
+import {
   CreateFramework,
-  UpdateFramework,
+  Framework,
+  FrameworkId,
   FrameworkNotFoundError,
+  UpdateFramework,
 } from "../framework";
 import {
-  ControlId,
-  ControlStatus,
-  Control,
-  CreateControl,
-  ControlNotFoundError,
-} from "../control";
+  Answer,
+  CreateQuestionnaire,
+  Question,
+  type QuestionType,
+  QuestionerId,
+  Questionnaire,
+  QuestionnaireNotFoundError,
+  type QuestionnaireStatus,
+  type QuestionnaireType,
+} from "../questioner";
 
 // Helper to compare branded types
 const asString = (value: unknown) => value as string;
@@ -37,7 +48,6 @@ describe("Base Domain", () => {
       expect(asString(id)).toBe("org_abc123");
     });
   });
-
 
   describe("Hash", () => {
     it("should create a valid Hash", () => {
@@ -186,6 +196,176 @@ describe("Control Domain", () => {
       const error = ControlNotFoundError.fromId(ControlId.make("ctr_123"));
       expect(error.message).toBe("Control with id ctr_123 not found.");
       expect(error.entityType).toBe("Control");
+    });
+  });
+});
+
+describe("Questioner Domain", () => {
+  describe("QuestionerId", () => {
+    it("should create a valid QuestionerId", () => {
+      const id = QuestionerId.make("qst_test");
+      expect(asString(id)).toBe("qst_test");
+    });
+  });
+
+  describe("QuestionnaireStatus", () => {
+    it("should accept draft status", () => {
+      const status: QuestionnaireStatus = "draft";
+      expect(status).toBe("draft");
+    });
+
+    it("should accept submitted status", () => {
+      const status: QuestionnaireStatus = "submitted";
+      expect(status).toBe("submitted");
+    });
+
+    it("should accept reviewed status", () => {
+      const status: QuestionnaireStatus = "reviewed";
+      expect(status).toBe("reviewed");
+    });
+  });
+
+  describe("QuestionnaireType", () => {
+    it("should accept control_test type", () => {
+      const type: QuestionnaireType = "control_test";
+      expect(type).toBe("control_test");
+    });
+
+    it("should accept risk_assessment type", () => {
+      const type: QuestionnaireType = "risk_assessment";
+      expect(type).toBe("risk_assessment");
+    });
+  });
+
+  describe("QuestionType", () => {
+    it("should accept text type", () => {
+      const type: QuestionType = "text";
+      expect(type).toBe("text");
+    });
+
+    it("should accept multiple_choice type", () => {
+      const type: QuestionType = "multiple_choice";
+      expect(type).toBe("multiple_choice");
+    });
+  });
+
+  describe("Question Schema", () => {
+    it("should create a valid Question", () => {
+      const question = Question.make({
+        id: "q1",
+        text: "Is control effective?",
+        type: "boolean" as QuestionType,
+        required: true,
+        options: null,
+      });
+
+      expect(question.id).toBe("q1");
+      expect(question.text).toBe("Is control effective?");
+      expect(question.type).toBe("boolean");
+      expect(question.required).toBe(true);
+    });
+
+    it("should create Question with options", () => {
+      const question = Question.make({
+        id: "q2",
+        text: "Select severity",
+        type: "multiple_choice" as QuestionType,
+        required: true,
+        options: ["Low", "Medium", "High"],
+      });
+
+      expect(question.options).toEqual(["Low", "Medium", "High"]);
+    });
+  });
+
+  describe("Answer Schema", () => {
+    it("should create a valid Answer", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
+      const answer = Answer.make({
+        questionId: "q1",
+        value: "yes",
+        answeredAt: testDate,
+        answeredBy: MemberId.make("mem_test"),
+      });
+
+      expect(answer.questionId).toBe("q1");
+      expect(answer.value).toBe("yes");
+      expect(asString(answer.answeredBy)).toBe("mem_test");
+    });
+  });
+
+  describe("Questionnaire Schema", () => {
+    it("should create a valid Questionnaire", () => {
+      const testDate = dt("2024-01-01T00:00:00Z");
+      const question = Question.make({
+        id: "q1",
+        text: "Test question",
+        type: "text" as QuestionType,
+        required: true,
+        options: null,
+      });
+
+      const questionnaire = Questionnaire.make({
+        id: QuestionerId.make("qst_test"),
+        name: "Control Test Q1 2024",
+        description: "Quarterly control testing",
+        type: "control_test" as QuestionnaireType,
+        status: "draft" as QuestionnaireStatus,
+        frameworkId: FrameworkId.make("fwk_test"),
+        controlId: ControlId.make("ctr_test"),
+        questions: [question],
+        answers: [],
+        dueDate: testDate,
+        completedAt: null,
+        createdAt: testDate,
+        updatedAt: testDate,
+        deletedAt: null,
+        createdBy: MemberId.make("mem_test"),
+        updatedBy: MemberId.make("mem_test"),
+        deletedBy: null,
+        hash: Hash.make("hash123"),
+        orgId: OrgId.make("org_test"),
+      });
+
+      expect(asString(questionnaire.id)).toBe("qst_test");
+      expect(questionnaire.name).toBe("Control Test Q1 2024");
+      expect(questionnaire.type).toBe("control_test");
+      expect(questionnaire.status).toBe("draft");
+      expect(questionnaire.questions).toHaveLength(1);
+    });
+  });
+
+  describe("CreateQuestionnaire", () => {
+    it("should have correct structure", () => {
+      const question = Question.make({
+        id: "q1",
+        text: "Test",
+        type: "text" as QuestionType,
+        required: true,
+        options: null,
+      });
+
+      const input = {
+        name: "Test Questionnaire",
+        description: "Testing control",
+        type: "control_test" as QuestionnaireType,
+        frameworkId: FrameworkId.make("fwk_test"),
+        controlId: ControlId.make("ctr_test"),
+        questions: [question],
+        dueDate: null,
+      };
+
+      const decoded = Schema.decodeUnknownSync(CreateQuestionnaire)(input);
+      expect(decoded.name).toBe("Test Questionnaire");
+      expect(decoded.type).toBe("control_test");
+    });
+  });
+
+  describe("QuestionnaireNotFoundError", () => {
+    it("should create error with entity type", () => {
+      const error = QuestionnaireNotFoundError.fromId(QuestionerId.make("qst_123"));
+      expect(error.message).toBe("Questionnaire with id qst_123 not found.");
+      expect(error.entityType).toBe("Questionnaire");
     });
   });
 });

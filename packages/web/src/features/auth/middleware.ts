@@ -12,39 +12,37 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
   return await next();
 });
 
-export const organizationMiddleware = createMiddleware().server(
-  async ({ next, request }) => {
-    const headers = getRequestHeaders();
-    const organization = await auth.api.getFullOrganization({ headers });
+export const organizationMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const headers = getRequestHeaders();
+  const organization = await auth.api.getFullOrganization({ headers });
 
-    if (organization && new URL(request.url).pathname === "/org") {
-      throw redirect({
-        to: "/org/$slug",
-        params: { slug: organization.slug },
-      });
-    }
+  if (organization && new URL(request.url).pathname === "/org") {
+    throw redirect({
+      to: "/org/$slug",
+      params: { slug: organization.slug },
+    });
+  }
 
-    if (organization) {
-      return await next();
-    }
-
-    const organizations = await auth.api.listOrganizations({ headers });
-
-    const firstOrganization = organizations.at(0);
-
-    if (firstOrganization) {
-      throw redirect({
-        to: "/org/$slug",
-        params: { slug: firstOrganization.slug },
-      });
-    }
-
-    const pathname = new URL(request.url).pathname;
-
-    if (pathname !== "/org/create") {
-      throw redirect({ to: "/org/create" });
-    }
-
+  if (organization) {
     return await next();
-  },
-);
+  }
+
+  const organizations = await auth.api.listOrganizations({ headers });
+
+  const firstOrganization = organizations.at(0);
+
+  if (firstOrganization) {
+    throw redirect({
+      to: "/org/$slug",
+      params: { slug: firstOrganization.slug },
+    });
+  }
+
+  const pathname = new URL(request.url).pathname;
+
+  if (pathname !== "/org/create") {
+    throw redirect({ to: "/org/create" });
+  }
+
+  return await next();
+});

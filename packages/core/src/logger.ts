@@ -13,13 +13,10 @@ export const RpcLoggerLayer = Layer.succeed(
         onSuccess: () => exit,
         onFailure: (cause) =>
           Effect.zipRight(
-            Effect.annotateLogs(
-              Effect.logError(`RPC request failed: ${opts.rpc._tag}`, cause),
-              {
-                "rpc.method": opts.rpc._tag,
-                "rpc.clientId": opts.clientId,
-              },
-            ),
+            Effect.annotateLogs(Effect.logError(`RPC request failed: ${opts.rpc._tag}`, cause), {
+              "rpc.method": opts.rpc._tag,
+              "rpc.clientId": opts.clientId,
+            }),
             exit,
           ),
       }),

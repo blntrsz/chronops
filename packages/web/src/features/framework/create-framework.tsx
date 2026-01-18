@@ -1,3 +1,5 @@
+import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,25 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { GhostInput, GhostTextArea } from "@/components/ghost-input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  countFrameworks,
-  createFramework,
-  listFrameworks,
-} from "@/features/framework/_atom";
-import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { countFrameworks, createFramework, listFrameworks } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
+import { Framework } from "@chronops/domain";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
-import { Framework } from "@chronops/domain";
 
 function CreateFrameworkForm() {
   const setActiveDialog = useSetActiveDialog();
@@ -89,9 +80,7 @@ function CreateFrameworkForm() {
       <form onSubmit={onSubmit} className="flex flex-col gap-6">
         <DialogHeader>
           <DialogTitle>Create framework</DialogTitle>
-          <DialogDescription>
-            Name, optional version/description.
-          </DialogDescription>
+          <DialogDescription>Name, optional version/description.</DialogDescription>
         </DialogHeader>
 
         <FieldGroup>
@@ -184,12 +173,11 @@ export function CreateFramework({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createFramework" : null)}>
-        {trigger && (
-          <DialogTrigger asChild>
-            {triggerNode}
-          </DialogTrigger>
-        )}
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createFramework" : null)}
+      >
+        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 
         <CreateFrameworkForm />
       </Dialog>

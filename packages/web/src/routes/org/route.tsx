@@ -1,6 +1,6 @@
 import { organizationMiddleware } from "@/features/auth/middleware";
 import { AppHeader } from "@/widgets/header/app-header";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/org")({
   component: RouteComponent,

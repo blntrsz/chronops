@@ -1,24 +1,18 @@
-import { LandingHeader } from "@/widgets/header/landing-header";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ShieldCheck,
-  FileCheck,
-  Workflow,
-  FileText,
-  CheckCircle2,
-  ArrowRight,
-  Lock,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { authClient } from "@/features/auth/client";
+import { LandingHeader } from "@/widgets/header/landing-header";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  CheckCircle2,
+  FileCheck,
+  FileText,
+  Lock,
+  ShieldCheck,
+  Workflow,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -35,10 +29,7 @@ function App() {
           <div className="absolute inset-0 bg-linear-to-b from-primary/5 to-background z-0" />
           <div className="relative z-10 px-4 md:px-6">
             <div className="mx-auto flex max-w-4xl flex-col items-center text-center gap-8">
-              <Badge
-                variant="secondary"
-                className="px-4 py-1.5 text-sm rounded-full"
-              >
+              <Badge variant="secondary" className="px-4 py-1.5 text-sm rounded-full">
                 Compliance Management Reimagined
               </Badge>
               <h1 className="text-4xl font-extrabold tracking-tight lg:text-7xl">
@@ -46,8 +37,8 @@ function App() {
                 <span className="text-primary">Secure your future.</span>
               </h1>
               <p className="text-xl text-muted-foreground max-w-[42rem] leading-relaxed">
-                Streamline frameworks, controls, documents, and workflows in one
-                unified platform designed for modern engineering teams.
+                Streamline frameworks, controls, documents, and workflows in one unified platform
+                designed for modern engineering teams.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                 <Button asChild size="lg" className="h-12 px-8 text-base">
@@ -55,12 +46,7 @@ function App() {
                     Get Started <ArrowRight className="ml-2 size-4" />
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="h-12 px-8 text-base"
-                >
+                <Button asChild variant="outline" size="lg" className="h-12 px-8 text-base">
                   <Link to="/login">View Demo</Link>
                 </Button>
               </div>
@@ -103,8 +89,8 @@ function App() {
                   Everything you need to stay compliant
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  Stop wrestling with spreadsheets. Chronops gives you the tools
-                  to manage your compliance program with confidence.
+                  Stop wrestling with spreadsheets. Chronops gives you the tools to manage your
+                  compliance program with confidence.
                 </p>
                 <ul className="space-y-4">
                   {[
@@ -128,9 +114,7 @@ function App() {
                     </div>
                     <div>
                       <h3 className="font-semibold">Security Review</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Pending approval
-                      </p>
+                      <p className="text-sm text-muted-foreground">Pending approval</p>
                     </div>
                     <Badge variant="outline" className="ml-auto">
                       High Priority
@@ -162,8 +146,8 @@ function App() {
               Ready to streamline your compliance?
             </h2>
             <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
-              Join engineering teams building trust with Chronops. Start your
-              journey to effortless compliance today.
+              Join engineering teams building trust with Chronops. Start your journey to effortless
+              compliance today.
             </p>
             <Button asChild size="lg" className="h-12 px-8 text-base">
               <Link to={getStartedTo}>Get Started Now</Link>
@@ -210,9 +194,7 @@ function FeatureCard({
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <CardDescription className="text-sm leading-relaxed">
-          {description}
-        </CardDescription>
+        <CardDescription className="text-sm leading-relaxed">{description}</CardDescription>
       </CardContent>
     </Card>
   );
