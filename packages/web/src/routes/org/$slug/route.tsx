@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { CreateFramework } from "@/features/framework/create-framework";
 import { CreateDocument } from "@/features/document/create-document";
+import { OrgShell } from "@/widgets/sidebar/org-shell";
 
 export const Route = createFileRoute("/org/$slug")({
   component: RouteComponent,
@@ -8,10 +9,10 @@ export const Route = createFileRoute("/org/$slug")({
 
 function RouteComponent() {
   return (
-    <>
+    <OrgShell>
       <CreateFramework />
       <CreateDocument />
       <Outlet />
-    </>
+    </OrgShell>
   );
 }
