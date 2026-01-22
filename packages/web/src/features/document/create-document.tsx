@@ -1,37 +1,12 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { GhostInput } from "@/components/ghost-input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { countDocuments, createDocument, listDocuments } from "@/features/document/_atom";
 import { cn } from "@/lib/utils";
-import {
-  countDocuments,
-  createDocument,
-  listDocuments,
-} from "@/features/document/_atom";
-import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Document } from "@chronops/domain";
+import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
 
@@ -53,7 +28,6 @@ function CreateDocumentForm() {
 
   const [values, setValues] = React.useState<CreateDocumentInput>({
     name: "",
-    type: "evidence",
     url: "",
     size: null,
     frameworkId: null,
@@ -77,7 +51,6 @@ function CreateDocumentForm() {
       await mutate({
         payload: {
           name: values.name.trim(),
-          type: values.type,
           url: values.url.trim(),
           size: values.size,
           frameworkId: values.frameworkId,
@@ -88,7 +61,6 @@ function CreateDocumentForm() {
       setActiveDialog(null);
       setValues({
         name: "",
-        type: "evidence",
         url: "",
         size: null,
         frameworkId: null,
@@ -104,126 +76,42 @@ function CreateDocumentForm() {
   }
 
   return (
-    <DialogContent>
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
-        <DialogHeader>
-          <DialogTitle>Create document</DialogTitle>
-          <DialogDescription>
-            For now, provide a URL. S3 upload next.
-          </DialogDescription>
-        </DialogHeader>
+    <DialogContent className="gap-0 p-0">
+      <form onSubmit={onSubmit} className="flex flex-col">
+        <div className="px-6 pt-6 pb-5">
+          <GhostInput
+            id="name"
+            name="name"
+            value={values.name}
+            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+            placeholder="Document name"
+            aria-label="Name"
+            className="w-full text-3xl font-semibold leading-tight tracking-tight placeholder:text-muted-foreground/40"
+            disabled={pending}
+            required
+            autoFocus
+          />
 
-        <FieldGroup>
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input
-              id="name"
-              name="name"
-              value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, name: e.target.value }))
-              }
-              placeholder="SOC2 evidence"
-              disabled={pending}
-              required
-            />
-          </Field>
+          <div
+            className={cn(
+              "mt-4 rounded-lg border border-dashed bg-muted/10 px-4 py-10 text-center",
+              pending && "opacity-60",
+            )}
+          >
+            <div className="text-base font-medium">Drop file</div>
+            <div className="mt-1 text-sm text-muted-foreground">Upload not wired yet</div>
+          </div>
 
-          <Field data-disabled={pending}>
-            <FieldLabel>Type</FieldLabel>
-            <Select
-              value={values.type}
-              onValueChange={(value) =>
-                setValues((v) => ({
-                  ...v,
-                  type: value as CreateDocumentInput["type"],
-                }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="requirement">requirement</SelectItem>
-                <SelectItem value="evidence">evidence</SelectItem>
-                <SelectItem value="clause">clause</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+          {formError ? (
+            <div role="alert" className="mt-3 text-sm text-destructive">
+              {formError}
+            </div>
+          ) : null}
+        </div>
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="url">URL</FieldLabel>
-            <Input
-              id="url"
-              name="url"
-              value={values.url}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, url: e.target.value }))
-              }
-              placeholder="https://..."
-              disabled={pending}
-              required
-            />
-          </Field>
+        <hr className="w-full" />
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="size">Size (bytes)</FieldLabel>
-            <Input
-              id="size"
-              name="size"
-              type="number"
-              value={values.size ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  size: e.target.value === "" ? null : Number(e.target.value),
-                }))
-              }
-              placeholder="12345"
-              disabled={pending}
-            />
-          </Field>
-
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="frameworkId">Framework ID</FieldLabel>
-            <Input
-              id="frameworkId"
-              name="frameworkId"
-              value={values.frameworkId ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  frameworkId:
-                    e.target.value === "" ? null : (e.target.value as any),
-                }))
-              }
-              placeholder="fwk_..."
-              disabled={pending}
-            />
-          </Field>
-
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="controlId">Control ID</FieldLabel>
-            <Input
-              id="controlId"
-              name="controlId"
-              value={values.controlId ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  controlId:
-                    e.target.value === "" ? null : (e.target.value as any),
-                }))
-              }
-              placeholder="ctrl_..."
-              disabled={pending}
-            />
-          </Field>
-
-          {formError ? <FieldError>{formError}</FieldError> : null}
-        </FieldGroup>
-
-        <DialogFooter>
+        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
           <Button type="submit" disabled={pending}>
             {pending ? (
               <>
@@ -234,7 +122,7 @@ function CreateDocumentForm() {
               "Create"
             )}
           </Button>
-        </DialogFooter>
+        </div>
       </form>
     </DialogContent>
   );
@@ -258,9 +146,7 @@ export function CreateDocument({
     <div className={cn("flex", className)} {...props}>
       <Dialog
         open={open}
-        onOpenChange={(isOpen) =>
-          setActiveDialog(isOpen ? "createDocument" : null)
-        }
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createDocument" : null)}
       >
         {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 

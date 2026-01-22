@@ -1,30 +1,24 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { GhostInput, GhostTextArea } from "@/components/ghost-input";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
-import { cn } from "@/lib/utils";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/spinner";
 import { countControls, createControl, listControls } from "@/features/control/_atom";
-import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
+import { listFrameworks } from "@/features/framework/_atom";
+import { cn } from "@/lib/utils";
 import { Control } from "@chronops/domain";
+import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
+import { useRouterState, useSearch } from "@tanstack/react-router";
 import { Schema } from "effect";
 import React from "react";
-import { useRouterState, useSearch } from "@tanstack/react-router";
 
 const CreateControlSchema = Control.CreateControl;
 
@@ -32,6 +26,9 @@ type CreateControlInput = Schema.Schema.Type<typeof CreateControlSchema>;
 
 const listRefreshAtom = listControls(1);
 const countRefreshAtom = countControls();
+const frameworkListAtom = listFrameworks(1);
+
+const testingFrequencyOptions = ["daily", "weekly", "monthly", "quarterly", "yearly"] as const;
 
 function CreateControlForm() {
   const setActiveDialog = useSetActiveDialog();
@@ -41,6 +38,9 @@ function CreateControlForm() {
 
   const [formError, setFormError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
+
+  const frameworks = useAtomValue(frameworkListAtom);
+  const frameworkOptions = Result.getOrElse(frameworks, () => []);
 
   const location = useRouterState({ select: (s) => s.location });
   const search = useSearch({ strict: false }) as any;
@@ -52,16 +52,20 @@ function CreateControlForm() {
     testingFrequency: null,
   });
 
+  const [selectedFrameworkIds, setSelectedFrameworkIds] = React.useState<string[]>([]);
+
   React.useEffect(() => {
     const fwkId = location.pathname.match(/\/framework\/(fwk_[^/]+)/)?.[1];
     if (!fwkId) return;
     setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+    setSelectedFrameworkIds([fwkId]);
   }, [location.pathname]);
 
   React.useEffect(() => {
     const fwkId = (search?.frameworkId as string | undefined) ?? undefined;
     if (!fwkId) return;
     setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+    setSelectedFrameworkIds([fwkId]);
   }, [search?.frameworkId]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -104,84 +108,125 @@ function CreateControlForm() {
   }
 
   return (
-    <DialogContent>
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
-        <DialogHeader>
-          <DialogTitle>Create control</DialogTitle>
-          <DialogDescription>
-            Define a security control with framework association.
-          </DialogDescription>
-        </DialogHeader>
+    <DialogContent className="gap-0 p-0">
+      <form onSubmit={onSubmit} className="flex flex-col">
+        <div className="px-6 pt-6 pb-5">
+          <GhostInput
+            id="name"
+            name="name"
+            value={values.name}
+            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+            placeholder="Control name"
+            aria-label="Name"
+            className="w-full text-3xl font-semibold leading-tight tracking-tight placeholder:text-muted-foreground/40"
+            disabled={pending}
+            required
+            autoFocus
+          />
 
-        <FieldGroup>
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
-            <GhostInput
-              id="name"
-              name="name"
-              value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, name: e.target.value }))
-              }
-              placeholder="Password policy"
-              disabled={pending}
-              required
-            />
-          </Field>
+          <GhostTextArea
+            id="description"
+            name="description"
+            value={values.description ?? ""}
+            onChange={(e) =>
+              setValues((v) => ({
+                ...v,
+                description: e.target.value,
+              }))
+            }
+            placeholder="Add description..."
+            aria-label="Description"
+            className="mt-3 w-full min-h-28 text-lg leading-relaxed placeholder:text-muted-foreground/40"
+            disabled={pending}
+          />
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="description">Description</FieldLabel>
-            <GhostTextArea
-              id="description"
-              name="description"
-              value={values.description ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  description: e.target.value,
-                }))
-              }
-              placeholder="Control requirements..."
-              disabled={pending}
-            />
-          </Field>
+          {formError ? (
+            <div role="alert" className="mt-3 text-sm text-destructive">
+              {formError}
+            </div>
+          ) : null}
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="frameworkId">Framework ID</FieldLabel>
-            <Input
-              id="frameworkId"
-              name="frameworkId"
-              value={values.frameworkId}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, frameworkId: e.target.value as any }) as any)
-              }
-              placeholder="fwk_..."
-              disabled={pending}
-              required
-            />
-          </Field>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span>framework</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild disabled={pending}>
+                  <button
+                    type="button"
+                    className="rounded-md border bg-muted/10 px-2 py-1 text-sm text-foreground"
+                  >
+                    {selectedFrameworkIds.length
+                      ? `${selectedFrameworkIds.length} selected`
+                      : "Select"}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {frameworkOptions.map((f) => (
+                    <DropdownMenuCheckboxItem
+                      key={f.id}
+                      checked={selectedFrameworkIds.includes(f.id)}
+                      onCheckedChange={(checked) => {
+                        setSelectedFrameworkIds((prev) => {
+                          const next = checked
+                            ? Array.from(new Set([...prev, f.id]))
+                            : prev.filter((id) => id !== f.id);
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="testingFrequency">Testing frequency</FieldLabel>
-            <Input
-              id="testingFrequency"
-              name="testingFrequency"
-              value={values.testingFrequency ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  testingFrequency: e.target.value,
-                }))
-              }
-              placeholder="quarterly"
-              disabled={pending}
-            />
-          </Field>
+                          setValues(
+                            (v) =>
+                              ({
+                                ...v,
+                                frameworkId: (next[0] ?? "") as any,
+                              }) as any,
+                          );
 
-          {formError ? <FieldError>{formError}</FieldError> : null}
-        </FieldGroup>
+                          return next;
+                        });
+                      }}
+                    >
+                      {f.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-        <DialogFooter>
+            <div className="flex items-center gap-2">
+              <span>testing</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild disabled={pending}>
+                  <button
+                    type="button"
+                    className="rounded-md border bg-muted/10 px-2 py-1 text-sm text-foreground"
+                  >
+                    {values.testingFrequency ?? "Select"}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuRadioGroup
+                    value={values.testingFrequency ?? "__none"}
+                    onValueChange={(value) =>
+                      setValues((v) => ({
+                        ...v,
+                        testingFrequency: value === "__none" ? null : value,
+                      }))
+                    }
+                  >
+                    <DropdownMenuRadioItem value="__none">none</DropdownMenuRadioItem>
+                    {testingFrequencyOptions.map((opt) => (
+                      <DropdownMenuRadioItem key={opt} value={opt}>
+                        {opt}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+
+        <hr className="w-full" />
+
+        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
           <Button type="submit" disabled={pending}>
             {pending ? (
               <>
@@ -192,7 +237,7 @@ function CreateControlForm() {
               "Create"
             )}
           </Button>
-        </DialogFooter>
+        </div>
       </form>
     </DialogContent>
   );
@@ -214,12 +259,11 @@ export function CreateControl({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createControl" : null)}>
-        {trigger && (
-          <DialogTrigger asChild>
-            {triggerNode}
-          </DialogTrigger>
-        )}
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createControl" : null)}
+      >
+        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 
         <CreateControlForm />
       </Dialog>

@@ -1,32 +1,14 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { GhostInput, GhostTextArea } from "@/components/ghost-input";
-import { Spinner } from "@/components/ui/spinner";
-import {
-  countFrameworks,
-  createFramework,
-  listFrameworks,
-} from "@/features/framework/_atom";
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { countFrameworks, createFramework, listFrameworks } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
+import { Framework } from "@chronops/domain";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Schema } from "effect";
 import React from "react";
-import { Framework } from "@chronops/domain";
 
 function CreateFrameworkForm() {
   const setActiveDialog = useSetActiveDialog();
@@ -85,73 +67,75 @@ function CreateFrameworkForm() {
   }
 
   return (
-    <DialogContent>
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
-        <DialogHeader>
-          <DialogTitle>Create framework</DialogTitle>
-          <DialogDescription>
-            Name, optional version/description.
-          </DialogDescription>
-        </DialogHeader>
+    <DialogContent className="gap-0 p-0">
+      <form onSubmit={onSubmit} className="flex flex-col">
+        <div className="px-6 pt-6 pb-5">
+          <GhostInput
+            id="name"
+            name="name"
+            value={values.name}
+            onChange={(e) =>
+              setValues((v) => ({
+                ...v,
+                name: e.target.value,
+              }))
+            }
+            placeholder="Framework name"
+            aria-label="Name"
+            className="w-full text-3xl font-semibold leading-tight tracking-tight placeholder:text-muted-foreground/40"
+            disabled={pending}
+            required
+            autoFocus
+          />
 
-        <FieldGroup>
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
-            <GhostInput
-              id="name"
-              name="name"
-              value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  name: e.target.value,
-                }))
-              }
-              placeholder="React"
-              disabled={pending}
-              required
-            />
-          </Field>
+          <GhostTextArea
+            id="description"
+            name="description"
+            value={values.description ?? ""}
+            onChange={(e) =>
+              setValues((v) => ({
+                ...v,
+                description: e.target.value,
+              }))
+            }
+            placeholder="Add description..."
+            aria-label="Description"
+            className="mt-3 w-full min-h-28 text-lg leading-relaxed placeholder:text-muted-foreground/40"
+            disabled={pending}
+          />
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="version">Version</FieldLabel>
-            <GhostInput
-              id="version"
-              name="version"
-              type="number"
-              value={values.version ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  version: Number(e.target.value),
-                }))
-              }
-              placeholder="19"
-              disabled={pending}
-            />
-          </Field>
+          {formError ? (
+            <div role="alert" className="mt-3 text-sm text-destructive">
+              {formError}
+            </div>
+          ) : null}
 
-          <Field data-disabled={pending}>
-            <FieldLabel htmlFor="description">Description</FieldLabel>
-            <GhostTextArea
-              id="description"
-              name="description"
-              value={values.description ?? ""}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  description: e.target.value,
-                }))
-              }
-              placeholder="UI framework"
-              disabled={pending}
-            />
-          </Field>
+          <div className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+            <span>version</span>
+            <div className="rounded-md border bg-muted/10 px-2 py-1">
+              <GhostInput
+                id="version"
+                name="version"
+                type="number"
+                value={values.version ?? ""}
+                onChange={(e) =>
+                  setValues((v) => ({
+                    ...v,
+                    version: Number(e.target.value),
+                  }))
+                }
+                placeholder="19"
+                aria-label="Version"
+                className="w-20 text-sm text-foreground placeholder:text-muted-foreground/60"
+                disabled={pending}
+              />
+            </div>
+          </div>
+        </div>
 
-          {formError ? <FieldError>{formError}</FieldError> : null}
-        </FieldGroup>
+        <hr className="w-full" />
 
-        <DialogFooter>
+        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
           <Button type="submit" disabled={pending}>
             {pending ? (
               <>
@@ -162,7 +146,7 @@ function CreateFrameworkForm() {
               "Create"
             )}
           </Button>
-        </DialogFooter>
+        </div>
       </form>
     </DialogContent>
   );
@@ -184,12 +168,11 @@ export function CreateFramework({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createFramework" : null)}>
-        {trigger && (
-          <DialogTrigger asChild>
-            {triggerNode}
-          </DialogTrigger>
-        )}
+      <Dialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createFramework" : null)}
+      >
+        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
 
         <CreateFrameworkForm />
       </Dialog>
