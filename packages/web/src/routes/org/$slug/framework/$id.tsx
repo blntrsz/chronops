@@ -1,9 +1,6 @@
-import { FieldDescription } from "@/components/ui/field";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ListControl } from "@/features/control/list-control";
-import { getFrameworkById, listFrameworks, updateFramework } from "@/features/framework/_atom";
 import { useSetActiveDialog } from "@/atoms/dialog-atom";
-import { OrgListLayout } from "@/widgets/layout/org-list-layout";
+import { GhostInput, GhostTextArea } from "@/components/ghost-input";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { FieldDescription } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { ListControl } from "@/features/control/list-control";
+import { getFrameworkById, listFrameworks, updateFramework } from "@/features/framework/_atom";
 import { DeleteFramework } from "@/features/framework/delete-framework";
-import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { cn } from "@/lib/utils";
+import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MoreHorizontal, Plus, Save, Trash2 } from "lucide-react";
@@ -42,14 +42,26 @@ export const Route = createFileRoute("/org/$slug/framework/$id")({
 });
 
 function RouteComponent() {
-  const { id } = Route.useParams();
+  const { id, slug } = Route.useParams();
   const fwk = useAtomValue(getFrameworkById(id as any));
-  const { slug } = Route.useParams();
   const setActiveDialog = useSetActiveDialog();
 
   const mutate = useAtomSet(updateFramework(), { mode: "promise" });
   const refreshDetail = useAtomRefresh(getFrameworkById(id as any));
   const refreshList = useAtomRefresh(listFrameworks(1));
+
+  const model = Result.getOrElse(fwk, () => null);
+  const fwkModel = model && model._tag === "Some" ? model.value : null;
+
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [saving, setSaving] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!fwkModel) return;
+    setName(fwkModel.name);
+    setDescription(fwkModel.description ?? "");
+  }, [fwkModel?.id]);
 
   if (fwk._tag === "Initial") {
     return <FrameworkSkeleton />;
@@ -59,21 +71,9 @@ function RouteComponent() {
     return <FieldDescription>Failed loading framework</FieldDescription>;
   }
 
-  const model = Result.getOrElse(fwk, () => null);
-  if (!model || model._tag !== "Some") {
+  if (!fwkModel) {
     return <FieldDescription>Framework not found</FieldDescription>;
   }
-
-  const fwkModel = model.value;
-
-  const [name, setName] = React.useState(fwkModel.name);
-  const [description, setDescription] = React.useState(fwkModel.description ?? "");
-  const [saving, setSaving] = React.useState(false);
-
-  React.useEffect(() => {
-    setName(fwkModel.name);
-    setDescription(fwkModel.description ?? "");
-  }, [fwkModel.id]);
 
   const dirty = name !== fwkModel.name || description !== (fwkModel.description ?? "");
   const canSave = dirty && !saving && name.trim() !== "";
@@ -123,12 +123,7 @@ function RouteComponent() {
       }
       action={
         <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            onClick={onSave}
-            disabled={!canSave}
-            className="gap-2"
-          >
+          <Button type="button" onClick={onSave} disabled={!canSave} className="gap-2">
             {saving ? <Spinner /> : <Save />}
             {saving ? "Saving..." : "Save"}
           </Button>
@@ -145,7 +140,10 @@ function RouteComponent() {
                 Add controls
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" onClick={() => setActiveDialog("deleteFramework")}>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => setActiveDialog("deleteFramework")}
+              >
                 <Trash2 />
                 Delete framework
               </DropdownMenuItem>

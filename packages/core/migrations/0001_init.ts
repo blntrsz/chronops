@@ -1,7 +1,9 @@
 import { SqlClient } from "@effect/sql";
 import { Effect } from "effect";
 
-export default Effect.flatMap(SqlClient.SqlClient, (sql) => sql`
+export default Effect.flatMap(
+  SqlClient.SqlClient,
+  (sql) => sql`
   CREATE TABLE IF NOT EXISTS framework (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -56,4 +58,5 @@ export default Effect.flatMap(SqlClient.SqlClient, (sql) => sql`
     deleted_by VARCHAR(255),
     hash VARCHAR(255) NOT NULL DEFAULT 'system'
   );
-`);
+`,
+);

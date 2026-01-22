@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppHeader } from "@/widgets/header/app-header";
 import { AppSidebar } from "@/widgets/sidebar/app-sidebar";
+import type * as React from "react";
 
 export function OrgShell({ children }: { children: React.ReactNode }) {
   return (

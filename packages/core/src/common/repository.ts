@@ -1,7 +1,7 @@
 import { Actor } from "@chronops/domain";
 import { SqlClient, SqlSchema } from "@effect/sql";
 import type { SqlError } from "@effect/sql/SqlError";
-import { Effect, Option, Schema } from "effect";
+import { Effect, type Option, Schema } from "effect";
 
 import type { ParseError } from "effect/ParseResult";
 
@@ -84,20 +84,13 @@ export const make = Effect.fn(function* <
         Result: config.model,
         execute(req) {
           return sql`SELECT * FROM ${sql(config.tableName)} 
-            WHERE ${sql.and([
-              sql`org_id = ${actor.orgId}`,
-              sql`deleted_at IS NULL`,
-            ])}
+            WHERE ${sql.and([sql`org_id = ${actor.orgId}`, sql`deleted_at IS NULL`])}
             LIMIT ${req.size} OFFSET ${(req.page - 1) * req.size}`;
         },
       })(request);
     })) as (
     request: Schema.Schema.Type<typeof Pagination>,
-  ) => Effect.Effect<
-    Schema.Schema.Type<typeof config.model>[],
-    SqlError | ParseError,
-    Actor.Actor
-  >;
+  ) => Effect.Effect<Schema.Schema.Type<typeof config.model>[], SqlError | ParseError, Actor.Actor>;
 
   /**
    * Delete a record by its ID.

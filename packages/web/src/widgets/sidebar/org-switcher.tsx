@@ -1,11 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import * as React from "react";
 
 import { useNavigate } from "@tanstack/react-router";
 
-import { authClient } from "@/features/auth/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { authClient } from "@/features/auth/client";
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/).slice(0, 2);

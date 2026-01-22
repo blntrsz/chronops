@@ -75,10 +75,7 @@ export const make = Effect.fn(function* (input: CreateControl) {
  * Update an existing Control
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (
-  model: Control,
-  input: UpdateControl,
-) {
+export const update = Effect.fn(function* (model: Control, input: UpdateControl) {
   const base = yield* Base.updateBase();
 
   return Control.make({
@@ -100,7 +97,6 @@ export const remove = Effect.fn(function* (model: Control) {
     ...base,
   });
 });
-
 
 /**
  * Control not found error

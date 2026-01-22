@@ -1,17 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CreateDocument } from "@/features/document/create-document";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { FieldDescription, FieldGroup } from "@/components/ui/field";
 import {
   Pagination,
@@ -22,8 +11,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { countDocuments, listDocuments } from "@/features/document/_atom";
+import { CreateDocument } from "@/features/document/create-document";
+import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { Link, useParams } from "@tanstack/react-router";
 import React from "react";
@@ -41,10 +31,7 @@ function DocumentCardSkeleton() {
   );
 }
 
-export function ListDocuments({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function ListDocuments({ className, ...props }: React.ComponentProps<"div">) {
   const [page, setPage] = React.useState(1);
   const { slug } = useParams({ from: "/org/$slug/document/" });
 
@@ -104,9 +91,7 @@ export function ListDocuments({
                         <div className="flex flex-wrap gap-x-4 gap-y-1">
                           <div className="line-clamp-1">{doc.type}</div>
                           {doc.size ? (
-                            <div className="line-clamp-1">
-                              {doc.size.toLocaleString()} bytes
-                            </div>
+                            <div className="line-clamp-1">{doc.size.toLocaleString()} bytes</div>
                           ) : null}
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1">

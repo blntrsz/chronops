@@ -12,8 +12,7 @@ export const ControlHandler = ControlContract.toLayer(
       ControlList: service.list,
       ControlUpdate: service.update,
       ControlRemove: ({ id }) => service.remove(id),
-      ControlByFramework: ({ frameworkId }) =>
-        service.getByFramework(frameworkId),
+      ControlByFramework: ({ frameworkId }) => service.getByFramework(frameworkId),
       ControlCount: service.count,
     };
   }),

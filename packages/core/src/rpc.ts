@@ -1,23 +1,19 @@
+import { Base } from "@chronops/domain";
+import { HttpLayerRouter } from "@effect/platform";
 import { RpcSerialization, RpcServer } from "@effect/rpc";
 import { Layer, Logger } from "effect";
-import { FrameworkHandler } from "./framework/handler";
-import { FrameworkService } from "./framework/service";
+import { AuthMiddlewareLive } from "./auth/middleware";
+import { SqlLayer } from "./common/sql";
+import { RpcContract } from "./contract";
 import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
 import { DocumentHandler } from "./document/handler";
 import { DocumentService } from "./document/service";
-import { HttpLayerRouter } from "@effect/platform";
-import { Base } from "@chronops/domain";
-import { SqlLayer } from "./common/sql";
-import { RpcContract } from "./contract";
-import { AuthMiddlewareLive } from "./auth/middleware";
+import { FrameworkHandler } from "./framework/handler";
+import { FrameworkService } from "./framework/service";
 import { RpcLoggerLayer } from "./logger";
 
-const HandlersLayer = Layer.mergeAll(
-  FrameworkHandler,
-  ControlHandler,
-  DocumentHandler,
-).pipe(
+const HandlersLayer = Layer.mergeAll(FrameworkHandler, ControlHandler, DocumentHandler).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(DocumentService.Default),

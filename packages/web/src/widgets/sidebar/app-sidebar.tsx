@@ -1,13 +1,7 @@
 "use client";
 
-import * as React from "react";
-import {
-  FileText,
-  Frame,
-  LayoutDashboard,
-  Shield,
-  SlidersHorizontal,
-} from "lucide-react";
+import { FileText, Frame, LayoutDashboard, Shield, SlidersHorizontal } from "lucide-react";
+import type * as React from "react";
 
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
 

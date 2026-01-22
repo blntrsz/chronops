@@ -1,10 +1,10 @@
-import { Rpc, RpcGroup } from "@effect/rpc";
 import { Control, Framework } from "@chronops/domain";
-import { Schema } from "effect";
+import { Rpc, RpcGroup } from "@effect/rpc";
 import { SqlError } from "@effect/sql";
+import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
-import { Pagination } from "../common/repository";
 import { AuthMiddleware } from "../auth/middleware-interface";
+import { Pagination } from "../common/repository";
 
 export class ControlContract extends RpcGroup.make(
   Rpc.make("ControlCreate", {
@@ -12,24 +12,19 @@ export class ControlContract extends RpcGroup.make(
     error: Schema.Union(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
     ),
     payload: Control.CreateControl,
   }),
   Rpc.make("ControlById", {
     success: Schema.Option(Control.Control),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
+    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
     payload: { id: Control.ControlId },
   }),
   Rpc.make("ControlList", {
     success: Schema.Array(Control.Control),
     payload: Pagination,
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
+    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
   }),
   Rpc.make("ControlUpdate", {
     success: Control.Control,
@@ -37,6 +32,7 @@ export class ControlContract extends RpcGroup.make(
       Schema.instanceOf(SqlError.SqlError),
       Schema.instanceOf(ParseError),
       Control.ControlNotFoundError,
+      Framework.FrameworkNotFoundError,
     ),
     payload: {
       id: Control.ControlId,
@@ -54,18 +50,12 @@ export class ControlContract extends RpcGroup.make(
   }),
   Rpc.make("ControlByFramework", {
     success: Schema.Array(Control.Control),
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
+    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
     payload: { frameworkId: Framework.FrameworkId },
   }),
   Rpc.make("ControlCount", {
     success: Schema.Number,
     payload: Schema.Void,
-    error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
-      Schema.instanceOf(ParseError),
-    ),
+    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
   }),
 ).middleware(AuthMiddleware) {}

@@ -1,14 +1,9 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldDescription, FieldGroup } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
-import React from "react";
+import type React from "react";
 import { authClient } from "./client";
 
 export function ListOrgs({ className, ...props }: React.ComponentProps<"div">) {

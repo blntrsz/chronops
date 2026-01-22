@@ -1,6 +1,6 @@
+import { useSetActiveDialog } from "@/atoms/dialog-atom";
 import { Button } from "@/components/ui/button";
 import { ListDocuments } from "@/features/document/list-documents";
-import { useSetActiveDialog } from "@/atoms/dialog-atom";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { createFileRoute } from "@tanstack/react-router";
 

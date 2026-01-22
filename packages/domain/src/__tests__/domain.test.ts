@@ -1,21 +1,21 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { DateTime, Schema } from "effect";
 import { MemberId, OrgId } from "../actor";
-import { Hash, Base, NotFoundError } from "../base";
+import { Base, Hash, NotFoundError } from "../base";
 import {
-  FrameworkId,
-  Framework,
-  CreateFramework,
-  UpdateFramework,
-  FrameworkNotFoundError,
-} from "../framework";
-import {
-  ControlId,
-  ControlStatus,
   Control,
-  CreateControl,
+  ControlId,
   ControlNotFoundError,
+  type ControlStatus,
+  CreateControl,
 } from "../control";
+import {
+  CreateFramework,
+  Framework,
+  FrameworkId,
+  FrameworkNotFoundError,
+  UpdateFramework,
+} from "../framework";
 
 // Helper to compare branded types
 const asString = (value: unknown) => value as string;
@@ -37,7 +37,6 @@ describe("Base Domain", () => {
       expect(asString(id)).toBe("org_abc123");
     });
   });
-
 
   describe("Hash", () => {
     it("should create a valid Hash", () => {

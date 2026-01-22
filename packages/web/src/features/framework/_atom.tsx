@@ -1,13 +1,9 @@
 import { Client } from "@/lib/rpc-client";
-import { Framework } from "@chronops/domain";
+import type { Framework } from "@chronops/domain";
 
 export const frameworkReactiveKeys = {
   all: ["framework"],
-  detail: (id: Framework.FrameworkId) => [
-    ...frameworkReactiveKeys.all,
-    "detail",
-    id,
-  ],
+  detail: (id: Framework.FrameworkId) => [...frameworkReactiveKeys.all, "detail", id],
   details: () => [...frameworkReactiveKeys.all, "detail"],
   list: (page = 1) => [...frameworkReactiveKeys.all, "list", page],
   lists: () => [...frameworkReactiveKeys.all, "list"],

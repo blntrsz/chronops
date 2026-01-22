@@ -1,22 +1,14 @@
 import { GalleryVerticalEnd } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import React from "react";
 import { authClient } from "./client";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
   const emailRef = React.useRef<HTMLInputElement>(null);
 
@@ -41,10 +33,7 @@ export function LoginForm({
       >
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
-            <a
-              href="#"
-              className="flex flex-col items-center gap-2 font-medium"
-            >
+            <a href="#" className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
@@ -57,13 +46,7 @@ export function LoginForm({
           </div>
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              ref={emailRef}
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-            />
+            <Input ref={emailRef} id="email" type="email" placeholder="m@example.com" required />
           </Field>
           <Field>
             <Button type="submit">Login</Button>
@@ -71,8 +54,8 @@ export function LoginForm({
         </FieldGroup>
       </form>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{" "}
+        <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
   );

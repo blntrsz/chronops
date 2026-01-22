@@ -1,14 +1,9 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDocumentById } from "@/features/document/_atom";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
 function DocumentSkeleton() {
   return (
@@ -78,14 +73,10 @@ function RouteComponent() {
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               {document.frameworkId ? (
-                <div className="text-muted-foreground">
-                  Framework: {document.frameworkId}
-                </div>
+                <div className="text-muted-foreground">Framework: {document.frameworkId}</div>
               ) : null}
               {document.controlId ? (
-                <div className="text-muted-foreground">
-                  Control: {document.controlId}
-                </div>
+                <div className="text-muted-foreground">Control: {document.controlId}</div>
               ) : null}
             </div>
           </CardDescription>
@@ -96,12 +87,7 @@ function RouteComponent() {
         <CardHeader>
           <CardTitle>Link</CardTitle>
           <CardDescription className="break-all">
-            <a
-              href={document.url}
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
+            <a href={document.url} target="_blank" rel="noreferrer" className="underline">
               {document.url}
             </a>
           </CardDescription>

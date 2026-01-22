@@ -1,3 +1,4 @@
+import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,16 +10,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
-import {
-  countFrameworks,
-  listFrameworks,
-  removeFramework,
-} from "@/features/framework/_atom";
+import { countFrameworks, listFrameworks, removeFramework } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
+import type { Framework } from "@chronops/domain";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { useNavigate } from "@tanstack/react-router";
-import { Framework } from "@chronops/domain";
 import React from "react";
 
 const listRefreshAtom = listFrameworks(1);
@@ -59,7 +55,10 @@ export function DeleteFramework({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <AlertDialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "deleteFramework" : null)}>
+      <AlertDialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "deleteFramework" : null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete framework</AlertDialogTitle>
