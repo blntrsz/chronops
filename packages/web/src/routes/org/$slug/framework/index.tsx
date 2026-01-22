@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ListFrameworks } from "@/features/framework/list-frameworks";
 import { useSetActiveDialog } from "@/atoms/dialog-atom";
+import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/org/$slug/framework/")({
@@ -11,9 +12,13 @@ function RouteComponent() {
   const setActiveDialog = useSetActiveDialog();
 
   return (
-    <div>
-      <Button onClick={() => setActiveDialog("createFramework")}>Create framework</Button>
+    <OrgListLayout
+      title="Frameworks"
+      action={
+        <Button onClick={() => setActiveDialog("createFramework")}>Create framework</Button>
+      }
+    >
       <ListFrameworks />
-    </div>
+    </OrgListLayout>
   );
 }

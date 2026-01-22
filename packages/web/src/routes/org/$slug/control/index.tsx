@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ListControl } from "@/features/control/list-control";
 import { useSetActiveDialog } from "@/atoms/dialog-atom";
+import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { createFileRoute } from "@tanstack/react-router";
 import { Schema } from "effect";
 
@@ -19,9 +20,11 @@ function RouteComponent() {
   const setActiveDialog = useSetActiveDialog();
 
   return (
-    <div>
-      <Button onClick={() => setActiveDialog("createControl")}>Create control</Button>
+    <OrgListLayout
+      title="Controls"
+      action={<Button onClick={() => setActiveDialog("createControl")}>Create control</Button>}
+    >
       <ListControl slug={slug} frameworkId={frameworkId} />
-    </div>
+    </OrgListLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ListDocuments } from "@/features/document/list-documents";
 import { useSetActiveDialog } from "@/atoms/dialog-atom";
+import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/org/$slug/document/")({
@@ -11,9 +12,11 @@ function RouteComponent() {
   const setActiveDialog = useSetActiveDialog();
 
   return (
-    <div>
-      <Button onClick={() => setActiveDialog("createDocument")}>Create document</Button>
+    <OrgListLayout
+      title="Documents"
+      action={<Button onClick={() => setActiveDialog("createDocument")}>Create document</Button>}
+    >
       <ListDocuments />
-    </div>
+    </OrgListLayout>
   );
 }
