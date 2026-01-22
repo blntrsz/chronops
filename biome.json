@@ -3,7 +3,7 @@
   "vcs": {
     "enabled": true,
     "defaultBranch": "main",
-    "provider": "git"
+    "clientKind": "git"
   },
   "organizeImports": {
     "enabled": true
@@ -34,7 +34,7 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "trailingComma": "all"
+      "trailingCommas": "all"
     }
   }
 }

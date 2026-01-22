@@ -10,7 +10,7 @@ import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
-import { Link, useParams } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import { DataTable } from "@/features/control/data-table";
 import { DataTableColumnHeader } from "@/features/control/data-table-column-header";

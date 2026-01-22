@@ -17,13 +17,6 @@ import {
 import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { cn } from "@/lib/utils";
 import { countControls, createControl, listControls } from "@/features/control/_atom";
@@ -31,6 +24,7 @@ import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";
 import { Control } from "@chronops/domain";
 import { Schema } from "effect";
 import React from "react";
+import { useRouterState, useSearch } from "@tanstack/react-router";
 
 const CreateControlSchema = Control.CreateControl;
 
@@ -48,13 +42,27 @@ function CreateControlForm() {
   const [formError, setFormError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
 
+  const location = useRouterState({ select: (s) => s.location });
+  const search = useSearch({ strict: false }) as any;
+
   const [values, setValues] = React.useState<CreateControlInput>({
     name: "",
     description: null,
     frameworkId: "" as any,
-    status: "draft",
     testingFrequency: null,
   });
+
+  React.useEffect(() => {
+    const fwkId = location.pathname.match(/\/framework\/(fwk_[^/]+)/)?.[1];
+    if (!fwkId) return;
+    setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    const fwkId = (search?.frameworkId as string | undefined) ?? undefined;
+    if (!fwkId) return;
+    setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+  }, [search?.frameworkId]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,7 +83,6 @@ function CreateControlForm() {
           name: values.name.trim(),
           description: values.description,
           frameworkId: values.frameworkId as any,
-          status: values.status,
           testingFrequency: values.testingFrequency,
         },
       });
@@ -85,7 +92,6 @@ function CreateControlForm() {
         name: "",
         description: null,
         frameworkId: "" as any,
-        status: "draft",
         testingFrequency: null,
       });
       refreshList();
@@ -153,28 +159,6 @@ function CreateControlForm() {
               disabled={pending}
               required
             />
-          </Field>
-
-          <Field data-disabled={pending}>
-            <FieldLabel>Status</FieldLabel>
-            <Select
-              value={values.status}
-              onValueChange={(value) =>
-                setValues((v) => ({
-                  ...v,
-                  status: value as CreateControlInput["status"],
-                }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="draft">draft</SelectItem>
-                <SelectItem value="active">active</SelectItem>
-                <SelectItem value="deprecated">deprecated</SelectItem>
-              </SelectContent>
-            </Select>
           </Field>
 
           <Field data-disabled={pending}>
