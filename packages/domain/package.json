@@ -1,22 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@chronops/domain",
+  "private": true,
+  "type": "module",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
-  "type": "module",
-  "private": true,
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
+  },
+  "dependencies": {
+    "effect": "^3.19.14"
   },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "effect": "^3.19.14"
   }
 }

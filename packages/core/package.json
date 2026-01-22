@@ -1,26 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@chronops/core",
-  "module": "index.ts",
-  "type": "module",
   "private": true,
+  "type": "module",
+  "module": "index.ts",
+  "exports": {
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "auth:gen": "bun x @better-auth/cli@latest generate --config ./src/auth/server.ts",
     "auth:migrate": "bun x @better-auth/cli@latest migrate --config ./src/auth/server.ts",
     "db:migrate": "bun ./src/migration.ts"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/pg": "^8.16.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "exports": {
-    "./*": {
-      "default": "./src/*.ts"
-    }
   },
   "dependencies": {
     "@chronops/domain": "workspace:^",
@@ -34,5 +27,12 @@
     "effect": "^3.19.14",
     "pg": "^8.16.3",
     "ulid": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.16.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
   }
 }

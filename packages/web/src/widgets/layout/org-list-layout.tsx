@@ -10,12 +10,7 @@ type OrgListLayoutProps = {
   className?: string;
 };
 
-export function OrgListLayout({
-  title,
-  action,
-  children,
-  className,
-}: OrgListLayoutProps) {
+export function OrgListLayout({ title, action, children, className }: OrgListLayoutProps) {
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">

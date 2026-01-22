@@ -39,7 +39,7 @@ packages/domain/
 - Module: Preserve (bundler mode)
 - Strict mode enabled with additional checks:
   - `noUncheckedIndexedAccess`: true
-  - `noFallthroughCasesInSwitch`: true  
+  - `noFallthroughCasesInSwitch`: true
   - `noImplicitOverride`: true
 - Use `.ts` extensions in imports (`allowImportingTsExtensions`)
 - `verbatimModuleSyntax`: use explicit `type` imports
@@ -59,7 +59,7 @@ import { ULID } from "./base";
 
 // Bad - don't mix styles inconsistently
 import Schema from "effect/Schema";
-import { Schema } from "effect";  // Use one or the other
+import { Schema } from "effect"; // Use one or the other
 ```
 
 ### Naming Conventions
@@ -127,10 +127,7 @@ export const make = Effect.fn(function* (input: CreateFramework) {
 Use `Context.Tag` for dependency injection:
 
 ```typescript
-export class ULID extends Context.Tag("ULID")<
-  ULID,
-  { createId: () => string }
->() {}
+export class ULID extends Context.Tag("ULID")<ULID, { createId: () => string }>() {}
 
 export const ULIDLayer = ULID.of({ createId: ulid });
 ```
@@ -147,8 +144,8 @@ export * as Base from "./src/base.ts";
 
 // Usage in other packages
 import { Framework } from "@chronops/domain";
-Framework.FrameworkId  // Access type
-Framework.make         // Access function
+Framework.FrameworkId; // Access type
+Framework.make; // Access function
 ```
 
 ### Type Exports
@@ -192,6 +189,7 @@ export class BaseSchema extends Schema.Class<BaseSchema>("BaseSchema")({
    - Factory function (`make`)
 
 2. Export in `index.ts`:
+
    ```typescript
    export * as Model from "./src/model.ts";
    ```

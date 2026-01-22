@@ -30,7 +30,12 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
   const location = useRouterState({ select: (s) => s.location });
 
   const nav: NavItem[] = [
-    { title: "Dashboard", to: "/org/$slug", icon: LayoutDashboard, exact: true },
+    {
+      title: "Dashboard",
+      to: "/org/$slug",
+      icon: LayoutDashboard,
+      exact: true,
+    },
     { title: "Frameworks", to: "/org/$slug/framework", icon: Shield },
     { title: "Controls", to: "/org/$slug/control", icon: SlidersHorizontal },
     { title: "Documents", to: "/org/$slug/document", icon: FileText },
