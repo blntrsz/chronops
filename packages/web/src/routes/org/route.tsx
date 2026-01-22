@@ -1,5 +1,4 @@
 import { organizationMiddleware } from "@/features/auth/middleware";
-import { AppHeader } from "@/widgets/header/app-header";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/org")({
@@ -10,12 +9,5 @@ export const Route = createFileRoute("/org")({
 });
 
 function RouteComponent() {
-  return (
-    <>
-      <AppHeader />
-      <div className="p-4">
-        <Outlet />
-      </div>
-    </>
-  );
+  return <Outlet />;
 }
