@@ -1,5 +1,6 @@
 import { organizationMiddleware } from "@/features/auth/middleware";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { OrgRouteRedirect } from "./-route-redirect";
 
 export const Route = createFileRoute("/org")({
   component: RouteComponent,
@@ -9,5 +10,10 @@ export const Route = createFileRoute("/org")({
 });
 
 function RouteComponent() {
-  return <Outlet />;
+  return (
+    <>
+      <OrgRouteRedirect />
+      <Outlet />
+    </>
+  );
 }
