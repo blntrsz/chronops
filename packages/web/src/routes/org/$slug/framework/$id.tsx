@@ -12,6 +12,7 @@ import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { ListControl } from "@/features/control/list-control";
+import { CommentsSection } from "@/features/comment/comments-section";
 import { getFrameworkById, listFrameworks, updateFramework } from "@/features/framework/_atom";
 import { DeleteFramework } from "@/features/framework/delete-framework";
 import { cn } from "@/lib/utils";
@@ -43,11 +44,11 @@ export const Route = createFileRoute("/org/$slug/framework/$id")({
 
 function RouteComponent() {
   const { id, slug } = Route.useParams();
-  const fwk = useAtomValue(getFrameworkById(id as any));
+  const fwk = useAtomValue(getFrameworkById(id as never));
   const setActiveDialog = useSetActiveDialog();
 
   const mutate = useAtomSet(updateFramework(), { mode: "promise" });
-  const refreshDetail = useAtomRefresh(getFrameworkById(id as any));
+  const refreshDetail = useAtomRefresh(getFrameworkById(id as never));
   const refreshList = useAtomRefresh(listFrameworks(1));
 
   const model = Result.getOrElse(fwk, () => null);
@@ -61,7 +62,7 @@ function RouteComponent() {
     if (!fwkModel) return;
     setName(fwkModel.name);
     setDescription(fwkModel.description ?? "");
-  }, [fwkModel?.id]);
+  }, [fwkModel]);
 
   if (fwk._tag === "Initial") {
     return <FrameworkSkeleton />;
@@ -86,7 +87,7 @@ function RouteComponent() {
       const nextDescription = description.trim();
       await mutate({
         payload: {
-          id: id as any,
+          id: id as never,
           data: {
             name: nextName,
             description: nextDescription === "" ? null : nextDescription,
@@ -153,9 +154,11 @@ function RouteComponent() {
       }
     >
       <div className="flex flex-col gap-6">
-        <DeleteFramework frameworkId={id as any} slug={slug} />
+        <DeleteFramework frameworkId={id as never} slug={slug} />
 
         <ListControl slug={slug} frameworkId={id} />
+
+        <CommentsSection entityId={id as never} />
       </div>
     </OrgListLayout>
   );

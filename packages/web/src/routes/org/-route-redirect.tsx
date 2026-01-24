@@ -1,5 +1,3 @@
-"use client";
-
 import { authClient } from "@/features/auth/client";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import * as React from "react";

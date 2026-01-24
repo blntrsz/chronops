@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
+import { CommentsSection } from "@/features/comment/comments-section";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
@@ -20,7 +21,7 @@ const updatedAtFormat = new Intl.DateTimeFormat(undefined, {
 function formatUpdatedAt(value: unknown) {
   if (value == null) return "—";
   try {
-    const dt = DateTime.isDateTime(value) ? value : DateTime.unsafeMake(value as any);
+    const dt = DateTime.isDateTime(value) ? value : DateTime.unsafeMake(value as never);
     return DateTime.formatIntl(dt, updatedAtFormat);
   } catch {
     return String(value);
@@ -49,9 +50,9 @@ export const Route = createFileRoute("/org/$slug/control/$id")({
 
 function RouteComponent() {
   const { id } = Route.useParams();
-  const ctrl = useAtomValue(getControlById(id as any));
+  const ctrl = useAtomValue(getControlById(id as never));
   const mutate = useAtomSet(updateControl(), { mode: "promise" });
-  const refreshDetail = useAtomRefresh(getControlById(id as any));
+  const refreshDetail = useAtomRefresh(getControlById(id as never));
   const refreshList = useAtomRefresh(listControls(1));
 
   const model = Result.getOrElse(ctrl, () => null);
@@ -91,7 +92,7 @@ function RouteComponent() {
       const nextDescription = description.trim();
       await mutate({
         payload: {
-          id: id as any,
+          id: id as never,
           data: {
             name: nextName,
             description: nextDescription === "" ? null : nextDescription,
@@ -134,6 +135,8 @@ function RouteComponent() {
           Minimal control dashboard placeholder; add widgets next.
         </p>
       </div>
+
+      <CommentsSection entityId={id as never} />
     </div>
   );
 
@@ -162,6 +165,7 @@ function RouteComponent() {
             {formatUpdatedAt(control.updatedAt)}
           </div>
         </div>
+
       </div>
     </div>
   );

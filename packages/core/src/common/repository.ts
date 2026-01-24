@@ -45,25 +45,18 @@ export const make = Effect.fn(function* <
   const getById = ((request: Schema.Schema.Type<typeof config.id>) =>
     Effect.gen(function* () {
       const actor = yield* Actor.Actor;
-      console.log({ actor });
-      console.log({ request });
       const result = SqlSchema.findOne({
         Request: config.id,
         Result: config.model,
         execute(req) {
-          const query = sql`SELECT * FROM ${sql(config.tableName)} 
+          return sql`SELECT * FROM ${sql(config.tableName)} 
             WHERE ${sql.and([
               sql`id = ${req}`,
               sql`org_id = ${actor.orgId}`,
               sql`deleted_at IS NULL`,
             ])}`;
-          console.log({ query });
-          return query;
         },
       })(request);
-
-      console.log({ result });
-
       return yield* result;
     })) as (
     request: Schema.Schema.Type<typeof config.id>,

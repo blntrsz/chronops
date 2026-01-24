@@ -1,6 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CommentsSection } from "@/features/comment/comments-section";
 import { getDocumentById } from "@/features/document/_atom";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/org/$slug/document/$id")({
 
 function RouteComponent() {
   const { id, slug } = Route.useParams();
-  const doc = useAtomValue(getDocumentById(id as any));
+  const doc = useAtomValue(getDocumentById(id as never));
 
   if (doc._tag === "Initial") {
     return <DocumentSkeleton />;
@@ -100,6 +101,8 @@ function RouteComponent() {
           <CardDescription>TODO: edit/delete UI next.</CardDescription>
         </CardHeader>
       </Card>
+
+      <CommentsSection entityId={id as never} />
     </div>
   );
 }

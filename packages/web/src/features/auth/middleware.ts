@@ -29,16 +29,33 @@ export const organizationMiddleware = createMiddleware().server(async ({ next, r
 
   const organizations = await auth.api.listOrganizations({ headers });
 
-  const firstOrganization = organizations.at(0);
+  const pathname = new URL(request.url).pathname;
 
-  if (firstOrganization) {
+  if ((organizations?.length ?? 0) > 0) {
+    const firstOrganization = organizations[0];
+    if (!firstOrganization) {
+      if (pathname !== "/org/create") {
+        throw redirect({ to: "/org/create" });
+      }
+      return await next();
+    }
+    const parts = pathname.split("/").filter(Boolean);
+    const requestedSlug = parts[1];
+    const hasRequestedSlug = parts[0] === "org" && typeof requestedSlug === "string";
+
+    if (hasRequestedSlug) {
+      const exists = organizations.some((o) => o.slug === requestedSlug);
+      if (exists) {
+        return await next();
+      }
+    }
+
+    // No active org + no valid slug in URL -> bounce to first org
     throw redirect({
       to: "/org/$slug",
       params: { slug: firstOrganization.slug },
     });
   }
-
-  const pathname = new URL(request.url).pathname;
 
   if (pathname !== "/org/create") {
     throw redirect({ to: "/org/create" });

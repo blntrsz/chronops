@@ -3,6 +3,8 @@ import { HttpLayerRouter } from "@effect/platform";
 import { RpcSerialization, RpcServer } from "@effect/rpc";
 import { Layer, Logger } from "effect";
 import { AuthMiddlewareLive } from "./auth/middleware";
+import { CommentHandler } from "./comment/handler";
+import { CommentService } from "./comment/service";
 import { SqlLayer } from "./common/sql";
 import { RpcContract } from "./contract";
 import { ControlHandler } from "./control/handler";
@@ -13,10 +15,16 @@ import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { RpcLoggerLayer } from "./logger";
 
-const HandlersLayer = Layer.mergeAll(FrameworkHandler, ControlHandler, DocumentHandler).pipe(
+const HandlersLayer = Layer.mergeAll(
+  FrameworkHandler,
+  ControlHandler,
+  DocumentHandler,
+  CommentHandler,
+).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(DocumentService.Default),
+  Layer.provide(CommentService.Default),
   Layer.provide(SqlLayer),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
 );
