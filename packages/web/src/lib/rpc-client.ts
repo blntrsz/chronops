@@ -5,9 +5,8 @@ import { RpcClient, RpcSerialization } from "@effect/rpc";
 import { Layer } from "effect";
 
 // SSR requires absolute URL; browser fetch resolves relative URLs
-const baseUrl =
-  // @ts-ignore -- window is not defined
-  typeof window === "undefined" ? process.env.API_BASE_URL || "http://localhost:3000" : "";
+const isBrowser = typeof globalThis !== "undefined" && "window" in globalThis;
+const baseUrl = isBrowser ? "" : process.env.API_BASE_URL || "http://localhost:3000";
 
 export const RpcConfigLayer = RpcClient.layerProtocolHttp({
   url: `${baseUrl}/api/rpc`,

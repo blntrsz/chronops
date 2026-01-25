@@ -22,8 +22,19 @@ const updatedAtFormat = new Intl.DateTimeFormat(undefined, {
 function formatUpdatedAt(value: unknown) {
   if (value == null) return "—";
   try {
-    const dt = DateTime.isDateTime(value) ? value : DateTime.unsafeMake(value as any);
-    return DateTime.formatIntl(dt, updatedAtFormat);
+    if (DateTime.isDateTime(value)) {
+      return DateTime.formatIntl(value, updatedAtFormat);
+    }
+
+    if (value instanceof Date) {
+      return DateTime.formatIntl(DateTime.unsafeMake(value), updatedAtFormat);
+    }
+
+    if (typeof value === "string" || typeof value === "number") {
+      return DateTime.formatIntl(DateTime.unsafeMake(value), updatedAtFormat);
+    }
+
+    return String(value);
   } catch {
     return String(value);
   }

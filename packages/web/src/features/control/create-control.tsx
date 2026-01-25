@@ -14,7 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { countControls, createControl, listControls } from "@/features/control/_atom";
 import { listFrameworks } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
-import { Control } from "@chronops/domain";
+import { Control, Framework } from "@chronops/domain";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { useRouterState, useSearch } from "@tanstack/react-router";
 import { Schema } from "effect";
@@ -23,6 +23,7 @@ import React from "react";
 const CreateControlSchema = Control.CreateControl;
 
 type CreateControlInput = Schema.Schema.Type<typeof CreateControlSchema>;
+type FrameworkId = Framework.FrameworkId;
 
 const listRefreshAtom = listControls(1);
 const countRefreshAtom = countControls();
@@ -43,30 +44,40 @@ function CreateControlForm() {
   const frameworkOptions = Result.getOrElse(frameworks, () => []);
 
   const location = useRouterState({ select: (s) => s.location });
-  const search = useSearch({ strict: false }) as any;
+  const search = useSearch({ strict: false });
 
   const [values, setValues] = React.useState<CreateControlInput>({
     name: "",
     description: null,
-    frameworkId: "" as any,
+    frameworkId: "" as FrameworkId,
     testingFrequency: null,
   });
 
-  const [selectedFrameworkIds, setSelectedFrameworkIds] = React.useState<string[]>([]);
+  const [selectedFrameworkIds, setSelectedFrameworkIds] = React.useState<FrameworkId[]>([]);
+
+  const parseFrameworkId = React.useCallback((value: unknown) => {
+    if (typeof value !== "string") return undefined;
+    const result = Schema.decodeOption(Framework.FrameworkId)(value);
+    return result._tag === "Some" ? result.value : undefined;
+  }, []);
 
   React.useEffect(() => {
-    const fwkId = location.pathname.match(/\/framework\/(fwk_[^/]+)/)?.[1];
+    const fwkId = parseFrameworkId(location.pathname.match(/\/framework\/(fwk_[^/]+)/)?.[1]);
     if (!fwkId) return;
-    setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+    setValues((v) => ({ ...v, frameworkId: fwkId }));
     setSelectedFrameworkIds([fwkId]);
-  }, [location.pathname]);
+  }, [location.pathname, parseFrameworkId]);
 
   React.useEffect(() => {
-    const fwkId = (search?.frameworkId as string | undefined) ?? undefined;
+    const fwkId = parseFrameworkId(
+      typeof search === "object" && search && "frameworkId" in search
+        ? (search as { frameworkId?: unknown }).frameworkId
+        : undefined,
+    );
     if (!fwkId) return;
-    setValues((v) => ({ ...v, frameworkId: fwkId as any }));
+    setValues((v) => ({ ...v, frameworkId: fwkId }));
     setSelectedFrameworkIds([fwkId]);
-  }, [search?.frameworkId]);
+  }, [parseFrameworkId, search]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,7 +97,7 @@ function CreateControlForm() {
         payload: {
           name: values.name.trim(),
           description: values.description,
-          frameworkId: values.frameworkId as any,
+          frameworkId: values.frameworkId,
           testingFrequency: values.testingFrequency,
         },
       });
@@ -95,7 +106,7 @@ function CreateControlForm() {
       setValues({
         name: "",
         description: null,
-        frameworkId: "" as any,
+        frameworkId: "" as FrameworkId,
         testingFrequency: null,
       });
       refreshList();
@@ -171,13 +182,10 @@ function CreateControlForm() {
                             ? Array.from(new Set([...prev, f.id]))
                             : prev.filter((id) => id !== f.id);
 
-                          setValues(
-                            (v) =>
-                              ({
-                                ...v,
-                                frameworkId: (next[0] ?? "") as any,
-                              }) as any,
-                          );
+                          setValues((v) => ({
+                            ...v,
+                            frameworkId: (next[0] ?? ("" as FrameworkId)) as FrameworkId,
+                          }));
 
                           return next;
                         });
