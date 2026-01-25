@@ -6,6 +6,7 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/comp
 import { cn } from "@/lib/utils";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
 import { CommentsSection } from "@/features/comment/comments-section";
+import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
@@ -45,153 +46,67 @@ function ControlSkeleton() {
   );
 }
 
-export const Route = createFileRoute("/org/$slug/control/$id")({
-  component: RouteComponent,
-});
+type ControlModel = {
+  id: string;
+  name: string;
+  description?: string | null;
+  frameworkId: string;
+  status?: string | null;
+  testingFrequency?: string | null;
+  updatedAt?: unknown;
+};
 
-function RouteComponent() {
-  const { id } = Route.useParams();
-  const ctrl = useAtomValue(getControlById(id as never));
-  const mutate = useAtomSet(updateControl(), { mode: "promise" });
-  const refreshDetail = useAtomRefresh(getControlById(id as never));
-  const refreshList = useAtomRefresh(listControls(1));
+type ControlHeaderRightProps = {
+  statusLabel: string;
+  isMetaOpen: boolean;
+  onToggle: () => void;
+};
 
-  const model = Result.getOrElse(ctrl, () => null);
-  const ctrlModel = model && model._tag === "Some" ? model.value : null;
-
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [saving, setSaving] = React.useState(false);
-  const [saveStatus, setSaveStatus] = React.useState<
-    "saved" | "saving" | "unsaved" | "invalid" | "error"
-  >("saved");
-  const saveCalledRef = React.useRef(0);
-  const timerRef = React.useRef<number | null>(null);
-  const lastIdRef = React.useRef<string | null>(null);
-  const [isMetaOpen, setIsMetaOpen] = React.useState(true);
-
-  const statusLabel = saving
-    ? "Saving..."
-    : saveStatus === "saved"
-      ? "Saved"
-      : saveStatus === "invalid"
-        ? "Name required"
-        : saveStatus === "error"
-          ? "Save failed"
-          : "Unsaved";
-
-  const headerRight = React.useMemo(
-    () => (
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">{statusLabel}</span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsMetaOpen((value) => !value)}
-          aria-expanded={isMetaOpen}
-          aria-controls="control-metadata"
-          aria-label={isMetaOpen ? "Hide metadata" : "Show metadata"}
-        >
-          <PanelRight />
-        </Button>
-      </div>
-    ),
-    [isMetaOpen, statusLabel],
+function ControlHeaderRight({ statusLabel, isMetaOpen, onToggle }: ControlHeaderRightProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground">{statusLabel}</span>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={onToggle}
+        aria-expanded={isMetaOpen}
+        aria-controls="control-metadata"
+        aria-label={isMetaOpen ? "Hide metadata" : "Show metadata"}
+      >
+        <PanelRight />
+      </Button>
+    </div>
   );
+}
 
-  useAppHeaderSlots({ right: headerRight }, [headerRight]);
+type ControlMainContentProps = {
+  id: string;
+  name: string;
+  description: string;
+  onNameChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+};
 
-  React.useEffect(() => {
-    if (!ctrlModel) return;
-
-    if (lastIdRef.current !== ctrlModel.id) {
-      lastIdRef.current = ctrlModel.id;
-      setName(ctrlModel.name);
-      setDescription(ctrlModel.description ?? "");
-      setSaveStatus("saved");
-    }
-  }, [ctrlModel]);
-
-  React.useEffect(() => {
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  const control = ctrlModel;
-  const dirty = ctrlModel
-    ? name !== ctrlModel.name || description !== (ctrlModel.description ?? "")
-    : false;
-  const isValid = name.trim() !== "";
-
-  React.useEffect(() => {
-    if (!dirty) {
-      setSaveStatus("saved");
-      return;
-    }
-    if (!isValid) {
-      setSaveStatus("invalid");
-      return;
-    }
-
-    setSaveStatus("unsaved");
-    timerRef.current = window.setTimeout(async () => {
-      const callId = ++saveCalledRef.current;
-      setSaving(true);
-      setSaveStatus("saving");
-      try {
-        const nextName = name.trim();
-        const nextDescription = description.trim();
-        await mutate({
-          payload: {
-            id: id as never,
-            data: {
-              name: nextName,
-              description: nextDescription === "" ? null : nextDescription,
-            },
-          },
-        });
-        if (callId === saveCalledRef.current) {
-          refreshDetail();
-          refreshList();
-          setSaveStatus("saved");
-        }
-      } catch {
-        if (callId === saveCalledRef.current) setSaveStatus("error");
-      } finally {
-        if (callId === saveCalledRef.current) setSaving(false);
-      }
-    }, 800);
-
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    };
-  }, [dirty, isValid, name, description, mutate, refreshDetail, refreshList, id]);
-
-  if (ctrl._tag === "Initial") {
-    return <ControlSkeleton />;
-  }
-
-  if (Result.isFailure(ctrl)) {
-    return <FieldDescription>Failed loading control</FieldDescription>;
-  }
-
-  if (!ctrlModel || !control) {
-    return <FieldDescription>Control not found</FieldDescription>;
-  }
-
-  const mainContent = (
+function ControlMainContent({
+  id,
+  name,
+  description,
+  onNameChange,
+  onDescriptionChange,
+}: ControlMainContentProps) {
+  return (
     <div className="flex flex-col gap-6 py-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <GhostInput
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => onNameChange(e.target.value)}
           className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
         />
         <GhostTextArea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => onDescriptionChange(e.target.value)}
           className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
           placeholder="Description"
           rows={1}
@@ -208,8 +123,14 @@ function RouteComponent() {
       <CommentsSection entityId={id as never} />
     </div>
   );
+}
 
-  const metadataContent = (
+type ControlMetadataPanelProps = {
+  control: ControlModel;
+};
+
+function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
+  return (
     <div className="space-y-4 text-sm">
       <div>
         <div className="text-xs uppercase text-muted-foreground">ID</div>
@@ -225,13 +146,91 @@ function RouteComponent() {
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Testing</div>
-        <div className="mt-1 font-medium text-foreground">{control.testingFrequency ?? "—"}</div>
+        <div className="mt-1 font-medium text-foreground">
+          {control.testingFrequency ?? "—"}
+        </div>
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Updated</div>
-        <div className="mt-1 font-medium text-foreground">{formatUpdatedAt(control.updatedAt)}</div>
+        <div className="mt-1 font-medium text-foreground">
+          {formatUpdatedAt(control.updatedAt)}
+        </div>
       </div>
     </div>
+  );
+}
+
+export const Route = createFileRoute("/org/$slug/control/$id")({
+  component: RouteComponent,
+});
+
+function RouteComponent() {
+  const { id } = Route.useParams();
+  const ctrl = useAtomValue(getControlById(id as never));
+  const mutate = useAtomSet(updateControl(), { mode: "promise" });
+  const refreshDetail = useAtomRefresh(getControlById(id as never));
+  const refreshList = useAtomRefresh(listControls(1));
+
+  const model = Result.getOrElse(ctrl, () => null);
+  const ctrlModel = model && model._tag === "Some" ? model.value : null;
+  const [isMetaOpen, setIsMetaOpen] = React.useState(true);
+
+  const { name, setName, description, setDescription, statusLabel } = useAutosaveFields({
+    id: ctrlModel?.id ?? null,
+    name: ctrlModel?.name,
+    description: ctrlModel?.description,
+    onSave: async ({ name: nextName, description: nextDescription }) => {
+      await mutate({
+        payload: {
+          id: id as never,
+          data: {
+            name: nextName,
+            description: nextDescription,
+          },
+        },
+      });
+    },
+    onSaved: () => {
+      refreshDetail();
+      refreshList();
+    },
+  });
+
+  const headerRight = React.useMemo(
+    () => (
+      <ControlHeaderRight
+        statusLabel={statusLabel}
+        isMetaOpen={isMetaOpen}
+        onToggle={() => setIsMetaOpen((value) => !value)}
+      />
+    ),
+    [isMetaOpen, statusLabel],
+  );
+
+  useAppHeaderSlots({ right: headerRight }, [headerRight]);
+
+  const control = ctrlModel as ControlModel | null;
+
+  if (ctrl._tag === "Initial") {
+    return <ControlSkeleton />;
+  }
+
+  if (Result.isFailure(ctrl)) {
+    return <FieldDescription>Failed loading control</FieldDescription>;
+  }
+
+  if (!ctrlModel || !control) {
+    return <FieldDescription>Control not found</FieldDescription>;
+  }
+
+  const mainContent = (
+    <ControlMainContent
+      id={id}
+      name={name}
+      description={description}
+      onNameChange={setName}
+      onDescriptionChange={setDescription}
+    />
   );
 
   return (
@@ -255,7 +254,9 @@ function RouteComponent() {
               <div className="text-xs uppercase text-muted-foreground">Metadata</div>
             </SidebarHeader>
             <SidebarSeparator />
-            <SidebarContent className="gap-4 px-4 py-4">{metadataContent}</SidebarContent>
+            <SidebarContent className="gap-4 px-4 py-4">
+              <ControlMetadataPanel control={control} />
+            </SidebarContent>
           </div>
         </Sidebar>
       </div>

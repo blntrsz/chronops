@@ -14,6 +14,7 @@ import { ListControl } from "@/features/control/list-control";
 import { CommentsSection } from "@/features/comment/comments-section";
 import { getFrameworkById, listFrameworks, updateFramework } from "@/features/framework/_atom";
 import { DeleteFramework } from "@/features/framework/delete-framework";
+import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { cn } from "@/lib/utils";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
@@ -54,90 +55,26 @@ function RouteComponent() {
   const model = Result.getOrElse(fwk, () => null);
   const fwkModel = model && model._tag === "Some" ? model.value : null;
 
-  const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
-  const [saving, setSaving] = React.useState(false);
-  const [saveStatus, setSaveStatus] = React.useState<
-    "saved" | "saving" | "unsaved" | "invalid" | "error"
-  >("saved");
-  const saveCalledRef = React.useRef(0);
-  const timerRef = React.useRef<number | null>(null);
-  const lastIdRef = React.useRef<string | null>(null);
-  const dirty = fwkModel
-    ? name !== fwkModel.name || description !== (fwkModel.description ?? "")
-    : false;
-  const isValid = name.trim() !== "";
-
-  React.useEffect(() => {
-    if (!fwkModel) return;
-
-    if (lastIdRef.current !== fwkModel.id) {
-      lastIdRef.current = fwkModel.id;
-      setName(fwkModel.name);
-      setDescription(fwkModel.description ?? "");
-      setSaveStatus("saved");
-    }
-  }, [fwkModel]);
-
-  React.useEffect(() => {
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!dirty) {
-      setSaveStatus("saved");
-      return;
-    }
-    if (!isValid) {
-      setSaveStatus("invalid");
-      return;
-    }
-
-    setSaveStatus("unsaved");
-    timerRef.current = window.setTimeout(async () => {
-      const callId = ++saveCalledRef.current;
-      setSaving(true);
-      setSaveStatus("saving");
-      try {
-        const nextName = name.trim();
-        const nextDescription = description.trim();
-        await mutate({
-          payload: {
-            id: id as never,
-            data: {
-              name: nextName,
-              description: nextDescription === "" ? null : nextDescription,
-            },
+  const { name, setName, description, setDescription, statusLabel } = useAutosaveFields({
+    id: fwkModel?.id ?? null,
+    name: fwkModel?.name,
+    description: fwkModel?.description,
+    onSave: async ({ name: nextName, description: nextDescription }) => {
+      await mutate({
+        payload: {
+          id: id as never,
+          data: {
+            name: nextName,
+            description: nextDescription,
           },
-        });
-        if (callId === saveCalledRef.current) {
-          refreshDetail();
-          refreshList();
-          setSaveStatus("saved");
-        }
-      } catch {
-        if (callId === saveCalledRef.current) setSaveStatus("error");
-      } finally {
-        if (callId === saveCalledRef.current) setSaving(false);
-      }
-    }, 800);
-
-    return () => {
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    };
-  }, [dirty, isValid, name, description, mutate, refreshDetail, refreshList, id]);
-
-  const statusLabel = saving
-    ? "Saving..."
-    : saveStatus === "saved"
-      ? "Saved"
-      : saveStatus === "invalid"
-        ? "Name required"
-        : saveStatus === "error"
-          ? "Save failed"
-          : "Unsaved";
+        },
+      });
+    },
+    onSaved: () => {
+      refreshDetail();
+      refreshList();
+    },
+  });
 
   const headerRight = React.useMemo(() => {
     if (!fwkModel) return null;
