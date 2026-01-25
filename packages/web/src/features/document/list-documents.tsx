@@ -52,9 +52,6 @@ export function ListDocuments({ className, ...props }: React.ComponentProps<"div
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-row justify-end gap-2">
-        <Button type="button" variant="secondary" disabled>
-          Upload (TODO)
-        </Button>
         <CreateDocument />
       </div>
 
