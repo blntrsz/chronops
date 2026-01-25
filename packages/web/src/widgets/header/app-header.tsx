@@ -17,8 +17,6 @@ import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-import { UserButton } from "./user-button";
-
 type AppHeaderProps = {
   hasSidebar?: boolean;
   className?: string;
@@ -115,7 +113,6 @@ export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps
 
         <div className="flex items-center gap-2">
           {right}
-          <UserButton />
         </div>
       </div>
     </header>

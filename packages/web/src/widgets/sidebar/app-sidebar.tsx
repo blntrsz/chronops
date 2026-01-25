@@ -1,7 +1,15 @@
 "use client";
 
-import { FileText, Frame, LayoutDashboard, Shield, SlidersHorizontal } from "lucide-react";
-import type * as React from "react";
+import {
+  CircleHelp,
+  FileText,
+  LayoutDashboard,
+  Search,
+  Settings,
+  Shield,
+  SlidersHorizontal,
+} from "lucide-react";
+import * as React from "react";
 
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
 
@@ -14,9 +22,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "@/components/ui/command";
 
 import { cn } from "@/lib/utils";
 import { OrgSwitcher } from "@/widgets/sidebar/org-switcher";
+import { SidebarUser } from "@/widgets/sidebar/sidebar-user";
 
 type NavItem = {
   title: string;
@@ -28,6 +38,7 @@ type NavItem = {
 export function AppSidebar({ className, ...props }: React.ComponentProps<typeof Sidebar>) {
   const { slug } = useParams({ from: "/org/$slug" });
   const location = useRouterState({ select: (s) => s.location });
+  const [searchOpen, setSearchOpen] = React.useState(false);
 
   const nav: NavItem[] = [
     {
@@ -73,12 +84,39 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Settings">
               <Link to="/org/$slug" params={{ slug }}>
-                <Frame />
+                <Settings />
                 <span>Settings</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Get Help">
+              <a href="mailto:support@chronops.dev">
+                <CircleHelp />
+                <span>Get Help</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Search">
+              <button type="button" onClick={() => setSearchOpen(true)}>
+                <Search />
+                <span>Search</span>
+              </button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarUser />
         </SidebarMenu>
+
+        <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
+          <CommandInput placeholder="Search..." />
+          <CommandList>
+            <CommandEmpty>No results.</CommandEmpty>
+          </CommandList>
+        </CommandDialog>
       </SidebarFooter>
     </Sidebar>
   );
