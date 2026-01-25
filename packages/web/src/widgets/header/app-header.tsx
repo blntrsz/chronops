@@ -8,11 +8,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import { MoreHorizontal, Star } from "lucide-react";
 import type * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -97,16 +95,6 @@ export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps
                 </BreadcrumbList>
               </Breadcrumb>
 
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <Button size="icon-sm" variant="ghost" className="h-8 w-8">
-                  <Star className="size-4" />
-                  <span className="sr-only">Star</span>
-                </Button>
-                <Button size="icon-sm" variant="ghost" className="h-8 w-8">
-                  <MoreHorizontal className="size-4" />
-                  <span className="sr-only">More</span>
-                </Button>
-              </div>
             </div>
           )}
         </div>

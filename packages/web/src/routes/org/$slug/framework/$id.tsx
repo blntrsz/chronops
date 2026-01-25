@@ -10,16 +10,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { ListControl } from "@/features/control/list-control";
 import { CommentsSection } from "@/features/comment/comments-section";
 import { getFrameworkById, listFrameworks, updateFramework } from "@/features/framework/_atom";
 import { DeleteFramework } from "@/features/framework/delete-framework";
 import { cn } from "@/lib/utils";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
+import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { MoreHorizontal, Plus, Save, Trash2 } from "lucide-react";
+import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import React from "react";
 
 function FrameworkSkeleton() {
@@ -57,12 +57,118 @@ function RouteComponent() {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [saving, setSaving] = React.useState(false);
+  const [saveStatus, setSaveStatus] = React.useState<"saved" | "saving" | "unsaved" | "invalid" | "error">(
+    "saved",
+  );
+  const saveCalledRef = React.useRef(0);
+  const timerRef = React.useRef<number | null>(null);
+  const lastIdRef = React.useRef<string | null>(null);
+  const dirty = fwkModel ? name !== fwkModel.name || description !== (fwkModel.description ?? "") : false;
+  const isValid = name.trim() !== "";
 
   React.useEffect(() => {
     if (!fwkModel) return;
-    setName(fwkModel.name);
-    setDescription(fwkModel.description ?? "");
+
+    if (lastIdRef.current !== fwkModel.id) {
+      lastIdRef.current = fwkModel.id;
+      setName(fwkModel.name);
+      setDescription(fwkModel.description ?? "");
+      setSaveStatus("saved");
+    }
   }, [fwkModel]);
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!dirty) {
+      setSaveStatus("saved");
+      return;
+    }
+    if (!isValid) {
+      setSaveStatus("invalid");
+      return;
+    }
+
+    setSaveStatus("unsaved");
+    timerRef.current = window.setTimeout(async () => {
+      const callId = ++saveCalledRef.current;
+      setSaving(true);
+      setSaveStatus("saving");
+      try {
+        const nextName = name.trim();
+        const nextDescription = description.trim();
+        await mutate({
+          payload: {
+            id: id as never,
+            data: {
+              name: nextName,
+              description: nextDescription === "" ? null : nextDescription,
+            },
+          },
+        });
+        if (callId === saveCalledRef.current) {
+          refreshDetail();
+          refreshList();
+          setSaveStatus("saved");
+        }
+      } catch {
+        if (callId === saveCalledRef.current) setSaveStatus("error");
+      } finally {
+        if (callId === saveCalledRef.current) setSaving(false);
+      }
+    }, 800);
+
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, [dirty, isValid, name, description, mutate, refreshDetail, refreshList, id]);
+
+  const statusLabel = saving
+    ? "Saving..."
+    : saveStatus === "saved"
+      ? "Saved"
+      : saveStatus === "invalid"
+        ? "Name required"
+        : saveStatus === "error"
+          ? "Save failed"
+          : "Unsaved";
+
+  const headerRight = React.useMemo(() => {
+    if (!fwkModel) return null;
+
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">{statusLabel}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" aria-label="Framework actions">
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => setActiveDialog("createControl")}>
+              <Plus />
+              Add controls
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setActiveDialog("deleteFramework")}
+            >
+              <Trash2 />
+              Delete framework
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }, [fwkModel, statusLabel, setActiveDialog]);
+
+  useAppHeaderSlots({ right: headerRight }, [headerRight]);
 
   if (fwk._tag === "Initial") {
     return <FrameworkSkeleton />;
@@ -74,31 +180,6 @@ function RouteComponent() {
 
   if (!fwkModel) {
     return <FieldDescription>Framework not found</FieldDescription>;
-  }
-
-  const dirty = name !== fwkModel.name || description !== (fwkModel.description ?? "");
-  const canSave = dirty && !saving && name.trim() !== "";
-
-  async function onSave() {
-    if (!canSave) return;
-    setSaving(true);
-    try {
-      const nextName = name.trim();
-      const nextDescription = description.trim();
-      await mutate({
-        payload: {
-          id: id as never,
-          data: {
-            name: nextName,
-            description: nextDescription === "" ? null : nextDescription,
-          },
-        },
-      });
-      refreshDetail();
-      refreshList();
-    } finally {
-      setSaving(false);
-    }
   }
 
   return (
@@ -122,36 +203,7 @@ function RouteComponent() {
           />
         </div>
       }
-      action={
-        <div className="flex items-center gap-2">
-          <Button type="button" onClick={onSave} disabled={!canSave} className="gap-2">
-            {saving ? <Spinner /> : <Save />}
-            {saving ? "Saving..." : "Save"}
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" aria-label="Framework actions">
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => setActiveDialog("createControl")}>
-                <Plus />
-                Add controls
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                onClick={() => setActiveDialog("deleteFramework")}
-              >
-                <Trash2 />
-                Delete framework
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      }
+      action={null}
     >
       <div className="flex flex-col gap-6">
         <DeleteFramework frameworkId={id as never} slug={slug} />
