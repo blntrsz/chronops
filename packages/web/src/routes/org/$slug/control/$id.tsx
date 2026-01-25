@@ -3,14 +3,16 @@ import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
 import { CommentsSection } from "@/features/comment/comments-section";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
+import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DateTime } from "effect";
-import { Save } from "lucide-react";
+import { PanelRight, Save } from "lucide-react";
 import React from "react";
 
 const updatedAtFormat = new Intl.DateTimeFormat(undefined, {
@@ -61,6 +63,26 @@ function RouteComponent() {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [saving, setSaving] = React.useState(false);
+  const [isMetaOpen, setIsMetaOpen] = React.useState(true);
+
+  const headerRight = React.useMemo(
+    () => (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsMetaOpen((value) => !value)}
+        aria-expanded={isMetaOpen}
+        aria-controls="control-metadata"
+        aria-label={isMetaOpen ? "Hide metadata" : "Show metadata"}
+      >
+        <PanelRight />
+      </Button>
+    ),
+    [isMetaOpen],
+  );
+
+  useAppHeaderSlots({ right: headerRight }, [headerRight]);
 
   React.useEffect(() => {
     if (!ctrlModel) return;
@@ -141,51 +163,55 @@ function RouteComponent() {
   );
 
   const metadataContent = (
-    <div className="h-full bg-muted/50 p-6 text-sm">
-      <div className="space-y-4">
-        <div>
-          <div className="text-xs uppercase text-muted-foreground">ID</div>
-          <div className="mt-1 font-medium text-foreground">{control.id}</div>
+    <div className="space-y-4 text-sm">
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">ID</div>
+        <div className="mt-1 font-medium text-foreground">{control.id}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">Framework</div>
+        <div className="mt-1 font-medium text-foreground">{control.frameworkId}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">Status</div>
+        <div className="mt-1 font-medium text-foreground">{control.status ?? "—"}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">Testing</div>
+        <div className="mt-1 font-medium text-foreground">{control.testingFrequency ?? "—"}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">Updated</div>
+        <div className="mt-1 font-medium text-foreground">
+          {formatUpdatedAt(control.updatedAt)}
         </div>
-        <div>
-          <div className="text-xs uppercase text-muted-foreground">Framework</div>
-          <div className="mt-1 font-medium text-foreground">{control.frameworkId}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase text-muted-foreground">Status</div>
-          <div className="mt-1 font-medium text-foreground">{control.status ?? "—"}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase text-muted-foreground">Testing</div>
-          <div className="mt-1 font-medium text-foreground">{control.testingFrequency ?? "—"}</div>
-        </div>
-        <div>
-          <div className="text-xs uppercase text-muted-foreground">Updated</div>
-          <div className="mt-1 font-medium text-foreground">
-            {formatUpdatedAt(control.updatedAt)}
-          </div>
-        </div>
-
       </div>
     </div>
   );
 
   return (
     <OrgListLayout title={null} action={null} className="gap-0">
-      <div className="lg:grid lg:min-h-[calc(100vh-140px)] lg:items-stretch lg:gap-8 lg:grid-cols-[2fr_1fr]">
-        <div className="lg:hidden">
-          <Tabs defaultValue="main" className="gap-4">
-            <TabsList className="w-full">
-              <TabsTrigger value="main">Main</TabsTrigger>
-              <TabsTrigger value="meta">Metadata</TabsTrigger>
-            </TabsList>
-            <TabsContent value="main">{mainContent}</TabsContent>
-            <TabsContent value="meta">{metadataContent}</TabsContent>
-          </Tabs>
-        </div>
-
-        <div className="hidden lg:block">{mainContent}</div>
-        <div className="hidden lg:block">{metadataContent}</div>
+      <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
+        <div className="min-w-0 flex-1">{mainContent}</div>
+        <Sidebar
+          id="control-metadata"
+          side="right"
+          collapsible="none"
+          className={cn(
+            "border-l transition-[width,opacity] duration-300 lg:-mt-4 lg:sticky lg:top-14 lg:h-[calc(100vh-56px)] lg:ml-4",
+            isMetaOpen ? "w-full opacity-100 lg:w-[320px]" : "w-0 opacity-0",
+          )}
+          aria-hidden={!isMetaOpen}
+        >
+          <div className={cn("flex h-full w-full flex-col", isMetaOpen ? "" : "pointer-events-none")}
+          >
+            <SidebarHeader className="px-4 py-3">
+              <div className="text-xs uppercase text-muted-foreground">Metadata</div>
+            </SidebarHeader>
+            <SidebarSeparator />
+            <SidebarContent className="gap-4 px-4 py-4">{metadataContent}</SidebarContent>
+          </div>
+        </Sidebar>
       </div>
     </OrgListLayout>
   );
