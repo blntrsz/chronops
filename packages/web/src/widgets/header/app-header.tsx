@@ -1,26 +1,122 @@
+"use client";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Logo } from "./logo";
+import { Link, useParams, useRouterState } from "@tanstack/react-router";
+import { MoreHorizontal, Star } from "lucide-react";
+import type * as React from "react";
+
+import { cn } from "@/lib/utils";
+
 import { UserButton } from "./user-button";
 
 type AppHeaderProps = {
   hasSidebar?: boolean;
+  className?: string;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
 };
 
-export function AppHeader({ hasSidebar }: AppHeaderProps) {
+const SECTION_LABEL: Record<string, string> = {
+  framework: "Frameworks",
+  control: "Controls",
+  document: "Documents",
+};
+
+export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps) {
+  const { slug } = useParams({ from: "/org/$slug" });
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const rest = pathname.replace(new RegExp(`^/org/${slug}(/)?`), "");
+  const [section, maybeId] = rest.split("/").filter(Boolean);
+  const sectionLabel = section ? SECTION_LABEL[section] ?? section : undefined;
+
+  const showSection = Boolean(sectionLabel);
+  const showId = Boolean(maybeId);
+
   return (
-    <header className="sticky top-0 z-50 bg-white">
-      <div className="flex h-16 items-center justify-between border-b-1 p-4">
-        <div className="flex h-full items-center gap-4">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        className,
+      )}
+    >
+      <div className="flex h-14 items-center justify-between gap-3 px-4">
+        <div className="flex min-w-0 items-center gap-2">
           {hasSidebar && (
             <>
               <SidebarTrigger className="h-8 w-8" />
-              <Separator className="mr-4 h-full w-1" orientation="vertical" />
+              <Separator className="mx-1 h-6" orientation="vertical" />
             </>
           )}
-          <Logo to={"/org"} />
+
+          {left ?? (
+            <div className="flex min-w-0 items-center gap-2">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink asChild>
+                      <Link to="/org/$slug" params={{ slug }}>
+                        {slug}
+                      </Link>
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+
+                  {showSection && (
+                    <>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        {showId ? (
+                          <BreadcrumbLink asChild>
+                            <Link to="/org/$slug" params={{ slug }}>
+                              {sectionLabel}
+                            </Link>
+                          </BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage className="truncate">{sectionLabel}</BreadcrumbPage>
+                        )}
+                      </BreadcrumbItem>
+                    </>
+                  )}
+
+                  {showId && (
+                    <>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage className="truncate">{maybeId}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </>
+                  )}
+                </BreadcrumbList>
+              </Breadcrumb>
+
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Button size="icon-sm" variant="ghost" className="h-8 w-8">
+                  <Star className="size-4" />
+                  <span className="sr-only">Star</span>
+                </Button>
+                <Button size="icon-sm" variant="ghost" className="h-8 w-8">
+                  <MoreHorizontal className="size-4" />
+                  <span className="sr-only">More</span>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-        <UserButton />
+
+        <div className="flex items-center gap-2">
+          {right}
+          <UserButton />
+        </div>
       </div>
     </header>
   );
