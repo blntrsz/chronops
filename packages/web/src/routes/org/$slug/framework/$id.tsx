@@ -57,13 +57,15 @@ function RouteComponent() {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [saving, setSaving] = React.useState(false);
-  const [saveStatus, setSaveStatus] = React.useState<"saved" | "saving" | "unsaved" | "invalid" | "error">(
-    "saved",
-  );
+  const [saveStatus, setSaveStatus] = React.useState<
+    "saved" | "saving" | "unsaved" | "invalid" | "error"
+  >("saved");
   const saveCalledRef = React.useRef(0);
   const timerRef = React.useRef<number | null>(null);
   const lastIdRef = React.useRef<string | null>(null);
-  const dirty = fwkModel ? name !== fwkModel.name || description !== (fwkModel.description ?? "") : false;
+  const dirty = fwkModel
+    ? name !== fwkModel.name || description !== (fwkModel.description ?? "")
+    : false;
   const isValid = name.trim() !== "";
 
   React.useEffect(() => {
@@ -185,7 +187,7 @@ function RouteComponent() {
   return (
     <OrgListLayout
       title={
-        <div className="flex min-w-0 flex-col gap-1">
+        <>
           <GhostInput
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -197,11 +199,11 @@ function RouteComponent() {
           <GhostTextArea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="text-muted-foreground min-h-0 w-full min-w-0 p-0 text-sm"
+            className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
             placeholder="Description"
             rows={1}
           />
-        </div>
+        </>
       }
       action={null}
     >

@@ -2,7 +2,6 @@ import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
@@ -12,7 +11,7 @@ import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
 import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DateTime } from "effect";
-import { PanelRight, Save } from "lucide-react";
+import { PanelRight } from "lucide-react";
 import React from "react";
 
 const updatedAtFormat = new Intl.DateTimeFormat(undefined, {
@@ -63,32 +62,112 @@ function RouteComponent() {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [saving, setSaving] = React.useState(false);
+  const [saveStatus, setSaveStatus] = React.useState<
+    "saved" | "saving" | "unsaved" | "invalid" | "error"
+  >("saved");
+  const saveCalledRef = React.useRef(0);
+  const timerRef = React.useRef<number | null>(null);
+  const lastIdRef = React.useRef<string | null>(null);
   const [isMetaOpen, setIsMetaOpen] = React.useState(true);
+
+  const statusLabel = saving
+    ? "Saving..."
+    : saveStatus === "saved"
+      ? "Saved"
+      : saveStatus === "invalid"
+        ? "Name required"
+        : saveStatus === "error"
+          ? "Save failed"
+          : "Unsaved";
 
   const headerRight = React.useMemo(
     () => (
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsMetaOpen((value) => !value)}
-        aria-expanded={isMetaOpen}
-        aria-controls="control-metadata"
-        aria-label={isMetaOpen ? "Hide metadata" : "Show metadata"}
-      >
-        <PanelRight />
-      </Button>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">{statusLabel}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMetaOpen((value) => !value)}
+          aria-expanded={isMetaOpen}
+          aria-controls="control-metadata"
+          aria-label={isMetaOpen ? "Hide metadata" : "Show metadata"}
+        >
+          <PanelRight />
+        </Button>
+      </div>
     ),
-    [isMetaOpen],
+    [isMetaOpen, statusLabel],
   );
 
   useAppHeaderSlots({ right: headerRight }, [headerRight]);
 
   React.useEffect(() => {
     if (!ctrlModel) return;
-    setName(ctrlModel.name);
-    setDescription(ctrlModel.description ?? "");
+
+    if (lastIdRef.current !== ctrlModel.id) {
+      lastIdRef.current = ctrlModel.id;
+      setName(ctrlModel.name);
+      setDescription(ctrlModel.description ?? "");
+      setSaveStatus("saved");
+    }
   }, [ctrlModel]);
+
+  React.useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const control = ctrlModel;
+  const dirty = ctrlModel
+    ? name !== ctrlModel.name || description !== (ctrlModel.description ?? "")
+    : false;
+  const isValid = name.trim() !== "";
+
+  React.useEffect(() => {
+    if (!dirty) {
+      setSaveStatus("saved");
+      return;
+    }
+    if (!isValid) {
+      setSaveStatus("invalid");
+      return;
+    }
+
+    setSaveStatus("unsaved");
+    timerRef.current = window.setTimeout(async () => {
+      const callId = ++saveCalledRef.current;
+      setSaving(true);
+      setSaveStatus("saving");
+      try {
+        const nextName = name.trim();
+        const nextDescription = description.trim();
+        await mutate({
+          payload: {
+            id: id as never,
+            data: {
+              name: nextName,
+              description: nextDescription === "" ? null : nextDescription,
+            },
+          },
+        });
+        if (callId === saveCalledRef.current) {
+          refreshDetail();
+          refreshList();
+          setSaveStatus("saved");
+        }
+      } catch {
+        if (callId === saveCalledRef.current) setSaveStatus("error");
+      } finally {
+        if (callId === saveCalledRef.current) setSaving(false);
+      }
+    }, 800);
+
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, [dirty, isValid, name, description, mutate, refreshDetail, refreshList, id]);
 
   if (ctrl._tag === "Initial") {
     return <ControlSkeleton />;
@@ -98,57 +177,25 @@ function RouteComponent() {
     return <FieldDescription>Failed loading control</FieldDescription>;
   }
 
-  if (!ctrlModel) {
+  if (!ctrlModel || !control) {
     return <FieldDescription>Control not found</FieldDescription>;
-  }
-
-  const control = ctrlModel;
-  const dirty = name !== ctrlModel.name || description !== (ctrlModel.description ?? "");
-  const canSave = dirty && !saving && name.trim() !== "";
-
-  async function onSave() {
-    if (!canSave) return;
-    setSaving(true);
-    try {
-      const nextName = name.trim();
-      const nextDescription = description.trim();
-      await mutate({
-        payload: {
-          id: id as never,
-          data: {
-            name: nextName,
-            description: nextDescription === "" ? null : nextDescription,
-          },
-        },
-      });
-      refreshDetail();
-      refreshList();
-    } finally {
-      setSaving(false);
-    }
   }
 
   const mainContent = (
     <div className="flex flex-col gap-6 py-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-col gap-1">
-          <GhostInput
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
-          />
-          <GhostTextArea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="text-muted-foreground min-h-0 w-full min-w-0 p-0 text-sm"
-            placeholder="Description"
-            rows={1}
-          />
-        </div>
-        <Button type="button" onClick={onSave} disabled={!canSave} className="gap-2">
-          {saving ? <Spinner /> : <Save />}
-          {saving ? "Saving..." : "Save"}
-        </Button>
+        <GhostInput
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
+        />
+        <GhostTextArea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
+          placeholder="Description"
+          rows={1}
+        />
       </div>
 
       <div className="space-y-3">
@@ -182,15 +229,13 @@ function RouteComponent() {
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Updated</div>
-        <div className="mt-1 font-medium text-foreground">
-          {formatUpdatedAt(control.updatedAt)}
-        </div>
+        <div className="mt-1 font-medium text-foreground">{formatUpdatedAt(control.updatedAt)}</div>
       </div>
     </div>
   );
 
   return (
-    <OrgListLayout title={null} action={null} className="gap-0">
+    <OrgListLayout title={null} action={null} className="gap-0 pr-0">
       <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
         <div className="min-w-0 flex-1">{mainContent}</div>
         <Sidebar
@@ -203,7 +248,8 @@ function RouteComponent() {
           )}
           aria-hidden={!isMetaOpen}
         >
-          <div className={cn("flex h-full w-full flex-col", isMetaOpen ? "" : "pointer-events-none")}
+          <div
+            className={cn("flex h-full w-full flex-col", isMetaOpen ? "" : "pointer-events-none")}
           >
             <SidebarHeader className="px-4 py-3">
               <div className="text-xs uppercase text-muted-foreground">Metadata</div>
