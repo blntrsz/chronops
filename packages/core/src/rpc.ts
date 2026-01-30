@@ -14,17 +14,21 @@ import { DocumentService } from "./document/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { RpcLoggerLayer } from "./logger";
+import { TagHandler } from "./tag/handler";
+import { TagService } from "./tag/service";
 
 const HandlersLayer = Layer.mergeAll(
   FrameworkHandler,
   ControlHandler,
   DocumentHandler,
   CommentHandler,
+  TagHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(DocumentService.Default),
   Layer.provide(CommentService.Default),
+  Layer.provide(TagService.Default),
   Layer.provide(SqlLayer),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
 );

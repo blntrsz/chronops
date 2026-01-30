@@ -2,5 +2,6 @@ export * as Framework from "./framework";
 export * as Control from "./control";
 export * as Document from "./document";
 export * as Comment from "./comment";
-export * as Base from "./base";
-export * as Actor from "./actor";
+export * as Tag from "./primitives/tag";
+export * as Base from "./primitives/base";
+export * as Actor from "./primitives/actor";
