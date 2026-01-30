@@ -13,6 +13,8 @@ import { DocumentHandler } from "./document/handler";
 import { DocumentService } from "./document/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
+import { QuestionerHandler } from "./questioner/handler";
+import { QuestionerService } from "./questioner/service";
 import { RpcLoggerLayer } from "./logger";
 import { TagHandler } from "./tag/handler";
 import { TagService } from "./tag/service";
@@ -23,12 +25,14 @@ const HandlersLayer = Layer.mergeAll(
   DocumentHandler,
   CommentHandler,
   TagHandler,
+  QuestionerHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(DocumentService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(TagService.Default),
+  Layer.provide(QuestionerService.Default),
   Layer.provide(SqlLayer),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
 );
