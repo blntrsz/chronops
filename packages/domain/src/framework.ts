@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Base from "./base";
+import * as Base from "./primitives/base";
 
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;

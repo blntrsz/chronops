@@ -16,6 +16,7 @@ import { CreateDocument } from "@/features/document/create-document";
 import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { Link, useParams } from "@tanstack/react-router";
+import { Effect } from "effect";
 import React from "react";
 
 const pageSize = 50;
