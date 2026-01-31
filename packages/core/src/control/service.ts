@@ -1,33 +1,94 @@
 import { Actor, Control, Framework } from "@chronops/domain";
-import { SqlClient, SqlSchema } from "@effect/sql";
-import { Effect, Option, Schema } from "effect";
-import * as Repository from "../common/repository";
-import { FrameworkService } from "../framework/service";
-
-const CountResult = Schema.Struct({ count: Schema.NumberFromString });
+import { and, count, eq, isNull } from "drizzle-orm";
+import { Effect, Schema } from "effect";
+import { Pagination } from "../common/repository";
+import { Database } from "../db";
 
 export class ControlService extends Effect.Service<ControlService>()("ControlService", {
   effect: Effect.gen(function* () {
-    const sql = yield* SqlClient.SqlClient;
+    const { use, tables } = yield* Database;
 
-    const repository = yield* Repository.make({
-      id: Control.ControlId,
-      model: Control.Control,
-      tableName: "control",
-    });
+    /**
+     * Get a control by its ID.
+     * @since 1.0.0
+     * @category service-method
+     */
+    const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Control.ControlId>) {
+      const actor = yield* Actor.Actor;
+      const model = yield* use((db) =>
+        db.query.control.findFirst({
+          where: and(
+            eq(tables.control.id, id),
+            eq(tables.control.orgId, actor.orgId),
+            isNull(tables.control.deletedAt),
+          ),
+        }),
+      );
 
-    const insert = Effect.fn(function* (input: Schema.Schema.Type<typeof Control.CreateControl>) {
-      const frameworkService = yield* FrameworkService;
-      const framework = yield* frameworkService.getById(input.frameworkId);
-      if (Option.isNone(framework)) {
-        return yield* Effect.fail(Framework.FrameworkNotFoundError.fromId(input.frameworkId));
+      if (!model) {
+        throw yield* Control.ControlNotFoundError.fromId(id);
       }
 
+      return Control.Control.make(model);
+    });
+
+    /**
+     * List controls with pagination.
+     * @since 1.0.0
+     * @category service-method
+     */
+    const list = Effect.fn(function* (
+      pagination: Schema.Schema.Type<typeof Pagination>,
+      filter?: {
+        frameworkId?: Schema.Schema.Type<typeof Framework.FrameworkId>;
+      },
+    ) {
+      const actor = yield* Actor.Actor;
+      const filters = [eq(tables.control.orgId, actor.orgId), isNull(tables.control.deletedAt)];
+
+      if (filter?.frameworkId) {
+        filters.push(eq(tables.control.frameworkId, filter.frameworkId));
+      }
+
+      const models = yield* use((db) =>
+        db.query.control.findMany({
+          where: and(...filters),
+          offset: (pagination.page - 1) * pagination.size,
+          limit: pagination.size,
+        }),
+      );
+
+      const [total] = yield* use((db) =>
+        db
+          .select({ count: count() })
+          .from(tables.control)
+          .where(and(...filters)),
+      );
+
+      return {
+        data: models.map((model) => Control.Control.make(model)),
+        total: total?.count ?? 0,
+        page: pagination.page,
+        size: pagination.size,
+      };
+    });
+
+    /**
+     * Insert a new control.
+     * @since 1.0.0
+     * @category service-method
+     */
+    const insert = Effect.fn(function* (input: Control.CreateControl) {
       const model = yield* Control.make(input);
-      yield* repository.save(model);
+      yield* use((db) => db.insert(tables.control).values(model));
       return model;
     });
 
+    /**
+     * Update an existing control.
+     * @since 1.0.0
+     * @category service-method
+     */
     const update = Effect.fn(function* ({
       id,
       data,
@@ -35,70 +96,30 @@ export class ControlService extends Effect.Service<ControlService>()("ControlSer
       id: Schema.Schema.Type<typeof Control.ControlId>;
       data: Schema.Schema.Type<typeof Control.UpdateControl>;
     }) {
-      const model = yield* repository.getById(id);
-      if (Option.isNone(model)) {
-        return yield* Effect.fail(Control.ControlNotFoundError.fromId(id));
-      }
+      const model = yield* getById(id);
 
-      if (data.frameworkId) {
-        const frameworkService = yield* FrameworkService;
-        const framework = yield* frameworkService.getById(data.frameworkId);
-        if (Option.isNone(framework)) {
-          return yield* Effect.fail(Framework.FrameworkNotFoundError.fromId(data.frameworkId));
-        }
-      }
-
-      const updatedModel = yield* Control.update(model.value, data);
-      yield* repository.save(updatedModel);
+      const updatedModel = yield* Control.update(model, data);
+      yield* use((db) => db.insert(tables.control).values(updatedModel));
       return updatedModel;
     });
 
+    /**
+     * Remove a control by its ID.
+     * @since 1.0.0
+     * @category service-method
+     */
     const remove = Effect.fn(function* (id: Schema.Schema.Type<typeof Control.ControlId>) {
-      const model = yield* repository.getById(id);
-      if (Option.isNone(model)) {
-        return yield* Effect.fail(Control.ControlNotFoundError.fromId(id));
-      }
-
-      const removedModel = yield* Control.remove(model.value);
-      yield* repository.save(removedModel);
+      const model = yield* getById(id);
+      const removedModel = yield* Control.remove(model);
+      yield* use((db) => db.insert(tables.control).values(removedModel));
     });
-
-    const count = Effect.fn(function* () {
-      const actor = yield* Actor.Actor;
-      const result = yield* SqlSchema.findAll({
-        Request: Schema.Void,
-        Result: CountResult,
-        execute() {
-          return sql`SELECT COUNT(*) as count FROM ${sql("control")} WHERE ${sql.and([
-            sql`org_id = ${actor.orgId}`,
-            sql`deleted_at IS NULL`,
-          ])}`;
-        },
-      })(undefined);
-      return result[0]?.count ?? 0;
-    });
-
-    const getByFramework = (frameworkId: any) =>
-      Effect.gen(function* () {
-        const actor = yield* Actor.Actor;
-        return yield* sql<Control.Control>`
-            SELECT * FROM ${sql("control")} 
-            WHERE ${sql.and([
-              sql`framework_id = ${frameworkId}`,
-              sql`org_id = ${actor.orgId}`,
-              sql`deleted_at IS NULL`,
-            ])}
-          `;
-      });
 
     return {
+      getById,
+      list,
       insert,
       update,
       remove,
-      getById: repository.getById,
-      list: repository.list,
-      getByFramework,
-      count,
     };
   }),
 }) {}

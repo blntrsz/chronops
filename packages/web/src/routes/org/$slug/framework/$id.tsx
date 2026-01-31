@@ -52,8 +52,7 @@ function RouteComponent() {
   const refreshDetail = useAtomRefresh(getFrameworkById(id as never));
   const refreshList = useAtomRefresh(listFrameworks(1));
 
-  const model = Result.getOrElse(fwk, () => null);
-  const fwkModel = model && model._tag === "Some" ? model.value : null;
+  const fwkModel = Result.getOrElse(fwk, () => null);
 
   const { name, setName, description, setDescription, statusLabel } = useAutosaveFields({
     id: fwkModel?.id ?? null,

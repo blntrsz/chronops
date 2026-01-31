@@ -9,11 +9,9 @@ export const ControlHandler = ControlContract.toLayer(
     return {
       ControlById: ({ id }) => service.getById(id),
       ControlCreate: service.insert,
-      ControlList: service.list,
+      ControlList: ({ page, size, frameworkId }) => service.list({ page, size }, { frameworkId }),
       ControlUpdate: service.update,
       ControlRemove: ({ id }) => service.remove(id),
-      ControlByFramework: ({ frameworkId }) => service.getByFramework(frameworkId),
-      ControlCount: service.count,
     };
   }),
 );

@@ -12,7 +12,6 @@ export const FrameworkHandler = FrameworkContract.toLayer(
       FrameworkList: service.list,
       FrameworkUpdate: service.update,
       FrameworkRemove: ({ id }) => service.remove(id),
-      FrameworkCount: service.count,
     };
   }),
 );

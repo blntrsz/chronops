@@ -5,39 +5,19 @@ import { Layer, Logger } from "effect";
 import { AuthMiddlewareLive } from "./auth/middleware";
 import { CommentHandler } from "./comment/handler";
 import { CommentService } from "./comment/service";
-import { SqlLayer } from "./common/sql";
 import { RpcContract } from "./contract";
 import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
-import { DocumentHandler } from "./document/handler";
-import { DocumentService } from "./document/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
-import { QuestionerHandler } from "./questioner/handler";
-import { QuestionerService } from "./questioner/service";
 import { RpcLoggerLayer } from "./logger";
-import { ScheduleHandler } from "./schedule/handler";
-import { ScheduleService } from "./schedule/service";
-import { TagHandler } from "./tag/handler";
-import { TagService } from "./tag/service";
+import { Database } from "./db";
 
-const HandlersLayer = Layer.mergeAll(
-  FrameworkHandler,
-  ControlHandler,
-  DocumentHandler,
-  CommentHandler,
-  TagHandler,
-  QuestionerHandler,
-  ScheduleHandler,
-).pipe(
+const HandlersLayer = Layer.mergeAll(FrameworkHandler, ControlHandler, CommentHandler).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
-  Layer.provide(DocumentService.Default),
   Layer.provide(CommentService.Default),
-  Layer.provide(TagService.Default),
-  Layer.provide(QuestionerService.Default),
-  Layer.provide(ScheduleService.Default),
-  Layer.provide(SqlLayer),
+  Layer.provide(Database.Default),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
 );
 

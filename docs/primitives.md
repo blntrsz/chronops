@@ -16,7 +16,7 @@ Goal: reusable building blocks across domains. Keep small, stable.
 - Mapping: typed relation between entities, direction, strength.
 - Notification: alerts, reminders, messages; delivery channel + status.
 
- ## Primitive reuse
+## Primitive reuse
 
 - Workflow template uses Workflow method.
 - Workflow instance uses Approval, Comment, Attachment.

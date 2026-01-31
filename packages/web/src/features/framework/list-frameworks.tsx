@@ -38,7 +38,7 @@ export function ListFrameworks({ className, ...props }: React.ComponentProps<"di
   const list = useAtomValue(listFrameworks(page));
   const count = useAtomValue(countFrameworks());
 
-  const total = Result.getOrElse(count, () => 0);
+  const total = Result.getOrElse(count, () => ({ total: 0 })).total;
   const pages = Math.max(1, Math.ceil(total / pageSize));
 
   function prev() {
@@ -64,7 +64,7 @@ export function ListFrameworks({ className, ...props }: React.ComponentProps<"di
           </div>
         ) : Result.isFailure(list) || Result.isFailure(count) ? (
           <FieldDescription>Failed loading frameworks</FieldDescription>
-        ) : (Result.getOrElse(list, () => []).length ?? 0) === 0 ? (
+        ) : (Result.getOrElse(list, () => ({ data: [] as any[] })).data.length ?? 0) === 0 ? (
           <Empty>
             <EmptyHeader>
               <EmptyTitle>No frameworks</EmptyTitle>
@@ -74,7 +74,7 @@ export function ListFrameworks({ className, ...props }: React.ComponentProps<"di
         ) : (
           <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {Result.getOrElse(list, () => []).map((fwk) => (
+              {Result.getOrElse(list, () => ({ data: [] as any[] })).data.map((fwk) => (
                 <Link
                   key={fwk.id}
                   to={"/org/$slug/framework/$id"}

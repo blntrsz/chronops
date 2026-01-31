@@ -11,7 +11,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "effect": "^3.19.14"
+    "effect": "^3.19.15"
   },
   "devDependencies": {
     "@types/bun": "latest"

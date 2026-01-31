@@ -115,7 +115,13 @@ export function CommentsSection({
           <Button type="button" variant="ghost" size="icon" aria-label="Attach file" disabled>
             <Paperclip className="h-4 w-4" />
           </Button>
-          <Button type="button" variant="secondary" size="icon" onClick={onPost} disabled={!canPost}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            onClick={onPost}
+            disabled={!canPost}
+          >
             <ArrowUp className="h-4 w-4" />
           </Button>
         </div>

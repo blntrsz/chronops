@@ -43,9 +43,7 @@ export function useAutosaveFields({
     };
   }, []);
 
-  const dirty = id
-    ? valueName !== (name ?? "") || valueDescription !== (description ?? "")
-    : false;
+  const dirty = id ? valueName !== (name ?? "") || valueDescription !== (description ?? "") : false;
   const isValid = valueName.trim() !== "";
 
   React.useEffect(() => {

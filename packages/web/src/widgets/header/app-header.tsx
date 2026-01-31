@@ -34,7 +34,7 @@ export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps
 
   const rest = pathname.replace(new RegExp(`^/org/${slug}(/)?`), "");
   const [section, maybeId] = rest.split("/").filter(Boolean);
-  const sectionLabel = section ? SECTION_LABEL[section] ?? section : undefined;
+  const sectionLabel = section ? (SECTION_LABEL[section] ?? section) : undefined;
 
   const showSection = Boolean(sectionLabel);
   const showId = Boolean(maybeId);
@@ -94,14 +94,11 @@ export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps
                   )}
                 </BreadcrumbList>
               </Breadcrumb>
-
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {right}
-        </div>
+        <div className="flex items-center gap-2">{right}</div>
       </div>
     </header>
   );

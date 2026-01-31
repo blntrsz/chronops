@@ -1,24 +1,13 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP, organization } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
-import { Pool } from "pg";
-
-const vercelURL = process.env.VERCEL_URL;
-const baseURL = process.env.BETTER_AUTH_URL
-  ? process.env.BETTER_AUTH_URL
-  : vercelURL
-    ? `https://${vercelURL}`
-    : "http://localhost:3000";
+import { db } from "../db";
 
 export const auth = betterAuth({
-  baseURL,
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    ...(vercelURL ? [`https://${vercelURL}`] : []),
-  ],
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
+  baseURL: "http://localhost:3000",
+  database: drizzleAdapter(db, {
+    provider: "pg",
   }),
   plugins: [
     emailOTP({

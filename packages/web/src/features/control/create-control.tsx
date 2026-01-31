@@ -41,7 +41,7 @@ function CreateControlForm() {
   const [pending, setPending] = React.useState(false);
 
   const frameworks = useAtomValue(frameworkListAtom);
-  const frameworkOptions = Result.getOrElse(frameworks, () => []);
+  const frameworkOptions = Result.getOrElse(frameworks, () => ({ data: [] as any[] })).data;
 
   const location = useRouterState({ select: (s) => s.location });
   const search = useSearch({ strict: false });

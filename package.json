@@ -16,16 +16,16 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
-    "@effect/platform": "^0.94.1",
+    "@effect/platform": "^0.94.2",
     "@tanstack/react-table": "^8.21.3",
-    "effect": "^3.19.14"
+    "effect": "^3.19.15"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "esbuild": "0.24.2",
-    "globals": "^17.0.0",
-    "oxfmt": "^0.26.0",
-    "oxlint": "^1.41.0"
+    "esbuild": "0.27.2",
+    "globals": "^17.2.0",
+    "oxfmt": "^0.27.0",
+    "oxlint": "^1.42.0"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -5,9 +5,13 @@ import { CommentService } from "./service";
 export const CommentHandler = CommentContract.toLayer(
   Effect.gen(function* () {
     const service = yield* CommentService;
+
     return {
+      CommentById: ({ id }) => service.getById(id),
       CommentCreate: service.insert,
-      CommentListByTarget: ({ entityId }) => service.listByTarget(entityId),
+      CommentList: ({ page, size, entityId }) => service.list({ page, size }, { entityId }),
+      CommentUpdate: service.update,
+      CommentRemove: ({ id }) => service.remove(id),
     };
   }),
 );

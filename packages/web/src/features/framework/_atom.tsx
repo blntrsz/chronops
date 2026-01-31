@@ -37,6 +37,10 @@ export const updateFramework = () => Client.mutation("FrameworkUpdate");
 export const removeFramework = () => Client.mutation("FrameworkRemove");
 
 export const countFrameworks = () =>
-  Client.query("FrameworkCount", undefined, {
-    reactivityKeys: [...frameworkReactiveKeys.all, "count"],
-  });
+  Client.query(
+    "FrameworkList",
+    { page: 1, size: 1 },
+    {
+      reactivityKeys: [...frameworkReactiveKeys.all, "count"],
+    },
+  );

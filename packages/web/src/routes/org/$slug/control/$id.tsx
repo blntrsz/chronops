@@ -146,15 +146,11 @@ function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Testing</div>
-        <div className="mt-1 font-medium text-foreground">
-          {control.testingFrequency ?? "—"}
-        </div>
+        <div className="mt-1 font-medium text-foreground">{control.testingFrequency ?? "—"}</div>
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Updated</div>
-        <div className="mt-1 font-medium text-foreground">
-          {formatUpdatedAt(control.updatedAt)}
-        </div>
+        <div className="mt-1 font-medium text-foreground">{formatUpdatedAt(control.updatedAt)}</div>
       </div>
     </div>
   );
@@ -171,8 +167,7 @@ function RouteComponent() {
   const refreshDetail = useAtomRefresh(getControlById(id as never));
   const refreshList = useAtomRefresh(listControls(1));
 
-  const model = Result.getOrElse(ctrl, () => null);
-  const ctrlModel = model && model._tag === "Some" ? model.value : null;
+  const ctrlModel = Result.getOrElse(ctrl, () => null);
   const [isMetaOpen, setIsMetaOpen] = React.useState(true);
 
   const { name, setName, description, setDescription, statusLabel } = useAutosaveFields({

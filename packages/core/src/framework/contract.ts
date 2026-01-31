@@ -1,31 +1,36 @@
 import { Framework } from "@chronops/domain";
 import { Rpc, RpcGroup } from "@effect/rpc";
-import { SqlError } from "@effect/sql";
 import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
 import { AuthMiddleware } from "../auth/middleware-interface";
 import { Pagination } from "../common/repository";
+import { DatabaseError } from "../db";
+import { Paginated } from "../common/pagination";
 
 export class FrameworkContract extends RpcGroup.make(
   Rpc.make("FrameworkCreate", {
     success: Framework.Framework,
-    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
+    error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError)),
     payload: Framework.CreateFramework,
   }),
   Rpc.make("FrameworkById", {
-    success: Schema.Option(Framework.Framework),
-    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
+    success: Framework.Framework,
+    error: Schema.Union(
+      DatabaseError,
+      Schema.instanceOf(ParseError),
+      Framework.FrameworkNotFoundError,
+    ),
     payload: { id: Framework.FrameworkId },
   }),
   Rpc.make("FrameworkList", {
-    success: Schema.Array(Framework.Framework),
+    success: Paginated(Framework.Framework),
     payload: Pagination,
-    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
+    error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError)),
   }),
   Rpc.make("FrameworkUpdate", {
     success: Framework.Framework,
     error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
+      DatabaseError,
       Schema.instanceOf(ParseError),
       Framework.FrameworkNotFoundError,
     ),
@@ -37,15 +42,10 @@ export class FrameworkContract extends RpcGroup.make(
   Rpc.make("FrameworkRemove", {
     success: Schema.Void,
     error: Schema.Union(
-      Schema.instanceOf(SqlError.SqlError),
+      DatabaseError,
       Schema.instanceOf(ParseError),
       Framework.FrameworkNotFoundError,
     ),
     payload: { id: Framework.FrameworkId },
-  }),
-  Rpc.make("FrameworkCount", {
-    success: Schema.Number,
-    payload: Schema.Void,
-    error: Schema.Union(Schema.instanceOf(SqlError.SqlError), Schema.instanceOf(ParseError)),
   }),
 ).middleware(AuthMiddleware) {}
