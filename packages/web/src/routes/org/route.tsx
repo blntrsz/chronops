@@ -1,4 +1,4 @@
-import { organizationMiddleware } from "@/features/auth/middleware";
+import { organizationMiddleware } from "@/features/auth/middleware.server";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { OrgRouteRedirect } from "./-route-redirect";
 

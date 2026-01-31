@@ -68,11 +68,6 @@ function App() {
               description="Track requirements, monitor status, and ensure implementation across your organization."
             />
             <FeatureCard
-              icon={<FileText className="size-8 text-primary" />}
-              title="Documents"
-              description="Centralize policies, procedures, and evidence in a secure, version-controlled vault."
-            />
-            <FeatureCard
               icon={<Workflow className="size-8 text-primary" />}
               title="Workflows"
               description="Automate review cycles, approvals, and recurring tasks to stay audit-ready."

@@ -1,11 +1,6 @@
 import { Atom, useAtomSet, useAtomValue } from "@effect-atom/atom-react";
 
-type ActiveDialog =
-  | "createFramework"
-  | "deleteFramework"
-  | "createDocument"
-  | "createControl"
-  | null;
+type ActiveDialog = "createFramework" | "deleteFramework" | "createControl" | null;
 
 const activeDialogAtom = Atom.make<ActiveDialog>(null);
 

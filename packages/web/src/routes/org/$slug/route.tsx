@@ -1,5 +1,4 @@
 import { CreateControl } from "@/features/control/create-control";
-import { CreateDocument } from "@/features/document/create-document";
 import { CreateFramework } from "@/features/framework/create-framework";
 import { authClient } from "@/features/auth/client";
 import { OrgShell } from "@/widgets/sidebar/org-shell";
@@ -36,7 +35,6 @@ function RouteComponent() {
     <OrgShell>
       <CreateFramework />
       <CreateControl />
-      <CreateDocument />
       <Outlet />
     </OrgShell>
   );

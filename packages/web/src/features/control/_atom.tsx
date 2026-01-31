@@ -35,8 +35,3 @@ export const getControlById = (id: Control.ControlId) =>
 export const createControl = () => Client.mutation("ControlCreate");
 export const updateControl = () => Client.mutation("ControlUpdate");
 export const removeControl = () => Client.mutation("ControlRemove");
-
-export const countControls = () =>
-  Client.query("ControlCount", undefined, {
-    reactivityKeys: [...controlReactiveKeys.all, "count"],
-  });

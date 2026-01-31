@@ -6,10 +6,12 @@ export const commentReactiveKeys = {
   target: (entityId: Comment.CommentEntityId) => [...commentReactiveKeys.all, "target", entityId],
 } as const;
 
-export const listCommentsByTarget = (entityId: Comment.CommentEntityId) =>
+export const listCommentsByTarget = (entityId: Comment.CommentEntityId, page = 1) =>
   Client.query(
-    "CommentListByTarget",
+    "CommentList",
     {
+      page,
+      size: 100,
       entityId,
     },
     {

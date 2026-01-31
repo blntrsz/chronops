@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Result, useAtomValue } from "@effect-atom/atom-react";
 import { Link } from "@tanstack/react-router";
 
-import { countControls, listControls } from "@/features/control/_atom";
+import { listControls } from "@/features/control/_atom";
 import { DataTable } from "@/features/control/data-table";
 import { DataTableColumnHeader } from "@/features/control/data-table-column-header";
 import { DateTime } from "effect";
@@ -126,18 +126,18 @@ export function ListControl({
 }: React.ComponentProps<"div"> & { frameworkId?: string; slug: string }) {
   // Route id for org slug includes trailing slash in this codebase.
   const list = useAtomValue(listControls(1));
-  const count = useAtomValue(countControls());
-
-  const total = Result.getOrElse(count, () => 0);
   const cols = React.useMemo(() => columns(slug), [slug]);
+
+  const data = Result.getOrElse(list, () => ({ data: [] as any[], total: 0 }));
+  const total = data.total;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      {list._tag === "Initial" || count._tag === "Initial" ? (
+      {list._tag === "Initial" ? (
         <LoadingSkeleton />
-      ) : Result.isFailure(list) || Result.isFailure(count) ? (
+      ) : Result.isFailure(list) ? (
         <FieldDescription>Failed loading controls</FieldDescription>
-      ) : (Result.getOrElse(list, () => []).length ?? 0) === 0 ? (
+      ) : data.data.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyTitle>No controls</EmptyTitle>
@@ -153,7 +153,7 @@ export function ListControl({
 
           <DataTable<ControlRow, unknown>
             columns={cols}
-            data={Result.getOrElse(list, () => []).map((c) => ({
+            data={data.data.map((c: any) => ({
               id: c.id,
               name: c.name,
               frameworkId: c.frameworkId,

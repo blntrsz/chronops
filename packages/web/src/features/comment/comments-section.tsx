@@ -90,7 +90,8 @@ export function CommentsSection({
     }
   }
 
-  const data = Result.getOrElse(list, () => []);
+  const result = Result.getOrElse(list, () => ({ data: [] as readonly Comment.Comment[], total: 0, page: 1, size: 10 }));
+  const data = result.data;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -135,7 +136,7 @@ export function CommentsSection({
         <FieldDescription>No comments yet</FieldDescription>
       ) : (
         <div className="flex flex-col gap-4">
-          {data.map((c) => (
+          {data.map((c: Comment.Comment) => (
             <div key={c.id} className="bg-card text-card-foreground rounded-xl border p-5">
               <div className="flex items-start gap-3">
                 <Avatar className="mt-0.5 size-7">

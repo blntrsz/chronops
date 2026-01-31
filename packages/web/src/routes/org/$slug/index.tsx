@@ -44,14 +44,6 @@ function RouteComponent() {
       trend: "down",
       color: "text-orange-500",
     },
-    {
-      title: "Total Documents",
-      value: "148",
-      description: "Policy & evidence files",
-      icon: FileText,
-      trend: "up",
-      color: "text-purple-500",
-    },
   ];
 
   return (
@@ -141,13 +133,6 @@ function RouteComponent() {
                   icon: AlertCircle,
                   color: "text-red-500",
                 },
-                {
-                  action: "New Document",
-                  subject: "Q1 Security Report",
-                  time: "1d ago",
-                  icon: FileText,
-                  color: "text-blue-500",
-                },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4">
                   <div
@@ -203,19 +188,6 @@ function RouteComponent() {
                     <CheckCircle2 className="h-5 w-5 text-foreground" />
                   </div>
                   <span className="font-medium">Review Controls</span>
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/org/$slug/document" params={{ slug }} className="group">
-            <Card className="bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-              <CardContent className="p-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-background border">
-                    <FileText className="h-5 w-5 text-foreground" />
-                  </div>
-                  <span className="font-medium">Upload Evidence</span>
                 </div>
                 <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </CardContent>

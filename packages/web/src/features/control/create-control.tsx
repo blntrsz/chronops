@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import { countControls, createControl, listControls } from "@/features/control/_atom";
+import { createControl, listControls } from "@/features/control/_atom";
 import { listFrameworks } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
 import { Control, Framework } from "@chronops/domain";
@@ -26,7 +26,6 @@ type CreateControlInput = Schema.Schema.Type<typeof CreateControlSchema>;
 type FrameworkId = Framework.FrameworkId;
 
 const listRefreshAtom = listControls(1);
-const countRefreshAtom = countControls();
 const frameworkListAtom = listFrameworks(1);
 
 const testingFrequencyOptions = ["daily", "weekly", "monthly", "quarterly", "yearly"] as const;
@@ -35,7 +34,6 @@ function CreateControlForm() {
   const setActiveDialog = useSetActiveDialog();
   const mutate = useAtomSet(createControl(), { mode: "promise" });
   const refreshList = useAtomRefresh(listRefreshAtom);
-  const refreshCount = useAtomRefresh(countRefreshAtom);
 
   const [formError, setFormError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
@@ -79,7 +77,7 @@ function CreateControlForm() {
     setSelectedFrameworkIds([fwkId]);
   }, [parseFrameworkId, search]);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -110,7 +108,6 @@ function CreateControlForm() {
         testingFrequency: null,
       });
       refreshList();
-      refreshCount();
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Create failed");
     } finally {

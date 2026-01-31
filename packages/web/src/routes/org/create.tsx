@@ -1,6 +1,6 @@
 import { FieldDescription } from "@/components/ui/field";
 import { CreateOrg } from "@/features/auth/create-org";
-import { authMiddleware } from "@/features/auth/middleware";
+import { authMiddleware } from "@/features/auth/middleware.server";
 import { createFileRoute } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
 

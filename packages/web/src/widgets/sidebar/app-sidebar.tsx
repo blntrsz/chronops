@@ -30,7 +30,7 @@ import { SidebarUser } from "@/widgets/sidebar/sidebar-user";
 
 type NavItem = {
   title: string;
-  to: "/org/$slug" | "/org/$slug/framework" | "/org/$slug/control" | "/org/$slug/document";
+  to: "/org/$slug" | "/org/$slug/framework" | "/org/$slug/control";
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
 };
@@ -49,7 +49,6 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
     },
     { title: "Frameworks", to: "/org/$slug/framework", icon: Shield },
     { title: "Controls", to: "/org/$slug/control", icon: SlidersHorizontal },
-    { title: "Documents", to: "/org/$slug/document", icon: FileText },
   ];
 
   return (
