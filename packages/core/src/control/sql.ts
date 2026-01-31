@@ -2,7 +2,7 @@ import { pgTable, text } from "drizzle-orm/pg-core";
 
 import { Actor, Base, Control, Framework } from "@chronops/domain";
 
-import { timestampUtc } from "../common/db-type";
+import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
 export const controlTable = pgTable("control", {
   // Control fields
@@ -16,7 +16,7 @@ export const controlTable = pgTable("control", {
   // Base fields
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
   updatedAt: timestampUtc({ withTimezone: true }).notNull(),
-  deletedAt: timestampUtc({ withTimezone: true }),
+  deletedAt: timestampUtcNullable({ withTimezone: true }),
 
   createdBy: text().$type<Actor.MemberId>().notNull(),
   updatedBy: text().$type<Actor.MemberId>().notNull(),

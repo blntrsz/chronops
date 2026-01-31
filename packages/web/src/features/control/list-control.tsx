@@ -13,6 +13,7 @@ import { DataTableColumnHeader } from "@/features/control/data-table-column-head
 import { DateTime } from "effect";
 
 import React from "react";
+import { Framework } from "@chronops/domain";
 
 const updatedAtFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium",
@@ -123,9 +124,9 @@ export function ListControl({
   className,
   slug,
   ...props
-}: React.ComponentProps<"div"> & { frameworkId?: string; slug: string }) {
+}: React.ComponentProps<"div"> & { frameworkId?: Framework.FrameworkId; slug: string }) {
   // Route id for org slug includes trailing slash in this codebase.
-  const list = useAtomValue(listControls(1));
+  const list = useAtomValue(listControls(1, frameworkId));
   const cols = React.useMemo(() => columns(slug), [slug]);
 
   const data = Result.getOrElse(list, () => ({ data: [] as any[], total: 0 }));

@@ -2,6 +2,7 @@ import { useSetActiveDialog } from "@/atoms/dialog-atom";
 import { Button } from "@/components/ui/button";
 import { ListControl } from "@/features/control/list-control";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
+import { Framework } from "@chronops/domain";
 import { createFileRoute } from "@tanstack/react-router";
 import { Schema } from "effect";
 
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/org/$slug/control/")({
   component: RouteComponent,
   validateSearch: Schema.standardSchemaV1(
     Schema.Struct({
-      frameworkId: Schema.optional(Schema.String),
+      frameworkId: Schema.optional(Framework.FrameworkId),
     }),
   ),
 });

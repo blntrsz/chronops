@@ -1,6 +1,6 @@
 import { pgTable, text, integer } from "drizzle-orm/pg-core";
 import { Actor, Base, Framework } from "@chronops/domain";
-import { timestampUtc } from "../common/db-type";
+import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
 export const frameworkTable = pgTable("framework", {
   // Framework fields
@@ -13,7 +13,7 @@ export const frameworkTable = pgTable("framework", {
   // Base fields
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
   updatedAt: timestampUtc({ withTimezone: true }).notNull(),
-  deletedAt: timestampUtc({ withTimezone: true }),
+  deletedAt: timestampUtcNullable({ withTimezone: true }),
 
   createdBy: text().$type<Actor.MemberId>().notNull(),
   updatedBy: text().$type<Actor.MemberId>().notNull(),

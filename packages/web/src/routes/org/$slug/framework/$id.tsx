@@ -22,6 +22,7 @@ import { Result, useAtomRefresh, useAtomSet, useAtomValue } from "@effect-atom/a
 import { createFileRoute } from "@tanstack/react-router";
 import { MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import React from "react";
+import { Framework } from "@chronops/domain";
 
 function FrameworkSkeleton() {
   return (
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/org/$slug/framework/$id")({
 
 function RouteComponent() {
   const { id, slug } = Route.useParams();
+  const frameworkId = Framework.FrameworkId.make(id);
   const fwk = useAtomValue(getFrameworkById(id as never));
   const setActiveDialog = useSetActiveDialog();
 
@@ -144,9 +146,9 @@ function RouteComponent() {
       action={null}
     >
       <div className="flex flex-col gap-6">
-        <DeleteFramework frameworkId={id as never} slug={slug} />
+        <DeleteFramework frameworkId={frameworkId} slug={slug} />
 
-        <ListControl slug={slug} frameworkId={id} />
+        <ListControl slug={slug} frameworkId={frameworkId} />
 
         <CommentsSection entityId={id as never} />
       </div>
