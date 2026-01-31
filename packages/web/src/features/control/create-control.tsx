@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import { createControl, listControls } from "@/features/control/_atom";
+import { controlReactiveKeys, createControl, listControls } from "@/features/control/_atom";
 import { listFrameworks } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
 import { Control, Framework } from "@chronops/domain";
@@ -98,6 +98,7 @@ function CreateControlForm() {
           frameworkId: values.frameworkId,
           testingFrequency: values.testingFrequency,
         },
+        reactivityKeys: controlReactiveKeys.all,
       });
 
       setActiveDialog(null);

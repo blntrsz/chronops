@@ -1,5 +1,5 @@
 import { Client } from "@/lib/rpc-client";
-import type { Control } from "@chronops/domain";
+import type { Control, Framework } from "@chronops/domain";
 
 export const controlReactiveKeys = {
   all: ["control"],
@@ -9,12 +9,13 @@ export const controlReactiveKeys = {
   lists: () => [...controlReactiveKeys.all, "list"],
 } as const;
 
-export const listControls = (page = 1) =>
+export const listControls = (page = 1, frameworkId?: Framework.FrameworkId) =>
   Client.query(
     "ControlList",
     {
       page,
       size: 50,
+      frameworkId,
     },
     {
       reactivityKeys: controlReactiveKeys.list(page),
