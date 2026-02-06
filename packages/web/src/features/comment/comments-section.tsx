@@ -90,7 +90,12 @@ export function CommentsSection({
     }
   }
 
-  const result = Result.getOrElse(list, () => ({ data: [] as readonly Comment.Comment[], total: 0, page: 1, size: 10 }));
+  const result = Result.getOrElse(list, () => ({
+    data: [] as readonly Comment.Comment[],
+    total: 0,
+    page: 1,
+    size: 10,
+  }));
   const data = result.data;
 
   return (

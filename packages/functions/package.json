@@ -6,7 +6,11 @@
   "scripts": {
     "start": "bun src/index.ts",
     "dev": "bun src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --threads=1",
+    "format:fix": "oxfmt --write --threads=1"
   },
   "dependencies": {
     "@chronops/core": "workspace:^",
@@ -15,8 +19,8 @@
     "ulid": "^3.0.2"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@effect/language-service": "^0.73.0"
+    "@effect/language-service": "^0.73.0",
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -8,9 +8,9 @@ export const CommentHandler = CommentContract.toLayer(
 
     return {
       CommentById: ({ id }) => service.getById(id),
-      CommentCreate: service.insert,
+      CommentCreate: (payload) => service.insert(payload),
       CommentList: ({ page, size, entityId }) => service.list({ page, size }, { entityId }),
-      CommentUpdate: service.update,
+      CommentUpdate: (payload) => service.update(payload),
       CommentRemove: ({ id }) => service.remove(id),
     };
   }),

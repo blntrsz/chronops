@@ -31,9 +31,10 @@ export class ScheduleService extends Effect.Service<ScheduleService>()("Schedule
       yield* use((db) => db.insert(tables.scheduleRun).values(run));
 
       const result = yield* Effect.either(callback);
-      const updatedRun = result._tag === "Right"
-        ? yield* ScheduleRun.markSuccess(run)
-        : yield* ScheduleRun.markFailure(run);
+      const updatedRun =
+        result._tag === "Right"
+          ? yield* ScheduleRun.markSuccess(run)
+          : yield* ScheduleRun.markFailure(run);
 
       yield* use((db) =>
         db

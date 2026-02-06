@@ -13,7 +13,11 @@
     "typecheck": "tsc --noEmit",
     "auth:migrate": "bun x @better-auth/cli@latest migrate --config ./src/auth/server.ts",
     "auth:gen": "bun x @better-auth/cli@latest generate --config ./src/auth/server.ts --output ./src/auth/sql.ts",
-    "db": "drizzle-kit"
+    "db": "drizzle-kit",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --threads=1",
+    "format:fix": "oxfmt --write --threads=1"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.25",
@@ -36,9 +40,9 @@
     "ulid": "^3.0.2"
   },
   "devDependencies": {
+    "@effect/language-service": "^0.73.0",
     "@types/bun": "latest",
-    "@types/pg": "^8.16.0",
-    "@effect/language-service": "^0.73.0"
+    "@types/pg": "^8.16.0"
   },
   "peerDependencies": {
     "typescript": "^5"

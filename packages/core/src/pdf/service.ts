@@ -3,8 +3,6 @@ import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
 import { StorageService } from "../storage/service";
-import { pdfTable } from "./sql";
-import { pdfPageTable } from "../pdf-page/sql";
 import * as PdfPageService from "../pdf-page/service";
 
 /**
@@ -46,9 +44,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const getUploadUrl = Effect.fn(function* (
-      input: Schema.Schema.Type<typeof Pdf.CreatePdf>,
-    ) {
+    const getUploadUrl = Effect.fn(function* (input: Schema.Schema.Type<typeof Pdf.CreatePdf>) {
       const model = yield* Pdf.make(input);
       yield* use((db) => db.insert(tables.pdf).values(model));
 

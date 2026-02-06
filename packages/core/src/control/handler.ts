@@ -8,9 +8,9 @@ export const ControlHandler = ControlContract.toLayer(
 
     return {
       ControlById: ({ id }) => service.getById(id),
-      ControlCreate: service.insert,
+      ControlCreate: (payload) => service.insert(payload),
       ControlList: ({ page, size, frameworkId }) => service.list({ page, size }, { frameworkId }),
-      ControlUpdate: service.update,
+      ControlUpdate: (payload) => service.update(payload),
       ControlRemove: ({ id }) => service.remove(id),
     };
   }),

@@ -8,14 +8,18 @@
   "types": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --threads=1",
+    "format:fix": "oxfmt --write --threads=1"
   },
   "dependencies": {
     "effect": "^3.19.15"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@effect/language-service": "^0.73.0"
+    "@effect/language-service": "^0.73.0",
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -18,10 +18,7 @@ export const scheduleId = Effect.fn(function* () {
  * Trigger types for schedules
  * @since 1.0.0
  */
-export const TriggerType = Schema.Union(
-  Schema.Literal("once"),
-  Schema.Literal("forever"),
-);
+export const TriggerType = Schema.Union(Schema.Literal("once"), Schema.Literal("forever"));
 export type TriggerType = typeof TriggerType.Type;
 
 /**

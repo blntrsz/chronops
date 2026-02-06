@@ -8,9 +8,9 @@ export const FrameworkHandler = FrameworkContract.toLayer(
 
     return {
       FrameworkById: ({ id }) => service.getById(id),
-      FrameworkCreate: service.insert,
-      FrameworkList: service.list,
-      FrameworkUpdate: service.update,
+      FrameworkCreate: (payload) => service.insert(payload),
+      FrameworkList: (payload) => service.list(payload),
+      FrameworkUpdate: (payload) => service.update(payload),
       FrameworkRemove: ({ id }) => service.remove(id),
     };
   }),

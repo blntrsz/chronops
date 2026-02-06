@@ -21,7 +21,9 @@ const program = Effect.gen(function* () {
 
 Effect.runPromise(program)
   .then((result) => {
-    console.log(`[Functions] Completed: ${result.executed} schedules executed, ${result.failed} failed`);
+    console.log(
+      `[Functions] Completed: ${result.executed} schedules executed, ${result.failed} failed`,
+    );
     process.exit(0);
   })
   .catch((error) => {

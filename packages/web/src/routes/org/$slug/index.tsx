@@ -2,15 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-  Activity,
-  AlertCircle,
-  ArrowUpRight,
-  CheckCircle2,
-  Clock,
-  FileText,
-  Shield,
-} from "lucide-react";
+import { Activity, AlertCircle, ArrowUpRight, CheckCircle2, Clock, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/org/$slug/")({
   component: RouteComponent,

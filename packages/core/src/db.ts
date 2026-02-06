@@ -1,4 +1,4 @@
-import { Effect, Schema } from "effect";
+import { Effect } from "effect";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { commentTable } from "./comment/sql";

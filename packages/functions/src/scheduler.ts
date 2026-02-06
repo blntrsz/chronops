@@ -54,7 +54,9 @@ export class Scheduler extends Effect.Service<Scheduler>()("Scheduler", {
           executed++;
         } else {
           failed++;
-          yield* Effect.logError(`[Scheduler] Failed to execute schedule ${schedule.id}: ${result.left}`);
+          yield* Effect.logError(
+            `[Scheduler] Failed to execute schedule ${schedule.id}: ${result.left}`,
+          );
         }
       }
 

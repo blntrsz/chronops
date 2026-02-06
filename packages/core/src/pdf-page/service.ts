@@ -3,7 +3,6 @@ import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
 import { StorageService } from "../storage/service";
-import { pdfPageTable } from "./sql";
 import * as pdfjs from "pdfjs-serverless";
 
 /**
@@ -37,7 +36,9 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
         }),
       );
       if (!model) {
-        throw yield* PdfPage.PdfPageNotFoundError.fromId(PdfPage.PdfPageId.make(`${pdfId}_${pageNumber}`));
+        throw yield* PdfPage.PdfPageNotFoundError.fromId(
+          PdfPage.PdfPageId.make(`${pdfId}_${pageNumber}`),
+        );
       }
 
       return PdfPage.PdfPage.make(model);
@@ -69,9 +70,7 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
      * @since 1.0.0
      * @category service-method
      */
-    const processPdfPages = Effect.fn(function* (
-      pdf: Pdf.Pdf,
-    ) {
+    const processPdfPages = Effect.fn(function* (pdf: Pdf.Pdf) {
       yield* Effect.log(`Fetching PDF ${pdf.id} from S3`);
 
       const s3Object = yield* storage.getObject(pdf.storageKey);
@@ -91,35 +90,37 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
 
       const pageNumbers = Array.from({ length: numPages }, (_, i) => i + 1);
 
-      const pages = yield* Effect.forEach(pageNumbers, (pageNum) =>
-        Effect.gen(function* () {
-          yield* Effect.log(`Processing page ${pageNum}/${numPages}`);
+      const pages = yield* Effect.forEach(
+        pageNumbers,
+        (pageNum) =>
+          Effect.gen(function* () {
+            yield* Effect.log(`Processing page ${pageNum}/${numPages}`);
 
-          const page = yield* Effect.try({
-            try: () => pdfDocument.getPage(pageNum),
-            catch: (error) => new Error(`Failed to get page ${pageNum}: ${error}`),
-          });
+            const page = yield* Effect.try({
+              try: () => pdfDocument.getPage(pageNum),
+              catch: (error) => new Error(`Failed to get page ${pageNum}: ${error}`),
+            });
 
-          const textContent = yield* Effect.tryPromise({
-            try: async () => {
-              const content = await page.getTextContent();
-              return content.items.map((item: { str: string }) => item.str).join(" ");
-            },
-            catch: (error) => new Error(`Failed to extract text from page ${pageNum}: ${error}`),
-          });
+            const textContent = yield* Effect.tryPromise({
+              try: async () => {
+                const content = await page.getTextContent();
+                return content.items.map((item: { str: string }) => item.str).join(" ");
+              },
+              catch: (error) => new Error(`Failed to extract text from page ${pageNum}: ${error}`),
+            });
 
-          const pdfPage = yield* PdfPage.make({
-            pdfId: pdf.id,
-            pageNumber: pageNum,
-            storageKey: `${pdf.storageKey}/page-${pageNum}`,
-          });
+            const pdfPage = yield* PdfPage.make({
+              pdfId: pdf.id,
+              pageNumber: pageNum,
+              storageKey: `${pdf.storageKey}/page-${pageNum}`,
+            });
 
-          const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
+            const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
 
-          yield* use((db) => db.insert(tables.pdfPage).values(pdfPageWithText));
+            yield* use((db) => db.insert(tables.pdfPage).values(pdfPageWithText));
 
-          return pdfPageWithText;
-        }),
+            return pdfPageWithText;
+          }),
         { concurrency: 1 },
       );
 

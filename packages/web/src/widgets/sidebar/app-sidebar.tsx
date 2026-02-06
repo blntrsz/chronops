@@ -2,7 +2,6 @@
 
 import {
   CircleHelp,
-  FileText,
   LayoutDashboard,
   Search,
   Settings,

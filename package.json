@@ -10,10 +10,14 @@
   "scripts": {
     "dev": "bun --filter '*' dev",
     "typecheck": "bun --filter '*' typecheck",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "format": "bun --filter '*' format",
+    "format:fix": "bun --filter '*' format:fix",
+    "lint": "bun --filter '*' lint",
+    "lint:fix": "bun --filter '*' lint:fix",
+    "lint:repo": "sherif",
+    "lint:repo:fix": "sherif --fix",
+    "scan": "bun run lint && bun run format && bun run typecheck && bun run lint:repo",
+    "scan:fix": "bun run lint:fix && bun run format:fix && bun run typecheck && bun run lint:repo:fix"
   },
   "dependencies": {
     "@effect/platform": "^0.94.2",

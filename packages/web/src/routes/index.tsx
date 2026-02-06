@@ -4,15 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { authClient } from "@/features/auth/client";
 import { LandingHeader } from "@/widgets/header/landing-header";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  CheckCircle2,
-  FileCheck,
-  FileText,
-  Lock,
-  ShieldCheck,
-  Workflow,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, FileCheck, Lock, ShieldCheck, Workflow } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: App });
 

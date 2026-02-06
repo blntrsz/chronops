@@ -10,7 +10,10 @@ export type ScheduleRunId = typeof ScheduleRunId.Type;
  * Schedule run statuses
  * @since 1.0.0
  */
-export const ScheduleRunStatus = Schema.Union(Schema.Literal("in_progress"), Schema.Literal("completed"));
+export const ScheduleRunStatus = Schema.Union(
+  Schema.Literal("in_progress"),
+  Schema.Literal("completed"),
+);
 export type ScheduleRunStatus = typeof ScheduleRunStatus.Type;
 
 /**
