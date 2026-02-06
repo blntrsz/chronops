@@ -6,6 +6,7 @@ import { controlTable } from "./control/sql";
 import { frameworkTable } from "./framework/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
+import { scheduleTable, scheduleRunTable } from "./schedule/sql";
 import * as auth from "./auth/sql";
 import { DatabaseError } from "./db-error";
 
@@ -15,6 +16,8 @@ const tables = {
   framework: frameworkTable,
   pdf: pdfTable,
   pdfPage: pdfPageTable,
+  schedule: scheduleTable,
+  scheduleRun: scheduleRunTable,
   ...auth,
 } as const;
 
