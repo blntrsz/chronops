@@ -4,6 +4,7 @@ import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
 import { AuthMiddleware } from "../auth/middleware-interface";
 import { DatabaseError } from "../db-error";
+import { StorageError } from "../storage/service";
 
 /**
  * Response schema for PDF upload URL generation.
@@ -25,7 +26,7 @@ export type PdfUploadResponse = typeof PdfUploadResponse.Type;
 export class PdfContract extends RpcGroup.make(
   Rpc.make("PdfGetUploadUrl", {
     success: PdfUploadResponse,
-    error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError)),
+    error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError), StorageError),
     payload: Pdf.CreatePdf,
   }),
   Rpc.make("PdfStartProcessing", {

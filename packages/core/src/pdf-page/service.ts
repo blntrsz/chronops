@@ -3,7 +3,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
 import { StorageService } from "../storage/service";
-import * as pdfjs from "pdfjs-serverless";
+import { resolvePDFJS } from "pdfjs-serverless";
 
 /**
  * Service for managing PDF page content and text extraction.
@@ -75,15 +75,32 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
 
       const s3Object = yield* storage.getObject(pdf.storageKey);
 
-      const arrayBuffer = yield* Effect.tryPromise({
-        try: () => s3Object.Body!.transformToByteArray(),
-        catch: (error) => new Error(`Failed to read PDF data: ${error}`),
+      const arrayBuffer = (yield* Effect.tryPromise(() =>
+        (s3Object.Body as { transformToByteArray: () => Promise<Uint8Array> }).transformToByteArray(),
+      ).pipe(
+        Effect.mapError((error: unknown) => new Error(`Failed to read PDF data: ${error}`)),
+      )) as Uint8Array;
+
+      const pdfjs = yield* Effect.tryPromise({
+        try: () => resolvePDFJS(),
+        catch: (error) => new Error(`Failed to load PDF engine: ${error}`),
       });
 
-      const pdfDocument = yield* Effect.try({
-        try: () => pdfjs.getDocument({ data: arrayBuffer }).promise,
-        catch: (error) => new Error(`Failed to parse PDF: ${error}`),
-      });
+      const pdfDocument = (yield* Effect.tryPromise(() =>
+        pdfjs.getDocument({ data: arrayBuffer as Uint8Array }).promise as Promise<{
+          numPages: number;
+          getPage: (pageNumber: number) => Promise<{
+            getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
+          }>;
+        }>,
+      ).pipe(
+        Effect.mapError((error: unknown) => new Error(`Failed to parse PDF: ${error}`)),
+      )) as {
+        numPages: number;
+        getPage: (pageNumber: number) => Promise<{
+          getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
+        }>;
+      };
 
       const numPages = pdfDocument.numPages;
       yield* Effect.log(`PDF has ${numPages} pages`);
@@ -96,9 +113,9 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
           Effect.gen(function* () {
             yield* Effect.log(`Processing page ${pageNum}/${numPages}`);
 
-            const page = yield* Effect.try({
+            const page = yield* Effect.tryPromise({
               try: () => pdfDocument.getPage(pageNum),
-              catch: (error) => new Error(`Failed to get page ${pageNum}: ${error}`),
+              catch: (error: unknown) => new Error(`Failed to get page ${pageNum}: ${error}`),
             });
 
             const textContent = yield* Effect.tryPromise({
@@ -106,7 +123,8 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
                 const content = await page.getTextContent();
                 return content.items.map((item: { str: string }) => item.str).join(" ");
               },
-              catch: (error) => new Error(`Failed to extract text from page ${pageNum}: ${error}`),
+              catch: (error: unknown) =>
+                new Error(`Failed to extract text from page ${pageNum}: ${error}`),
             });
 
             const pdfPage = yield* PdfPage.make({

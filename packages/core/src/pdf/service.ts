@@ -93,7 +93,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
       const result = yield* Effect.either(process);
 
-      if (Effect.isLeft(result)) {
+      if (result._tag === "Left") {
         yield* Effect.logError(`Failed to process PDF ${id}: ${result.left}`);
 
         const model = yield* getById(id);

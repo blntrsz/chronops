@@ -32,6 +32,7 @@ export const db = drizzle(pool, {
 });
 
 export class Database extends Effect.Service<Database>()("Database", {
+  // oxlint-disable-next-line eslint(require-yield)
   effect: Effect.gen(function* () {
     const use = <T>(fn: (client: typeof db) => Promise<T>) =>
       Effect.tryPromise({

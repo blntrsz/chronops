@@ -49,6 +49,6 @@ const RpcRouter = RpcServer.layerHttpRouter({
   Layer.provide(RpcSerialization.layerNdjson),
 );
 
-const AllRoutes = Layer.mergeAll(RpcRouter).pipe(Layer.provide(Logger.pretty));
+const AllRoutes = RpcRouter.pipe(Layer.provide(Logger.pretty));
 
-export const { handler, dispose } = HttpLayerRouter.toWebHandler(AllRoutes);
+export const { handler, dispose } = HttpLayerRouter.toWebHandler(AllRoutes as any);
