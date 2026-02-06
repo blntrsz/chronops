@@ -9,6 +9,10 @@ Default to using Bun instead of Node.js.
 
 - In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
 
+# Agent Behavior
+
+Be extremely concise. Sacrifice grammar for the sake of concision.
+
 # GitHub
 
 - Your primary method of interaction with GitHub should be GitHub CLI (`gh`).
