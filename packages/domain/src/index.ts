@@ -6,3 +6,5 @@ export * as Actor from "./actor";
 export * as Pdf from "./pdf";
 export * as PdfPage from "./pdf-page";
 export * as AI from "./ai";
+export * as Schedule from "./schedule";
+export * as ScheduleRun from "./schedule-run";
