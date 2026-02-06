@@ -1,17 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "@chronops/domain",
+  "name": "@chronops/functions",
   "private": true,
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "start": "bun src/index.ts",
+    "dev": "bun src/index.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "effect": "^3.19.15"
+    "@chronops/core": "workspace:^",
+    "@chronops/domain": "workspace:^",
+    "effect": "^3.19.15",
+    "ulid": "^3.0.2"
   },
   "devDependencies": {
     "@types/bun": "latest",

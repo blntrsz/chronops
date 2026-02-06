@@ -1,6 +1,11 @@
 {
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ],
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
