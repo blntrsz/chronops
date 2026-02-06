@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { DateTime, Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
 import { ScheduleId } from "./schedule";
@@ -12,7 +12,8 @@ export type ScheduleRunId = typeof ScheduleRunId.Type;
  */
 export const ScheduleRunStatus = Schema.Union(
   Schema.Literal("in_progress"),
-  Schema.Literal("completed"),
+  Schema.Literal("success"),
+  Schema.Literal("failed"),
 );
 export type ScheduleRunStatus = typeof ScheduleRunStatus.Type;
 
@@ -22,7 +23,7 @@ export type ScheduleRunStatus = typeof ScheduleRunStatus.Type;
  */
 export const scheduleRunId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
-  return ScheduleRunId.make(`srn_${createId()}`);
+  return ScheduleRunId.make(Base.buildId("srn", createId));
 });
 
 /**
@@ -35,13 +36,13 @@ export class ScheduleRun extends Base.Base.extend<ScheduleRun>("ScheduleRun")({
   id: ScheduleRunId,
   scheduleId: ScheduleId,
   status: ScheduleRunStatus,
-  success: Schema.Boolean,
+  finishedAt: Schema.NullOr(Schema.DateTimeUtc),
 }) {}
 
 export const CreateScheduleRun = ScheduleRun.pipe(Schema.pick("scheduleId"));
 export type CreateScheduleRun = typeof CreateScheduleRun.Type;
 
-export const UpdateScheduleRun = Schema.partial(ScheduleRun.pipe(Schema.pick("success")));
+export const UpdateScheduleRun = Schema.partial(ScheduleRun.pipe(Schema.pick("finishedAt")));
 export type UpdateScheduleRun = typeof UpdateScheduleRun.Type;
 
 /**
@@ -55,7 +56,7 @@ export const make = Effect.fn(function* (input: CreateScheduleRun) {
     id: yield* scheduleRunId(),
     scheduleId: input.scheduleId,
     status: "in_progress",
-    success: false,
+    finishedAt: null,
     ...base,
   });
 });
@@ -66,11 +67,12 @@ export const make = Effect.fn(function* (input: CreateScheduleRun) {
  */
 export const markSuccess = Effect.fn(function* (model: ScheduleRun) {
   const base = yield* Base.updateBase();
+  const now = yield* DateTime.now;
 
   return ScheduleRun.make({
     ...model,
-    status: "completed",
-    success: true,
+    status: "success",
+    finishedAt: now,
     ...base,
   });
 });
@@ -81,11 +83,12 @@ export const markSuccess = Effect.fn(function* (model: ScheduleRun) {
  */
 export const markFailure = Effect.fn(function* (model: ScheduleRun) {
   const base = yield* Base.updateBase();
+  const now = yield* DateTime.now;
 
   return ScheduleRun.make({
     ...model,
-    status: "completed",
-    success: false,
+    status: "failed",
+    finishedAt: now,
     ...base,
   });
 });

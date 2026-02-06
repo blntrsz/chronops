@@ -19,6 +19,6 @@ export const commentTable = pgTable("comment", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

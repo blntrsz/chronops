@@ -15,6 +15,7 @@ export const PdfUploadResponse = Schema.Struct({
   pdfId: Pdf.PdfId,
   uploadUrl: Schema.String,
   storageKey: Schema.String,
+  storageProvider: Pdf.PdfStorageProvider,
 });
 export type PdfUploadResponse = typeof PdfUploadResponse.Type;
 
@@ -53,7 +54,7 @@ export class PdfContract extends RpcGroup.make(
     ),
     payload: Schema.Struct({
       pdfId: Pdf.PdfId,
-      pageNumber: Schema.Number,
+      pageNumber: Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(1)),
     }),
   }),
   Rpc.make("PdfPagesList", {

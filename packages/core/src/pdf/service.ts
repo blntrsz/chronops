@@ -54,6 +54,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
         pdfId: model.id,
         uploadUrl,
         storageKey: model.storageKey,
+        storageProvider: model.storageProvider,
       };
     });
 
@@ -121,7 +122,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
           .set({
             deletedAt: removedModel.deletedAt,
             deletedBy: removedModel.deletedBy,
-            hash: removedModel.hash,
+            revisionId: removedModel.revisionId,
           })
           .where(eq(tables.pdfPage.pdfId, id)),
       );

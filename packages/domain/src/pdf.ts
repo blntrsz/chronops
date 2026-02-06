@@ -16,7 +16,7 @@ export type PdfId = typeof PdfId.Type;
  */
 export const pdfId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
-  return PdfId.make(`pdf_${createId()}`);
+  return PdfId.make(Base.buildId("pdf", createId));
 });
 
 /**
@@ -32,6 +32,27 @@ export const PdfStatus = Schema.Union(
 );
 export type PdfStatus = typeof PdfStatus.Type;
 
+export const PdfContentType = Schema.Union(
+  Schema.Literal("application/pdf"),
+  Schema.Literal("application/octet-stream"),
+);
+export type PdfContentType = typeof PdfContentType.Type;
+
+export const PdfStorageProvider = Schema.Union(
+  Schema.Literal("s3"),
+  Schema.Literal("local"),
+);
+export type PdfStorageProvider = typeof PdfStorageProvider.Type;
+
+export const PdfChecksum = Schema.String.pipe(Schema.brand("PdfChecksum"));
+export type PdfChecksum = typeof PdfChecksum.Type;
+
+export const PdfPageCount = Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(0));
+export type PdfPageCount = typeof PdfPageCount.Type;
+
+export const PdfFileSize = Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(0));
+export type PdfFileSize = typeof PdfFileSize.Type;
+
 /**
  * PDF document model.
  * @since 1.0.0
@@ -41,10 +62,12 @@ export class Pdf extends Base.Base.extend<Pdf>("Pdf")({
   id: PdfId,
   title: Schema.String,
   filename: Schema.String,
-  fileSize: Schema.Number,
-  contentType: Schema.String,
-  pageCount: Schema.Number,
+  fileSize: PdfFileSize,
+  contentType: PdfContentType,
+  pageCount: PdfPageCount,
   storageKey: Schema.String,
+  storageProvider: PdfStorageProvider,
+  checksum: PdfChecksum,
   status: PdfStatus,
 }) {}
 
@@ -56,9 +79,11 @@ export class Pdf extends Base.Base.extend<Pdf>("Pdf")({
 export const CreatePdf = Schema.Struct({
   title: Schema.String,
   filename: Schema.String,
-  fileSize: Schema.Number,
-  contentType: Schema.String,
+  fileSize: PdfFileSize,
+  contentType: PdfContentType,
   storageKey: Schema.String,
+  storageProvider: PdfStorageProvider,
+  checksum: PdfChecksum,
 });
 export type CreatePdf = typeof CreatePdf.Type;
 
@@ -71,7 +96,7 @@ export const make = Effect.fn(function* (input: CreatePdf) {
 
   return Pdf.make({
     id: yield* pdfId(),
-    pageCount: 0,
+    pageCount: PdfPageCount.make(0),
     status: "uploaded",
     ...input,
     ...base,
@@ -102,7 +127,7 @@ export const markReady = Effect.fn(function* (model: Pdf, pageCount: number) {
   return Pdf.make({
     ...model,
     status: "ready",
-    pageCount,
+    pageCount: PdfPageCount.make(pageCount),
     ...base,
   });
 });

@@ -1,4 +1,4 @@
-import { pgTable, text, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 import { Actor, Base, Schedule, ScheduleRun } from "@chronops/domain";
 import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
@@ -9,9 +9,8 @@ import { timestampUtc, timestampUtcNullable } from "../common/db-type";
  */
 export const scheduleTable = pgTable("schedule", {
   id: text().notNull().$type<Schedule.ScheduleId>().primaryKey(),
-  cron: text().notNull(),
+  cron: text().$type<Schedule.CronExpression>().notNull(),
   triggerType: text().$type<Schedule.TriggerType>().notNull(),
-  lastRanAt: timestampUtcNullable({ withTimezone: true }),
 
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
   updatedAt: timestampUtc({ withTimezone: true }).notNull(),
@@ -21,7 +20,7 @@ export const scheduleTable = pgTable("schedule", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });
 
@@ -34,7 +33,7 @@ export const scheduleRunTable = pgTable("schedule_run", {
   id: text().notNull().$type<ScheduleRun.ScheduleRunId>().primaryKey(),
   scheduleId: text().notNull().$type<Schedule.ScheduleId>(),
   status: text().$type<ScheduleRun.ScheduleRunStatus>().notNull().default("in_progress"),
-  success: boolean().notNull().default(false),
+  finishedAt: timestampUtcNullable({ withTimezone: true }),
 
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
   updatedAt: timestampUtc({ withTimezone: true }).notNull(),
@@ -44,6 +43,6 @@ export const scheduleRunTable = pgTable("schedule_run", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

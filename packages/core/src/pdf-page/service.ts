@@ -131,6 +131,7 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
               pdfId: pdf.id,
               pageNumber: pageNum,
               storageKey: `${pdf.storageKey}/page-${pageNum}`,
+              storageProvider: pdf.storageProvider,
             });
 
             const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);

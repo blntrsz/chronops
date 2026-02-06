@@ -1,4 +1,4 @@
-import { pgTable, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 import { Actor, Base, Framework } from "@chronops/domain";
 import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
@@ -7,7 +7,7 @@ export const frameworkTable = pgTable("framework", {
   id: text().notNull().$type<Framework.FrameworkId>().primaryKey(),
   name: text().notNull(),
   description: text(),
-  version: integer(),
+  version: text().$type<Framework.SemVer>(),
   status: text().$type<Framework.WorkflowStatus>().notNull(),
 
   // Base fields
@@ -19,6 +19,6 @@ export const frameworkTable = pgTable("framework", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

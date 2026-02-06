@@ -11,7 +11,7 @@ export const controlTable = pgTable("control", {
   description: text(),
   frameworkId: text().notNull().$type<Framework.FrameworkId>(),
   status: text().$type<Control.ControlStatus>().notNull(),
-  testingFrequency: text(),
+  testingFrequency: text().$type<Control.ControlTestingFrequency>(),
 
   // Base fields
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
@@ -22,6 +22,6 @@ export const controlTable = pgTable("control", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

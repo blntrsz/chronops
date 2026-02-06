@@ -2,8 +2,8 @@ import { Context, DateTime, Effect, Schema } from "effect";
 import { ulid } from "ulid";
 import * as Actor from "./actor";
 
-export const Hash = Schema.String.pipe(Schema.brand("Hash"));
-export type Hash = typeof Hash.Type;
+export const RevisionId = Schema.String.pipe(Schema.brand("RevisionId"));
+export type RevisionId = typeof RevisionId.Type;
 
 export class Base extends Schema.Class<Base>("BaseSchema")({
   createdAt: Schema.DateTimeUtc,
@@ -14,9 +14,11 @@ export class Base extends Schema.Class<Base>("BaseSchema")({
   updatedBy: Actor.MemberId,
   deletedBy: Schema.NullOr(Actor.MemberId),
 
-  hash: Hash,
+  revisionId: RevisionId,
   orgId: Actor.OrgId,
 }) {}
+
+export const buildId = (prefix: string, createId: () => string) => `${prefix}_${createId()}`;
 
 export class ULID extends Context.Tag("ULID")<
   ULID,
@@ -65,7 +67,7 @@ export const makeBase = Effect.fn(function* () {
     createdBy: actor.memberId,
     updatedBy: actor.memberId,
     deletedBy: null,
-    hash: Hash.make(ulid.createId()),
+    revisionId: RevisionId.make(ulid.createId()),
     orgId: actor.orgId,
   });
 });
@@ -78,7 +80,7 @@ export const updateBase = Effect.fn(function* () {
   return {
     updatedAt: now,
     updatedBy: actor.memberId,
-    hash: Hash.make(ulid.createId()),
+    revisionId: RevisionId.make(ulid.createId()),
   };
 });
 
@@ -90,6 +92,6 @@ export const removeBase = Effect.fn(function* () {
   return {
     deletedAt: now,
     deletedBy: actor.memberId,
-    hash: Hash.make(ulid.createId()),
+    revisionId: RevisionId.make(ulid.createId()),
   };
 });

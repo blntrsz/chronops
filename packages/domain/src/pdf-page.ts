@@ -17,7 +17,7 @@ export type PdfPageId = typeof PdfPageId.Type;
  */
 export const pdfPageId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
-  return PdfPageId.make(`pg_${createId()}`);
+  return PdfPageId.make(Base.buildId("pg", createId));
 });
 
 /**
@@ -28,9 +28,10 @@ export const pdfPageId = Effect.fn(function* () {
 export class PdfPage extends Base.Base.extend<PdfPage>("PdfPage")({
   id: PdfPageId,
   pdfId: Pdf.PdfId,
-  pageNumber: Schema.Number,
-  textContent: Schema.String,
+  pageNumber: Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(1)),
+  textContent: Schema.NullOr(Schema.String),
   storageKey: Schema.String,
+  storageProvider: Pdf.PdfStorageProvider,
 }) {}
 
 /**
@@ -40,8 +41,9 @@ export class PdfPage extends Base.Base.extend<PdfPage>("PdfPage")({
  */
 export const CreatePdfPage = Schema.Struct({
   pdfId: Pdf.PdfId,
-  pageNumber: Schema.Number,
+  pageNumber: Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(1)),
   storageKey: Schema.String,
+  storageProvider: Pdf.PdfStorageProvider,
 });
 export type CreatePdfPage = typeof CreatePdfPage.Type;
 
@@ -54,7 +56,7 @@ export const make = Effect.fn(function* (input: CreatePdfPage) {
 
   return PdfPage.make({
     id: yield* pdfPageId(),
-    textContent: "",
+    textContent: null,
     ...input,
     ...base,
   });

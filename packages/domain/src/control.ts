@@ -13,7 +13,7 @@ export type ControlId = typeof ControlId.Type;
 export const controlId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
 
-  return ControlId.make(`ctr_${createId()}`);
+  return ControlId.make(Base.buildId("ctr", createId));
 });
 
 /**
@@ -22,11 +22,20 @@ export const controlId = Effect.fn(function* () {
  */
 export const ControlStatus = Schema.Union(
   Schema.Literal("draft"),
-  Schema.Literal("under_review"),
-  Schema.Literal("approved"),
-  Schema.Literal("deprecated"),
+  Schema.Literal("active"),
+  Schema.Literal("archived"),
 );
 export type ControlStatus = typeof ControlStatus.Type;
+
+export const ControlTestingFrequency = Schema.Union(
+  Schema.Literal("daily"),
+  Schema.Literal("weekly"),
+  Schema.Literal("monthly"),
+  Schema.Literal("quarterly"),
+  Schema.Literal("semiannual"),
+  Schema.Literal("annual"),
+);
+export type ControlTestingFrequency = typeof ControlTestingFrequency.Type;
 
 /**
  * Control model
@@ -39,7 +48,7 @@ export class Control extends Base.Base.extend<Control>("Control")({
   description: Schema.NullOr(Schema.String),
   frameworkId: FrameworkId,
   status: ControlStatus,
-  testingFrequency: Schema.NullOr(Schema.String),
+  testingFrequency: Schema.NullOr(ControlTestingFrequency),
 }) {}
 
 export const CreateControl = Control.pipe(

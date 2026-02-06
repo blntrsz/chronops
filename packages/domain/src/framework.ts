@@ -5,6 +5,12 @@ import * as Base from "./base";
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;
 
+export const SemVer = Schema.String.pipe(
+  Schema.pattern(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/),
+  Schema.brand("SemVer"),
+);
+export type SemVer = typeof SemVer.Type;
+
 /**
  * Generate a new FrameworkId
  * @since 1.0.0
@@ -12,7 +18,7 @@ export type FrameworkId = typeof FrameworkId.Type;
 export const frameworkId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
 
-  return FrameworkId.make(`fwk_${createId()}`);
+  return FrameworkId.make(Base.buildId("fwk", createId));
 });
 
 /**
@@ -35,7 +41,7 @@ export class Framework extends Base.Base.extend<Framework>("Framework")({
   id: FrameworkId,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
-  version: Schema.NullOr(Schema.Union(Schema.Number, Schema.NumberFromString)),
+  version: Schema.NullOr(SemVer),
   status: WorkflowStatus,
 }) {}
 

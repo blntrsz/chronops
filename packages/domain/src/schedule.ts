@@ -11,7 +11,7 @@ export type ScheduleId = typeof ScheduleId.Type;
  */
 export const scheduleId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
-  return ScheduleId.make(`sch_${createId()}`);
+  return ScheduleId.make(Base.buildId("sch", createId));
 });
 
 /**
@@ -21,6 +21,9 @@ export const scheduleId = Effect.fn(function* () {
 export const TriggerType = Schema.Union(Schema.Literal("once"), Schema.Literal("forever"));
 export type TriggerType = typeof TriggerType.Type;
 
+export const CronExpression = Schema.String.pipe(Schema.brand("CronExpression"));
+export type CronExpression = typeof CronExpression.Type;
+
 /**
  * Schedule model
  * @since 1.0.0
@@ -28,9 +31,8 @@ export type TriggerType = typeof TriggerType.Type;
  */
 export class Schedule extends Base.Base.extend<Schedule>("Schedule")({
   id: ScheduleId,
-  cron: Schema.String,
+  cron: CronExpression,
   triggerType: TriggerType,
-  lastRanAt: Schema.NullOr(Schema.DateTimeUtc),
 }) {}
 
 export const CreateSchedule = Schedule.pipe(Schema.pick("cron", "triggerType"));
@@ -49,7 +51,6 @@ export const make = Effect.fn(function* (input: CreateSchedule) {
   return Schedule.make({
     id: yield* scheduleId(),
     ...input,
-    lastRanAt: null,
     ...base,
   });
 });

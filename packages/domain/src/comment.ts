@@ -13,7 +13,7 @@ export type CommentId = typeof CommentId.Type;
  */
 export const commentId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
-  return CommentId.make(`cmt_${createId()}`);
+  return CommentId.make(Base.buildId("cmt", createId));
 });
 
 export const CommentEntityId = Schema.Union(Framework.FrameworkId, Control.ControlId);

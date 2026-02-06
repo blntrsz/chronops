@@ -11,8 +11,9 @@ export const pdfPageTable = pgTable("pdf_page", {
   id: text().notNull().$type<PdfPage.PdfPageId>().primaryKey(),
   pdfId: text().notNull().$type<Pdf.PdfId>(),
   pageNumber: integer().notNull(),
-  textContent: text().notNull(),
+  textContent: text(),
   storageKey: text().notNull(),
+  storageProvider: text().$type<Pdf.PdfStorageProvider>().notNull(),
 
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
   updatedAt: timestampUtc({ withTimezone: true }).notNull(),
@@ -22,6 +23,6 @@ export const pdfPageTable = pgTable("pdf_page", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

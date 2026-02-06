@@ -12,9 +12,11 @@ export const pdfTable = pgTable("pdf", {
   title: text().notNull(),
   filename: text().notNull(),
   fileSize: integer().notNull(),
-  contentType: text().notNull(),
+  contentType: text().$type<Pdf.PdfContentType>().notNull(),
   pageCount: integer().notNull(),
   storageKey: text().notNull(),
+  storageProvider: text().$type<Pdf.PdfStorageProvider>().notNull(),
+  checksum: text().$type<Pdf.PdfChecksum>().notNull(),
   status: text().$type<Pdf.PdfStatus>().notNull(),
 
   createdAt: timestampUtc({ withTimezone: true }).notNull(),
@@ -25,6 +27,6 @@ export const pdfTable = pgTable("pdf", {
   updatedBy: text().$type<Actor.MemberId>().notNull(),
   deletedBy: text().$type<Actor.MemberId>(),
 
-  hash: text().$type<Base.Hash>().notNull(),
+  revisionId: text().$type<Base.RevisionId>().notNull(),
   orgId: text().$type<Actor.OrgId>().notNull(),
 });

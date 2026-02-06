@@ -1,5 +1,5 @@
+import { and, eq, isNull } from "drizzle-orm";
 import { DateTime, Effect } from "effect";
-import { and, eq, or, isNull, lt } from "drizzle-orm";
 import { Schedule, ScheduleRun } from "@chronops/domain";
 import { Database } from "../db";
 
@@ -13,14 +13,31 @@ export class ScheduleService extends Effect.Service<ScheduleService>()("Schedule
 
       const models = yield* use((db) =>
         db.query.schedule.findMany({
-          where: and(
-            isNull(tables.schedule.deletedAt),
-            or(isNull(tables.schedule.lastRanAt), lt(tables.schedule.lastRanAt, startOfDay)),
-          ),
+          where: and(isNull(tables.schedule.deletedAt)),
         }),
       );
 
-      return models.map((model) => Schedule.Schedule.make(model));
+      const due = yield* Effect.filter(models, (model) =>
+        Effect.gen(function* () {
+          const lastRun = yield* use((db) =>
+            db.query.scheduleRun.findFirst({
+              where: and(
+                eq(tables.scheduleRun.scheduleId, model.id),
+                isNull(tables.scheduleRun.deletedAt),
+              ),
+              orderBy: (scheduleRun, { desc }) => [desc(scheduleRun.updatedAt)],
+            }),
+          );
+
+          if (!lastRun) {
+            return true;
+          }
+
+          return DateTime.lessThan(lastRun.updatedAt, startOfDay);
+        }),
+      );
+
+      return due.map((model) => Schedule.Schedule.make(model));
     });
 
     const runSchedule = Effect.fn(function* <A, E, R>(
@@ -41,20 +58,10 @@ export class ScheduleService extends Effect.Service<ScheduleService>()("Schedule
           .update(tables.scheduleRun)
           .set({
             status: updatedRun.status,
-            success: updatedRun.success,
+            finishedAt: updatedRun.finishedAt,
             updatedAt: updatedRun.updatedAt,
           })
           .where(eq(tables.scheduleRun.id, updatedRun.id)),
-      );
-
-      yield* use((db) =>
-        db
-          .update(tables.schedule)
-          .set({
-            lastRanAt: updatedRun.updatedAt,
-            updatedAt: updatedRun.updatedAt,
-          })
-          .where(eq(tables.schedule.id, schedule.id)),
       );
 
       return result;
