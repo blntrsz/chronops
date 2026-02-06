@@ -16,6 +16,8 @@
     "db": "drizzle-kit"
   },
   "dependencies": {
+    "@effect-aws/client-s3": "^0.1.0",
+    "@effect-aws/s3": "^0.1.0",
     "@chronops/domain": "workspace:^",
     "@effect-atom/atom-react": "^0.5.0",
     "@effect/platform": "^0.94.2",
@@ -27,6 +29,7 @@
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "effect": "^3.19.15",
+    "pdfjs-serverless": "^0.4.2",
     "pg": "^8.18.0",
     "ulid": "^3.0.2"
   },

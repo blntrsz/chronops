@@ -4,6 +4,8 @@ import { Pool } from "pg";
 import { commentTable } from "./comment/sql";
 import { controlTable } from "./control/sql";
 import { frameworkTable } from "./framework/sql";
+import { pdfTable } from "./pdf/sql";
+import { pdfPageTable } from "./pdf-page/sql";
 import * as auth from "./auth/sql";
 import { DatabaseError } from "./db-error";
 
@@ -11,6 +13,8 @@ const tables = {
   comment: commentTable,
   control: controlTable,
   framework: frameworkTable,
+  pdf: pdfTable,
+  pdfPage: pdfPageTable,
   ...auth,
 } as const;
 

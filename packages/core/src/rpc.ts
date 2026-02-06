@@ -10,14 +10,23 @@ import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
+import { PdfHandler } from "./pdf/handler";
+import { PdfService } from "./pdf/service";
+import { PdfPageService } from "./pdf-page/service";
+import { StorageService } from "./storage/service";
 import { RpcLoggerLayer } from "./logger";
 import { Database } from "./db";
+import { S3 } from "@effect-aws/client-s3";
 
-const HandlersLayer = Layer.mergeAll(FrameworkHandler, ControlHandler, CommentHandler).pipe(
+const HandlersLayer = Layer.mergeAll(FrameworkHandler, ControlHandler, CommentHandler, PdfHandler).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(CommentService.Default),
+  Layer.provide(PdfService.Default),
+  Layer.provide(PdfPageService.Default),
+  Layer.provide(StorageService.Default),
   Layer.provide(Database.Default),
+  Layer.provide(S3.defaultLayer),
   Layer.provide(Layer.succeed(Base.ULID, Base.ULIDLayer)),
 );
 
