@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "@effect/language-service": "^0.73.0",
-    "@types/bun": "latest"
+    "@effect/vitest": "^0.27.0",
+    "@types/bun": "latest",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "typescript": "^5"

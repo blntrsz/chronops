@@ -2,6 +2,7 @@ import { DateTime, Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
 import { ScheduleId } from "./schedule";
+import * as Workflow from "./workflow";
 
 export const ScheduleRunId = Schema.String.pipe(Schema.brand("ScheduleRunId"));
 export type ScheduleRunId = typeof ScheduleRunId.Type;
@@ -16,6 +17,22 @@ export const ScheduleRunStatus = Schema.Union(
   Schema.Literal("failed"),
 );
 export type ScheduleRunStatus = typeof ScheduleRunStatus.Type;
+
+/**
+ * Workflow template for ScheduleRun entity
+ * @since 1.0.0
+ * @category workflows
+ */
+export const ScheduleRunTemplate = Workflow.WorkflowTemplate.make({
+  initial: "in_progress",
+  transitions: {
+    in_progress: { succeed: "success", fail: "failed" },
+    success: {},
+    failed: {},
+  },
+});
+
+export type ScheduleRunEvent = Workflow.EventOf<typeof ScheduleRunTemplate>;
 
 /**
  * Generate a new ScheduleRunId
@@ -68,10 +85,15 @@ export const make = Effect.fn(function* (input: CreateScheduleRun) {
 export const markSuccess = Effect.fn(function* (model: ScheduleRun) {
   const base = yield* Base.updateBase();
   const now = yield* DateTime.now;
+  const workflow = yield* Workflow.make(
+    ScheduleRunTemplate,
+    model.status as Workflow.StateOf<typeof ScheduleRunTemplate>,
+  );
+  const next = yield* Workflow.transition(workflow, "succeed");
 
   return ScheduleRun.make({
     ...model,
-    status: "success",
+    status: next.state,
     finishedAt: now,
     ...base,
   });
@@ -84,10 +106,15 @@ export const markSuccess = Effect.fn(function* (model: ScheduleRun) {
 export const markFailure = Effect.fn(function* (model: ScheduleRun) {
   const base = yield* Base.updateBase();
   const now = yield* DateTime.now;
+  const workflow = yield* Workflow.make(
+    ScheduleRunTemplate,
+    model.status as Workflow.StateOf<typeof ScheduleRunTemplate>,
+  );
+  const next = yield* Workflow.transition(workflow, "fail");
 
   return ScheduleRun.make({
     ...model,
-    status: "failed",
+    status: next.state,
     finishedAt: now,
     ...base,
   });

@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
+import * as Workflow from "./workflow";
 
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;
@@ -56,20 +57,16 @@ export type UpdateFramework = typeof UpdateFramework.Type;
  * @since 1.0.0
  * @category workflows
  */
-export const WorkflowTemplate = {
-  entityType: "framework",
+export const FrameworkTemplate = Workflow.WorkflowTemplate.make({
   initial: "draft",
   transitions: {
-    draft: { ACTIVATE: "active", ARCHIVE: "archived" },
-    active: { ARCHIVE: "archived" },
+    draft: { activate: "active", archive: "archived" },
+    active: { archive: "archived" },
     archived: {},
   },
-} as const;
+});
 
-export type WorkflowEvent =
-  | keyof (typeof WorkflowTemplate.transitions)["draft"]
-  | keyof (typeof WorkflowTemplate.transitions)["active"]
-  | keyof (typeof WorkflowTemplate.transitions)["archived"];
+export type WorkflowEvent = Workflow.EventOf<typeof FrameworkTemplate>;
 
 /**
  * Create a new Framework

@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
+import * as Workflow from "./workflow";
 
 /**
  * Branded type for PDF identifiers.
@@ -31,6 +32,23 @@ export const PdfStatus = Schema.Union(
   Schema.Literal("failed"),
 );
 export type PdfStatus = typeof PdfStatus.Type;
+
+/**
+ * Workflow template for Pdf entity.
+ * @since 1.0.0
+ * @category workflows
+ */
+export const PdfTemplate = Workflow.WorkflowTemplate.make({
+  initial: "uploaded",
+  transitions: {
+    uploaded: { process: "processing" },
+    processing: { ready: "ready", fail: "failed" },
+    ready: {},
+    failed: {},
+  },
+});
+
+export type PdfEvent = Workflow.EventOf<typeof PdfTemplate>;
 
 export const PdfContentType = Schema.Union(
   Schema.Literal("application/pdf"),
@@ -109,10 +127,12 @@ export const make = Effect.fn(function* (input: CreatePdf) {
  */
 export const markProcessing = Effect.fn(function* (model: Pdf) {
   const base = yield* Base.updateBase();
+  const workflow = yield* Workflow.make(PdfTemplate, model.status as Workflow.StateOf<typeof PdfTemplate>);
+  const next = yield* Workflow.transition(workflow, "process");
 
   return Pdf.make({
     ...model,
-    status: "processing",
+    status: next.state,
     ...base,
   });
 });
@@ -123,10 +143,12 @@ export const markProcessing = Effect.fn(function* (model: Pdf) {
  */
 export const markReady = Effect.fn(function* (model: Pdf, pageCount: number) {
   const base = yield* Base.updateBase();
+  const workflow = yield* Workflow.make(PdfTemplate, model.status as Workflow.StateOf<typeof PdfTemplate>);
+  const next = yield* Workflow.transition(workflow, "ready");
 
   return Pdf.make({
     ...model,
-    status: "ready",
+    status: next.state,
     pageCount: PdfPageCount.make(pageCount),
     ...base,
   });
@@ -138,10 +160,12 @@ export const markReady = Effect.fn(function* (model: Pdf, pageCount: number) {
  */
 export const markFailed = Effect.fn(function* (model: Pdf) {
   const base = yield* Base.updateBase();
+  const workflow = yield* Workflow.make(PdfTemplate, model.status as Workflow.StateOf<typeof PdfTemplate>);
+  const next = yield* Workflow.transition(workflow, "fail");
 
   return Pdf.make({
     ...model,
-    status: "failed",
+    status: next.state,
     ...base,
   });
 });

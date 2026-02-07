@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Base from "./base";
 import { FrameworkId } from "./framework";
+import * as Workflow from "./workflow";
 
 export const ControlId = Schema.String.pipe(Schema.brand("ControlId"));
 export type ControlId = typeof ControlId.Type;
@@ -64,6 +65,16 @@ export type UpdateControl = typeof UpdateControl.Type;
  * @since 1.0.0
  * @category workflows
  */
+export const ControlTemplate = Workflow.WorkflowTemplate.make({
+  initial: "draft",
+  transitions: {
+    draft: { activate: "active", archive: "archived" },
+    active: { archive: "archived" },
+    archived: {},
+  },
+});
+
+export type ControlEvent = Workflow.EventOf<typeof ControlTemplate>;
 
 /**
  * Create a new Control

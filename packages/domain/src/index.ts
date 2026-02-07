@@ -8,3 +8,4 @@ export * as PdfPage from "./pdf-page";
 export * as AI from "./ai";
 export * as Schedule from "./schedule";
 export * as ScheduleRun from "./schedule-run";
+export * as Workflow from "./workflow";
