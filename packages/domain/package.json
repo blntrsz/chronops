@@ -8,7 +8,7 @@
   "types": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun test",
+    "test": "bunx vitest run",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt --threads=1",
