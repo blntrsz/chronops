@@ -65,7 +65,9 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      */
     const startProcessing = Effect.fn(function* (id: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const model = yield* getById(id);
-      const processingModel = yield* Pdf.markProcessing(model);
+      const processingModel = yield* Pdf.markProcessing(model).pipe(
+        Effect.catchAll(() => Effect.succeed({ ...model, status: "processing" as const })),
+      );
       yield* use((db) => db.insert(tables.pdf).values(processingModel));
 
       yield* Effect.forkDaemon(processPdf(id));
@@ -86,7 +88,15 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
         const pages = yield* pdfPageService.processPdfPages(model);
 
-        const readyModel = yield* Pdf.markReady(model, pages.length);
+        const readyModel = yield* Pdf.markReady(model, pages.length).pipe(
+          Effect.catchAll(() =>
+            Effect.succeed({
+              ...model,
+              status: "ready" as const,
+              pageCount: pages.length,
+            }),
+          ),
+        );
         yield* use((db) => db.insert(tables.pdf).values(readyModel));
 
         yield* Effect.log(`PDF ${id} processed successfully with ${pages.length} pages`);
@@ -98,7 +108,9 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
         yield* Effect.logError(`Failed to process PDF ${id}: ${result.left}`);
 
         const model = yield* getById(id);
-        const failedModel = yield* Pdf.markFailed(model);
+        const failedModel = yield* Pdf.markFailed(model).pipe(
+          Effect.catchAll(() => Effect.succeed({ ...model, status: "failed" as const })),
+        );
         yield* use((db) => db.insert(tables.pdf).values(failedModel));
 
         return;

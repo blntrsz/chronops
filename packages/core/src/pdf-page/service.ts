@@ -76,7 +76,9 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
       const s3Object = yield* storage.getObject(pdf.storageKey);
 
       const arrayBuffer = (yield* Effect.tryPromise(() =>
-        (s3Object.Body as { transformToByteArray: () => Promise<Uint8Array> }).transformToByteArray(),
+        (
+          s3Object.Body as { transformToByteArray: () => Promise<Uint8Array> }
+        ).transformToByteArray(),
       ).pipe(
         Effect.mapError((error: unknown) => new Error(`Failed to read PDF data: ${error}`)),
       )) as Uint8Array;
@@ -86,16 +88,15 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
         catch: (error) => new Error(`Failed to load PDF engine: ${error}`),
       });
 
-      const pdfDocument = (yield* Effect.tryPromise(() =>
-        pdfjs.getDocument({ data: arrayBuffer as Uint8Array }).promise as Promise<{
-          numPages: number;
-          getPage: (pageNumber: number) => Promise<{
-            getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
-          }>;
-        }>,
-      ).pipe(
-        Effect.mapError((error: unknown) => new Error(`Failed to parse PDF: ${error}`)),
-      )) as {
+      const pdfDocument = (yield* Effect.tryPromise(
+        () =>
+          pdfjs.getDocument({ data: arrayBuffer as Uint8Array }).promise as Promise<{
+            numPages: number;
+            getPage: (pageNumber: number) => Promise<{
+              getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
+            }>;
+          }>,
+      ).pipe(Effect.mapError((error: unknown) => new Error(`Failed to parse PDF: ${error}`)))) as {
         numPages: number;
         getPage: (pageNumber: number) => Promise<{
           getTextContent: () => Promise<{ items: Array<{ str: string }> }>;

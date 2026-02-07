@@ -13,9 +13,7 @@ function RouteComponent() {
     <OrgListLayout
       title="Assessments"
       action={
-        <CreateAssessmentTemplate
-          trigger={<Button type="button">Create assessment</Button>}
-        />
+        <CreateAssessmentTemplate trigger={<Button type="button">Create assessment</Button>} />
       }
     >
       <ListAssessmentTemplates />

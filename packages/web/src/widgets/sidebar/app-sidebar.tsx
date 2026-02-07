@@ -30,11 +30,7 @@ import { SidebarUser } from "@/widgets/sidebar/sidebar-user";
 
 type NavItem = {
   title: string;
-  to:
-    | "/org/$slug"
-    | "/org/$slug/framework"
-    | "/org/$slug/control"
-    | "/org/$slug/assessment";
+  to: "/org/$slug" | "/org/$slug/framework" | "/org/$slug/control" | "/org/$slug/assessment";
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
 };
@@ -67,7 +63,8 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
           {nav.map((item) => {
             const isActive = item.exact
               ? location.pathname === `/org/${slug}` || location.pathname === `/org/${slug}/`
-              : location.pathname.startsWith(`/org/${slug}${item.to.replace("/org/$slug", "")}`);
+              : location.pathname.startsWith(`/org/${slug}${item.to.replace("/org/$slug", "")}`) ||
+                location.pathname.startsWith(`/org/${slug}${item.to.replace("/org/$slug", "")}/`);
 
             return (
               <SidebarMenuItem key={item.title}>

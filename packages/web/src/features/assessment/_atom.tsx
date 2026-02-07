@@ -3,15 +3,21 @@ import type { AssessmentTemplate, AssessmentInstance, Control } from "@chronops/
 
 export const assessmentTemplateKeys = {
   all: ["assessmentTemplate"],
-  detail: (id: AssessmentTemplate.AssessmentTemplateId) =>
-    [...assessmentTemplateKeys.all, "detail", id],
+  detail: (id: AssessmentTemplate.AssessmentTemplateId) => [
+    ...assessmentTemplateKeys.all,
+    "detail",
+    id,
+  ],
   list: (page = 1) => [...assessmentTemplateKeys.all, "list", page],
 } as const;
 
 export const assessmentInstanceKeys = {
   all: ["assessmentInstance"],
-  detail: (id: AssessmentInstance.AssessmentInstanceId) =>
-    [...assessmentInstanceKeys.all, "detail", id],
+  detail: (id: AssessmentInstance.AssessmentInstanceId) => [
+    ...assessmentInstanceKeys.all,
+    "detail",
+    id,
+  ],
   list: (page = 1) => [...assessmentInstanceKeys.all, "list", page],
 } as const;
 

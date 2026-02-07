@@ -17,7 +17,7 @@ describe("Pdf", () => {
           contentType: "application/pdf",
           storageKey: "key",
           storageProvider: "local",
-          checksum: "sum",
+          checksum: Pdf.PdfChecksum.make("sum"),
         });
         const processing = yield* Pdf.markProcessing(created);
         const ready = yield* Pdf.markReady(processing, 2);

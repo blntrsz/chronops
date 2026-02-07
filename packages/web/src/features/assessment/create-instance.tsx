@@ -3,10 +3,7 @@ import { GhostInput } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  createAssessmentInstance,
-  listAssessmentInstances,
-} from "@/features/assessment/_atom";
+import { createAssessmentInstance, listAssessmentInstances } from "@/features/assessment/_atom";
 import { cn } from "@/lib/utils";
 import { AssessmentTemplate, Control } from "@chronops/domain";
 import { useAtomRefresh, useAtomSet } from "@effect-atom/atom-react";

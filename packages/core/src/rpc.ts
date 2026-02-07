@@ -8,6 +8,8 @@ import { CommentService } from "./comment/service";
 import { RpcContract } from "./contract";
 import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
+import { EvidenceHandler } from "./evidence/handler";
+import { EvidenceService } from "./evidence/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { PdfHandler } from "./pdf/handler";
@@ -25,6 +27,7 @@ import { AssessmentInstanceService } from "./assessment/instance/service";
 const HandlersLayer = Layer.mergeAll(
   FrameworkHandler,
   ControlHandler,
+  EvidenceHandler,
   CommentHandler,
   PdfHandler,
   AssessmentTemplateHandler,
@@ -32,6 +35,7 @@ const HandlersLayer = Layer.mergeAll(
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
+  Layer.provide(EvidenceService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
   Layer.provide(PdfPageService.Default),

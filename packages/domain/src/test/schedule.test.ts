@@ -11,7 +11,7 @@ describe("Schedule", () => {
     runTest(
       Effect.gen(function* () {
         const created = yield* Schedule.make({
-          cron: "0 0 * * *",
+          cron: Schedule.CronExpression.make("0 0 * * *"),
           triggerType: "once",
         });
         const updated = yield* Schedule.update(created, { triggerType: "forever" });

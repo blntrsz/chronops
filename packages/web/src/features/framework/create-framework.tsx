@@ -23,7 +23,7 @@ function CreateFrameworkForm() {
 
   const [values, setValues] = React.useState<Framework.CreateFramework>({
     name: "",
-    version: 0,
+    version: null,
     description: "",
   });
 
@@ -55,7 +55,7 @@ function CreateFrameworkForm() {
       });
 
       setActiveDialog(null);
-      setValues({ name: "", version: 0, description: "" });
+      setValues({ name: "", version: null, description: "" });
 
       refreshList();
       refreshCount();
@@ -116,15 +116,15 @@ function CreateFrameworkForm() {
               <GhostInput
                 id="version"
                 name="version"
-                type="number"
+                type="text"
                 value={values.version ?? ""}
                 onChange={(e) =>
                   setValues((v) => ({
                     ...v,
-                    version: Number(e.target.value),
+                    version: e.target.value ? Framework.SemVer.make(e.target.value) : null,
                   }))
                 }
-                placeholder="19"
+                placeholder="1.0.0"
                 aria-label="Version"
                 className="w-20 text-sm text-foreground placeholder:text-muted-foreground/60"
                 disabled={pending}

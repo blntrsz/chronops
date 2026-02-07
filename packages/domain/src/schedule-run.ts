@@ -93,7 +93,7 @@ export const markSuccess = Effect.fn(function* (model: ScheduleRun) {
 
   return ScheduleRun.make({
     ...model,
-    status: next.state,
+    status: next.state as ScheduleRunStatus,
     finishedAt: now,
     ...base,
   });
@@ -114,7 +114,7 @@ export const markFailure = Effect.fn(function* (model: ScheduleRun) {
 
   return ScheduleRun.make({
     ...model,
-    status: next.state,
+    status: next.state as ScheduleRunStatus,
     finishedAt: now,
     ...base,
   });

@@ -25,7 +25,7 @@ export function ListAssessmentTemplates({
   ...props
 }: React.ComponentProps<"div"> & { controlId?: string }) {
   const [page] = React.useState(1);
-  const { slug } = useParams({ from: "/org/$slug/assessment/" });
+  const { slug } = useParams({ from: "/org/$slug/assessment" });
 
   const list = useAtomValue(listAssessmentTemplates(page, controlId as never));
 

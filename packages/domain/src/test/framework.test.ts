@@ -13,7 +13,7 @@ describe("Framework", () => {
         const created = yield* Framework.make({
           name: "SOC 2",
           description: null,
-          version: "1.0.0",
+          version: Framework.SemVer.make("1.0.0"),
         });
         const updated = yield* Framework.update(created, { description: "desc" });
         const removed = yield* Framework.remove(updated);

@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { commentTable } from "./comment/sql";
 import { controlTable } from "./control/sql";
+import { evidenceTable } from "./evidence/sql";
 import { frameworkTable } from "./framework/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
@@ -15,6 +16,7 @@ import { DatabaseError } from "./db-error";
 const tables = {
   comment: commentTable,
   control: controlTable,
+  evidence: evidenceTable,
   framework: frameworkTable,
   pdf: pdfTable,
   pdfPage: pdfPageTable,

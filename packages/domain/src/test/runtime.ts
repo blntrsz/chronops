@@ -32,7 +32,7 @@ export const makeTestRuntime = () => {
     ),
   );
 
-  const runTest = <A, E>(effect: Effect.Effect<A, E>) =>
+  const runTest = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
     Effect.provide(Effect.withClock(effect, fixedClock), TestRuntime);
 
   return { createId, runTest };

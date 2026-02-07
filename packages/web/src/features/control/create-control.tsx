@@ -28,7 +28,14 @@ type FrameworkId = Framework.FrameworkId;
 const listRefreshAtom = listControls(1);
 const frameworkListAtom = listFrameworks(1);
 
-const testingFrequencyOptions = ["daily", "weekly", "monthly", "quarterly", "yearly"] as const;
+const testingFrequencyOptions = [
+  "daily",
+  "weekly",
+  "monthly",
+  "quarterly",
+  "semiannual",
+  "annual",
+] as const;
 
 function CreateControlForm() {
   const setActiveDialog = useSetActiveDialog();
@@ -213,7 +220,8 @@ function CreateControlForm() {
                     onValueChange={(value) =>
                       setValues((v) => ({
                         ...v,
-                        testingFrequency: value === "__none" ? null : value,
+                        testingFrequency:
+                          value === "__none" ? null : (value as Control.ControlTestingFrequency),
                       }))
                     }
                   >

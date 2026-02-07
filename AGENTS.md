@@ -7,6 +7,8 @@ Default to using Bun instead of Node.js.
 - Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
 - Bun automatically loads .env, so don't use dotenv.
 
+- After each implementation, run `bun scan:fix` and fix issues; ensure it runs clean.
+
 - In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
 
 # Agent Behavior
