@@ -17,6 +17,12 @@ Be extremely concise. Sacrifice grammar for the sake of concision.
 
 - Your primary method of interaction with GitHub should be GitHub CLI (`gh`).
 
+# Commit Rules
+
+- Use conventional commits with scope: `<keyword>(<folder>/<domain-slice>): <message>`
+- Scope format: `<folder>/<domain-slice>` (e.g. `core/framework`, `ui/control`)
+- Title short, summarize change; body ok for plan parts, key decisions, whys
+
 # Plan
 
 - At the end of each plan, give me a list of unresolved questions to answer, if any. Make the questions extremely concise. Sacrifice grammar for the sake of concision.
