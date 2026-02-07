@@ -16,6 +16,10 @@ import { PdfPageService } from "./pdf-page/service";
 import { StorageService } from "./storage/service";
 import { RpcLoggerLayer } from "./logger";
 import { Database } from "./db";
+import { AssessmentTemplateHandler } from "./assessment/template/handler";
+import { AssessmentTemplateService } from "./assessment/template/service";
+import { AssessmentInstanceHandler } from "./assessment/instance/handler";
+import { AssessmentInstanceService } from "./assessment/instance/service";
 // import { S3 } from "@effect-aws/client-s3";
 
 const HandlersLayer = Layer.mergeAll(
@@ -23,12 +27,16 @@ const HandlersLayer = Layer.mergeAll(
   ControlHandler,
   CommentHandler,
   PdfHandler,
+  AssessmentTemplateHandler,
+  AssessmentInstanceHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
   Layer.provide(PdfPageService.Default),
+  Layer.provide(AssessmentTemplateService.Default),
+  Layer.provide(AssessmentInstanceService.Default),
   Layer.provide(StorageService.Default),
   Layer.provide(Database.Default),
   // TODO: Configure S3 client

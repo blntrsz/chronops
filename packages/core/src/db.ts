@@ -7,6 +7,8 @@ import { frameworkTable } from "./framework/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
 import { scheduleTable, scheduleRunTable } from "./schedule/sql";
+import { assessmentTemplateTable } from "./assessment/template/sql";
+import { assessmentInstanceTable } from "./assessment/instance/sql";
 import * as auth from "./auth/sql";
 import { DatabaseError } from "./db-error";
 
@@ -18,6 +20,8 @@ const tables = {
   pdfPage: pdfPageTable,
   schedule: scheduleTable,
   scheduleRun: scheduleRunTable,
+  assessmentTemplate: assessmentTemplateTable,
+  assessmentInstance: assessmentInstanceTable,
   ...auth,
 } as const;
 

@@ -1,5 +1,7 @@
 export * as Framework from "./framework";
 export * as Control from "./control";
+export * as AssessmentTemplate from "./assessment-template";
+export * as AssessmentInstance from "./assessment-instance";
 export * as Comment from "./comment";
 export * as Base from "./base";
 export * as Actor from "./actor";

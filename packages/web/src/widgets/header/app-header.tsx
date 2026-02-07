@@ -25,6 +25,8 @@ type AppHeaderProps = {
 const SECTION_LABEL: Record<string, string> = {
   framework: "Frameworks",
   control: "Controls",
+  assessment: "Assessments",
+  "assessment-instance": "Assessment Instances",
 };
 
 export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps) {
