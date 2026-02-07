@@ -1,5 +1,6 @@
 export * as AI from "./ai";
 export * as Actor from "./actor";
+export * as Audit from "./audit";
 export * as AssessmentInstance from "./assessment-instance";
 export * as AssessmentTemplate from "./assessment-template";
 export * as Base from "./base";
