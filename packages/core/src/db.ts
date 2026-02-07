@@ -5,6 +5,7 @@ import { commentTable } from "./comment/sql";
 import { controlTable } from "./control/sql";
 import { evidenceTable } from "./evidence/sql";
 import { frameworkTable } from "./framework/sql";
+import { issueTable } from "./issue/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
 import { scheduleTable, scheduleRunTable } from "./schedule/sql";
@@ -18,6 +19,7 @@ const tables = {
   control: controlTable,
   evidence: evidenceTable,
   framework: frameworkTable,
+  issue: issueTable,
   pdf: pdfTable,
   pdfPage: pdfPageTable,
   schedule: scheduleTable,

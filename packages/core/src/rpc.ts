@@ -12,6 +12,8 @@ import { EvidenceHandler } from "./evidence/handler";
 import { EvidenceService } from "./evidence/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
+import { IssueHandler } from "./issue/handler";
+import { IssueService } from "./issue/service";
 import { PdfHandler } from "./pdf/handler";
 import { PdfService } from "./pdf/service";
 import { PdfPageService } from "./pdf-page/service";
@@ -30,6 +32,7 @@ const HandlersLayer = Layer.mergeAll(
   EvidenceHandler,
   CommentHandler,
   PdfHandler,
+  IssueHandler,
   AssessmentTemplateHandler,
   AssessmentInstanceHandler,
 ).pipe(
@@ -38,6 +41,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(EvidenceService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
+  Layer.provide(IssueService.Default),
   Layer.provide(PdfPageService.Default),
   Layer.provide(AssessmentTemplateService.Default),
   Layer.provide(AssessmentInstanceService.Default),

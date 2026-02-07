@@ -23,7 +23,8 @@ Be extremely concise. Sacrifice grammar for the sake of concision.
 
 - Use conventional commits with scope: `<keyword>(<folder>/<domain-slice>): <message>`
 - Scope format: `<folder>/<domain-slice>` (e.g. `core/framework`, `ui/control`)
-- Title short, summarize change; body ok for plan parts, key decisions, whys
+- Title short, summarize change
+- Put plan parts, key decisions, whys into the body of the commit message
 - Commit plan file too
 
 # Plan

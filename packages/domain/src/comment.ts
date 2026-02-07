@@ -3,6 +3,7 @@ import * as Schema from "effect/Schema";
 import * as Base from "./base";
 import * as Control from "./control";
 import * as Framework from "./framework";
+import * as Issue from "./issue";
 
 export const CommentId = Schema.String.pipe(Schema.brand("CommentId"));
 export type CommentId = typeof CommentId.Type;
@@ -16,7 +17,11 @@ export const commentId = Effect.fn(function* () {
   return CommentId.make(Base.buildId("cmt", createId));
 });
 
-export const CommentEntityId = Schema.Union(Framework.FrameworkId, Control.ControlId);
+export const CommentEntityId = Schema.Union(
+  Framework.FrameworkId,
+  Control.ControlId,
+  Issue.IssueId,
+);
 export type CommentEntityId = typeof CommentEntityId.Type;
 
 /**

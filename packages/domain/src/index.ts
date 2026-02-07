@@ -7,6 +7,7 @@ export * as Comment from "./comment";
 export * as Control from "./control";
 export * as Evidence from "./evidence";
 export * as Framework from "./framework";
+export * as Issue from "./issue";
 export * as Pdf from "./pdf";
 export * as PdfPage from "./pdf-page";
 export * as Schedule from "./schedule";
