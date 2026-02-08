@@ -10,6 +10,8 @@ import { ControlHandler } from "./control/handler";
 import { ControlService } from "./control/service";
 import { EvidenceHandler } from "./evidence/handler";
 import { EvidenceService } from "./evidence/service";
+import { EventHandler } from "./event/handler";
+import { EventService } from "./event/service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { IssueHandler } from "./issue/handler";
@@ -34,6 +36,7 @@ const HandlersLayer = Layer.mergeAll(
   FrameworkHandler,
   ControlHandler,
   EvidenceHandler,
+  EventHandler,
   CommentHandler,
   PdfHandler,
   IssueHandler,
@@ -45,6 +48,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(EvidenceService.Default),
+  Layer.provide(EventService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
   Layer.provide(IssueService.Default),

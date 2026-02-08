@@ -7,6 +7,7 @@ export * as Base from "./base";
 export * as Comment from "./comment";
 export * as Control from "./control";
 export * as Evidence from "./evidence";
+export * as Event from "./event";
 export * as Framework from "./framework";
 export * as Issue from "./issue";
 export * as Policy from "./policy";

@@ -2,6 +2,7 @@ import { RpcGroup } from "@effect/rpc";
 import { CommentContract } from "./comment/contract";
 import { ControlContract } from "./control/contract";
 import { EvidenceContract } from "./evidence/contract";
+import { EventContract } from "./event/contract";
 import { FrameworkContract } from "./framework/contract";
 import { IssueContract } from "./issue/contract";
 import { PolicyContract } from "./policy/contract";
@@ -15,6 +16,7 @@ export class RpcContract extends RpcGroup.make()
   .merge(FrameworkContract)
   .merge(ControlContract)
   .merge(EvidenceContract)
+  .merge(EventContract)
   .merge(CommentContract)
   .merge(PdfContract)
   .merge(IssueContract)

@@ -6,6 +6,7 @@ import { controlTable } from "./control/sql";
 import { evidenceTable } from "./evidence/sql";
 import { frameworkTable } from "./framework/sql";
 import { issueTable } from "./issue/sql";
+import { eventTable } from "./event/sql";
 import { policyTable } from "./policy/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
@@ -22,6 +23,7 @@ const tables = {
   evidence: evidenceTable,
   framework: frameworkTable,
   issue: issueTable,
+  event: eventTable,
   policy: policyTable,
   pdf: pdfTable,
   pdfPage: pdfPageTable,
