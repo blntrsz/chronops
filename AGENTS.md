@@ -15,6 +15,8 @@ Default to using Bun instead of Node.js.
 
 Be extremely concise. Sacrifice grammar for the sake of concision.
 
+Adhere to first principle thinking, always start from primitive and build up from that like lego pieces.
+
 # GitHub
 
 - Your primary method of interaction with GitHub should be GitHub CLI (`gh`).
