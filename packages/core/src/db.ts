@@ -8,6 +8,7 @@ import { frameworkTable } from "./framework/sql";
 import { issueTable } from "./issue/sql";
 import { pdfTable } from "./pdf/sql";
 import { pdfPageTable } from "./pdf-page/sql";
+import { riskTable } from "./risk/sql";
 import { scheduleTable, scheduleRunTable } from "./schedule/sql";
 import { assessmentTemplateTable } from "./assessment/template/sql";
 import { assessmentInstanceTable } from "./assessment/instance/sql";
@@ -22,6 +23,7 @@ const tables = {
   issue: issueTable,
   pdf: pdfTable,
   pdfPage: pdfPageTable,
+  risk: riskTable,
   schedule: scheduleTable,
   scheduleRun: scheduleRunTable,
   assessmentTemplate: assessmentTemplateTable,

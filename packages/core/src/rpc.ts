@@ -17,6 +17,8 @@ import { IssueService } from "./issue/service";
 import { PdfHandler } from "./pdf/handler";
 import { PdfService } from "./pdf/service";
 import { PdfPageService } from "./pdf-page/service";
+import { RiskHandler } from "./risk/handler";
+import { RiskService } from "./risk/service";
 import { StorageService } from "./storage/service";
 import { RpcLoggerLayer } from "./logger";
 import { Database } from "./db";
@@ -35,6 +37,7 @@ const HandlersLayer = Layer.mergeAll(
   IssueHandler,
   AssessmentTemplateHandler,
   AssessmentInstanceHandler,
+  RiskHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
@@ -45,6 +48,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(PdfPageService.Default),
   Layer.provide(AssessmentTemplateService.Default),
   Layer.provide(AssessmentInstanceService.Default),
+  Layer.provide(RiskService.Default),
   Layer.provide(StorageService.Default),
   Layer.provide(Database.Default),
   // TODO: Configure S3 client
