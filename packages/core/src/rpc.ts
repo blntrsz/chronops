@@ -14,6 +14,8 @@ import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { IssueHandler } from "./issue/handler";
 import { IssueService } from "./issue/service";
+import { PolicyHandler } from "./policy/handler";
+import { PolicyService } from "./policy/service";
 import { PdfHandler } from "./pdf/handler";
 import { PdfService } from "./pdf/service";
 import { PdfPageService } from "./pdf-page/service";
@@ -35,6 +37,7 @@ const HandlersLayer = Layer.mergeAll(
   CommentHandler,
   PdfHandler,
   IssueHandler,
+  PolicyHandler,
   AssessmentTemplateHandler,
   AssessmentInstanceHandler,
   RiskHandler,
@@ -45,6 +48,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
   Layer.provide(IssueService.Default),
+  Layer.provide(PolicyService.Default),
   Layer.provide(PdfPageService.Default),
   Layer.provide(AssessmentTemplateService.Default),
   Layer.provide(AssessmentInstanceService.Default),

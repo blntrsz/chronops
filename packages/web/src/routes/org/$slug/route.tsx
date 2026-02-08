@@ -1,5 +1,6 @@
 import { CreateControl } from "@/features/control/create-control";
 import { CreateFramework } from "@/features/framework/create-framework";
+import { CreatePolicy } from "@/features/policy/create-policy";
 import { authClient } from "@/features/auth/client";
 import { OrgShell } from "@/widgets/sidebar/org-shell";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -35,6 +36,7 @@ function RouteComponent() {
     <OrgShell>
       <CreateFramework />
       <CreateControl />
+      <CreatePolicy />
       <Outlet />
     </OrgShell>
   );

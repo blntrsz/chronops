@@ -4,6 +4,7 @@ import * as Base from "./base";
 import * as Control from "./control";
 import * as Framework from "./framework";
 import * as Issue from "./issue";
+import * as Policy from "./policy";
 import * as Risk from "./risk";
 
 export const CommentId = Schema.String.pipe(Schema.brand("CommentId"));
@@ -22,6 +23,7 @@ export const CommentEntityId = Schema.Union(
   Framework.FrameworkId,
   Control.ControlId,
   Issue.IssueId,
+  Policy.PolicyId,
   Risk.RiskId,
 );
 export type CommentEntityId = typeof CommentEntityId.Type;

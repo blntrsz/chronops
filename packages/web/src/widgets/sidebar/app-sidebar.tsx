@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   ClipboardCheck,
   AlertTriangle,
+  FileText,
 } from "lucide-react";
 import * as React from "react";
 
@@ -36,7 +37,8 @@ type NavItem = {
     | "/org/$slug/framework"
     | "/org/$slug/control"
     | "/org/$slug/issue"
-    | "/org/$slug/assessment";
+    | "/org/$slug/assessment"
+    | "/org/$slug/policy";
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
 };
@@ -55,6 +57,7 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
     },
     { title: "Frameworks", to: "/org/$slug/framework", icon: Shield },
     { title: "Controls", to: "/org/$slug/control", icon: SlidersHorizontal },
+    { title: "Policies", to: "/org/$slug/policy", icon: FileText },
     { title: "Issues", to: "/org/$slug/issue", icon: AlertTriangle },
     { title: "Assessments", to: "/org/$slug/assessment", icon: ClipboardCheck },
   ];

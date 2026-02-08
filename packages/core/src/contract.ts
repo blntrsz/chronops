@@ -4,6 +4,7 @@ import { ControlContract } from "./control/contract";
 import { EvidenceContract } from "./evidence/contract";
 import { FrameworkContract } from "./framework/contract";
 import { IssueContract } from "./issue/contract";
+import { PolicyContract } from "./policy/contract";
 import { PdfContract } from "./pdf/contract";
 import { AssessmentTemplateContract } from "./assessment/template/contract";
 import { AssessmentInstanceContract } from "./assessment/instance/contract";
@@ -17,6 +18,7 @@ export class RpcContract extends RpcGroup.make()
   .merge(CommentContract)
   .merge(PdfContract)
   .merge(IssueContract)
+  .merge(PolicyContract)
   .merge(AssessmentTemplateContract)
   .merge(AssessmentInstanceContract)
   .merge(RiskContract)
