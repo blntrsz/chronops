@@ -2,11 +2,13 @@ import { Actor, Control, Policy } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class PolicyService extends Effect.Service<PolicyService>()("PolicyService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Policy.PolicyId>) {
       const actor = yield* Actor.Actor;
@@ -76,6 +78,8 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
     const insert = Effect.fn(function* (input: Policy.CreatePolicy) {
       const model = yield* Policy.make(input);
       yield* use((db) => db.insert(tables.policy).values(model));
+      const event = yield* Policy.makeCreatePolicyEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -89,6 +93,8 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
       const model = yield* getById(id);
       const updatedModel = yield* Policy.update(model, data);
       yield* use((db) => db.insert(tables.policy).values(updatedModel));
+      const event = yield* Policy.makeUpdatePolicyEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -96,6 +102,8 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
       const model = yield* getById(id);
       const removedModel = yield* Policy.remove(model);
       yield* use((db) => db.insert(tables.policy).values(removedModel));
+      const event = yield* Policy.makeDeletePolicyEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

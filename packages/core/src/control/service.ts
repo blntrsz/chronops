@@ -2,11 +2,13 @@ import { Actor, Control, Framework } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class ControlService extends Effect.Service<ControlService>()("ControlService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     /**
      * Get a control by its ID.
@@ -81,6 +83,8 @@ export class ControlService extends Effect.Service<ControlService>()("ControlSer
     const insert = Effect.fn(function* (input: Control.CreateControl) {
       const model = yield* Control.make(input);
       yield* use((db) => db.insert(tables.control).values(model));
+      const event = yield* Control.makeCreateControlEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -100,6 +104,8 @@ export class ControlService extends Effect.Service<ControlService>()("ControlSer
 
       const updatedModel = yield* Control.update(model, data);
       yield* use((db) => db.insert(tables.control).values(updatedModel));
+      const event = yield* Control.makeUpdateControlEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -112,6 +118,8 @@ export class ControlService extends Effect.Service<ControlService>()("ControlSer
       const model = yield* getById(id);
       const removedModel = yield* Control.remove(model);
       yield* use((db) => db.insert(tables.control).values(removedModel));
+      const event = yield* Control.makeDeleteControlEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

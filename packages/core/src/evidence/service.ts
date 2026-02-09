@@ -2,11 +2,13 @@ import { Actor, Control, Evidence, Pdf } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class EvidenceService extends Effect.Service<EvidenceService>()("EvidenceService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Evidence.EvidenceId>) {
       const actor = yield* Actor.Actor;
@@ -71,6 +73,8 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
     const insert = Effect.fn(function* (input: Evidence.CreateEvidence) {
       const model = yield* Evidence.make(input);
       yield* use((db) => db.insert(tables.evidence).values(model));
+      const event = yield* Evidence.makeCreateEvidenceEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -84,6 +88,8 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
       const model = yield* getById(id);
       const updatedModel = yield* Evidence.update(model, data);
       yield* use((db) => db.insert(tables.evidence).values(updatedModel));
+      const event = yield* Evidence.makeUpdateEvidenceEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -91,6 +97,8 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
       const model = yield* getById(id);
       const removedModel = yield* Evidence.remove(model);
       yield* use((db) => db.insert(tables.evidence).values(removedModel));
+      const event = yield* Evidence.makeDeleteEvidenceEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

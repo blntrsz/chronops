@@ -1,8 +1,8 @@
 import { Actor, Event } from "@chronops/domain";
 import { and, count, eq } from "drizzle-orm";
 import { Effect, Schema } from "effect";
-import { Pagination } from "../common/repository";
-import { Database } from "../db";
+import { Pagination } from "../repository";
+import { Database } from "../../db";
 
 export class EventService extends Effect.Service<EventService>()("EventService", {
   effect: Effect.gen(function* () {

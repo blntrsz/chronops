@@ -2,6 +2,7 @@ import { Actor, AssessmentInstance, AssessmentTemplate, Control } from "@chronop
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
+import { EventService } from "../../common/service/event-service";
 import { Database } from "../../db";
 
 export class AssessmentInstanceService extends Effect.Service<AssessmentInstanceService>()(
@@ -9,6 +10,7 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
   {
     effect: Effect.gen(function* () {
       const { use, tables } = yield* Database;
+      const eventService = yield* EventService;
 
       const getById = Effect.fn(function* (
         id: Schema.Schema.Type<typeof AssessmentInstance.AssessmentInstanceId>,
@@ -78,6 +80,8 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
       const insert = Effect.fn(function* (input: AssessmentInstance.CreateAssessmentInstance) {
         const model = yield* AssessmentInstance.make(input);
         yield* use((db) => db.insert(tables.assessmentInstance).values(model));
+        const event = yield* AssessmentInstance.makeCreateAssessmentInstanceEvent(null, model);
+        yield* eventService.append(event);
         return model;
       });
 
@@ -91,6 +95,11 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         const model = yield* getById(id);
         const updatedModel = yield* AssessmentInstance.update(model, data);
         yield* use((db) => db.insert(tables.assessmentInstance).values(updatedModel));
+        const event = yield* AssessmentInstance.makeUpdateAssessmentInstanceEvent(
+          model,
+          updatedModel,
+        );
+        yield* eventService.append(event);
         return updatedModel;
       });
 
@@ -100,6 +109,11 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         const model = yield* getById(id);
         const removedModel = yield* AssessmentInstance.remove(model);
         yield* use((db) => db.insert(tables.assessmentInstance).values(removedModel));
+        const event = yield* AssessmentInstance.makeDeleteAssessmentInstanceEvent(
+          model,
+          removedModel,
+        );
+        yield* eventService.append(event);
       });
 
       return {

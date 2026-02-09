@@ -11,7 +11,7 @@ import { ControlService } from "./control/service";
 import { EvidenceHandler } from "./evidence/handler";
 import { EvidenceService } from "./evidence/service";
 import { EventHandler } from "./event/handler";
-import { EventService } from "./event/service";
+import { EventService } from "./common/service/event-service";
 import { FrameworkHandler } from "./framework/handler";
 import { FrameworkService } from "./framework/service";
 import { IssueHandler } from "./issue/handler";

@@ -1,6 +1,8 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
+import * as Actor from "./actor";
 import * as Base from "./base";
+import * as Event from "./event";
 import * as Workflow from "./workflow";
 
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
@@ -67,6 +69,87 @@ export const FrameworkTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type WorkflowEvent = Workflow.EventOf<typeof FrameworkTemplate>;
+
+export class CreateFrameworkEvent extends Event.DomainEvent.extend<CreateFrameworkEvent>(
+  "CreateFrameworkEvent",
+)({
+  name: Schema.Literal("framework.created"),
+  entityType: Schema.Literal("framework"),
+}) {}
+
+export class UpdateFrameworkEvent extends Event.DomainEvent.extend<UpdateFrameworkEvent>(
+  "UpdateFrameworkEvent",
+)({
+  name: Schema.Literal("framework.updated"),
+  entityType: Schema.Literal("framework"),
+}) {}
+
+export class DeleteFrameworkEvent extends Event.DomainEvent.extend<DeleteFrameworkEvent>(
+  "DeleteFrameworkEvent",
+)({
+  name: Schema.Literal("framework.deleted"),
+  entityType: Schema.Literal("framework"),
+}) {}
+
+export const makeCreateFrameworkEvent = Effect.fn(function* (
+  previous: Framework | null,
+  next: Framework,
+) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "framework.created",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous?.revisionId ?? null,
+    revisionId: next.revisionId,
+    entityType: "framework",
+    entityId: next.id,
+  });
+
+  return CreateFrameworkEvent.make({
+    ...event,
+    name: "framework.created",
+    entityType: "framework",
+  });
+});
+
+export const makeUpdateFrameworkEvent = Effect.fn(function* (previous: Framework, next: Framework) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "framework.updated",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "framework",
+    entityId: next.id,
+  });
+
+  return UpdateFrameworkEvent.make({
+    ...event,
+    name: "framework.updated",
+    entityType: "framework",
+  });
+});
+
+export const makeDeleteFrameworkEvent = Effect.fn(function* (previous: Framework, next: Framework) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "framework.deleted",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "framework",
+    entityId: next.id,
+  });
+
+  return DeleteFrameworkEvent.make({
+    ...event,
+    name: "framework.deleted",
+    entityType: "framework",
+  });
+});
 
 /**
  * Create a new Framework

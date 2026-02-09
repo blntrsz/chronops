@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { EventContract } from "./contract";
-import { EventService } from "./service";
+import { EventService } from "../common/service/event-service";
 
 export const EventHandler = EventContract.toLayer(
   Effect.gen(function* () {

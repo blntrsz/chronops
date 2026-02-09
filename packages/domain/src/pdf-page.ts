@@ -1,6 +1,8 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
+import * as Actor from "./actor";
 import * as Base from "./base";
+import * as Event from "./event";
 import * as Pdf from "./pdf";
 
 /**
@@ -46,6 +48,35 @@ export const CreatePdfPage = Schema.Struct({
   storageProvider: Pdf.PdfStorageProvider,
 });
 export type CreatePdfPage = typeof CreatePdfPage.Type;
+
+export class CreatePdfPageEvent extends Event.DomainEvent.extend<CreatePdfPageEvent>(
+  "CreatePdfPageEvent",
+)({
+  name: Schema.Literal("pdf-page.created"),
+  entityType: Schema.Literal("pdf-page"),
+}) {}
+
+export const makeCreatePdfPageEvent = Effect.fn(function* (
+  previous: PdfPage | null,
+  next: PdfPage,
+) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "pdf-page.created",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous?.revisionId ?? null,
+    revisionId: next.revisionId,
+    entityType: "pdf-page",
+    entityId: next.id,
+  });
+
+  return CreatePdfPageEvent.make({
+    ...event,
+    name: "pdf-page.created",
+    entityType: "pdf-page",
+  });
+});
 
 /**
  * Create a new PDF page entity.

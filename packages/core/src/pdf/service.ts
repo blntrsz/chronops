@@ -2,6 +2,7 @@ import { Actor, Pdf } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
+import { EventService } from "../common/service/event-service";
 import { StorageService } from "../storage/service";
 import * as PdfPageService from "../pdf-page/service";
 
@@ -15,6 +16,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
     const { use, tables } = yield* Database;
     const storage = yield* StorageService;
     const pdfPageService = yield* PdfPageService.PdfPageService;
+    const eventService = yield* EventService;
 
     /**
      * Get a PDF by its ID.
@@ -47,6 +49,8 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
     const getUploadUrl = Effect.fn(function* (input: Schema.Schema.Type<typeof Pdf.CreatePdf>) {
       const model = yield* Pdf.make(input);
       yield* use((db) => db.insert(tables.pdf).values(model));
+      const event = yield* Pdf.makeCreatePdfEvent(null, model);
+      yield* eventService.append(event);
 
       const uploadUrl = yield* storage.getSignedUploadUrl(model.storageKey, model.contentType);
 
@@ -127,6 +131,8 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
       const removedModel = yield* Pdf.remove(model);
       yield* use((db) => db.insert(tables.pdf).values(removedModel));
+      const event = yield* Pdf.makeDeletePdfEvent(model, removedModel);
+      yield* eventService.append(event);
 
       yield* use((db) =>
         db

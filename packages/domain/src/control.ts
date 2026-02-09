@@ -1,6 +1,8 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
+import * as Actor from "./actor";
 import * as Base from "./base";
+import * as Event from "./event";
 import { FrameworkId } from "./framework";
 import * as Workflow from "./workflow";
 
@@ -75,6 +77,87 @@ export const ControlTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type ControlEvent = Workflow.EventOf<typeof ControlTemplate>;
+
+export class CreateControlEvent extends Event.DomainEvent.extend<CreateControlEvent>(
+  "CreateControlEvent",
+)({
+  name: Schema.Literal("control.created"),
+  entityType: Schema.Literal("control"),
+}) {}
+
+export class UpdateControlEvent extends Event.DomainEvent.extend<UpdateControlEvent>(
+  "UpdateControlEvent",
+)({
+  name: Schema.Literal("control.updated"),
+  entityType: Schema.Literal("control"),
+}) {}
+
+export class DeleteControlEvent extends Event.DomainEvent.extend<DeleteControlEvent>(
+  "DeleteControlEvent",
+)({
+  name: Schema.Literal("control.deleted"),
+  entityType: Schema.Literal("control"),
+}) {}
+
+export const makeCreateControlEvent = Effect.fn(function* (
+  previous: Control | null,
+  next: Control,
+) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "control.created",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous?.revisionId ?? null,
+    revisionId: next.revisionId,
+    entityType: "control",
+    entityId: next.id,
+  });
+
+  return CreateControlEvent.make({
+    ...event,
+    name: "control.created",
+    entityType: "control",
+  });
+});
+
+export const makeUpdateControlEvent = Effect.fn(function* (previous: Control, next: Control) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "control.updated",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "control",
+    entityId: next.id,
+  });
+
+  return UpdateControlEvent.make({
+    ...event,
+    name: "control.updated",
+    entityType: "control",
+  });
+});
+
+export const makeDeleteControlEvent = Effect.fn(function* (previous: Control, next: Control) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "control.deleted",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "control",
+    entityId: next.id,
+  });
+
+  return DeleteControlEvent.make({
+    ...event,
+    name: "control.deleted",
+    entityType: "control",
+  });
+});
 
 /**
  * Create a new Control

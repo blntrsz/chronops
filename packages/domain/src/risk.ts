@@ -1,7 +1,9 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
+import * as Actor from "./actor";
 import * as Base from "./base";
 import * as Control from "./control";
+import * as Event from "./event";
 import * as Workflow from "./workflow";
 
 export const RiskId = Schema.String.pipe(Schema.brand("RiskId"));
@@ -88,6 +90,78 @@ export const RiskTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type RiskEvent = Workflow.EventOf<typeof RiskTemplate>;
+
+export class CreateRiskEvent extends Event.DomainEvent.extend<CreateRiskEvent>("CreateRiskEvent")({
+  name: Schema.Literal("risk.created"),
+  entityType: Schema.Literal("risk"),
+}) {}
+
+export class UpdateRiskEvent extends Event.DomainEvent.extend<UpdateRiskEvent>("UpdateRiskEvent")({
+  name: Schema.Literal("risk.updated"),
+  entityType: Schema.Literal("risk"),
+}) {}
+
+export class DeleteRiskEvent extends Event.DomainEvent.extend<DeleteRiskEvent>("DeleteRiskEvent")({
+  name: Schema.Literal("risk.deleted"),
+  entityType: Schema.Literal("risk"),
+}) {}
+
+export const makeCreateRiskEvent = Effect.fn(function* (previous: Risk | null, next: Risk) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "risk.created",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous?.revisionId ?? null,
+    revisionId: next.revisionId,
+    entityType: "risk",
+    entityId: next.id,
+  });
+
+  return CreateRiskEvent.make({
+    ...event,
+    name: "risk.created",
+    entityType: "risk",
+  });
+});
+
+export const makeUpdateRiskEvent = Effect.fn(function* (previous: Risk, next: Risk) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "risk.updated",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "risk",
+    entityId: next.id,
+  });
+
+  return UpdateRiskEvent.make({
+    ...event,
+    name: "risk.updated",
+    entityType: "risk",
+  });
+});
+
+export const makeDeleteRiskEvent = Effect.fn(function* (previous: Risk, next: Risk) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "risk.deleted",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "risk",
+    entityId: next.id,
+  });
+
+  return DeleteRiskEvent.make({
+    ...event,
+    name: "risk.deleted",
+    entityType: "risk",
+  });
+});
 
 export const make = Effect.fn(function* (input: CreateRisk) {
   const base = yield* Base.makeBase();

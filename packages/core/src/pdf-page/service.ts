@@ -2,6 +2,7 @@ import { Actor, Pdf, PdfPage } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
+import { EventService } from "../common/service/event-service";
 import { StorageService } from "../storage/service";
 import { resolvePDFJS } from "pdfjs-serverless";
 
@@ -14,6 +15,7 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const storage = yield* StorageService;
+    const eventService = yield* EventService;
 
     /**
      * Get a specific page by PDF ID and page number.
@@ -138,6 +140,8 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
             const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
 
             yield* use((db) => db.insert(tables.pdfPage).values(pdfPageWithText));
+            const event = yield* PdfPage.makeCreatePdfPageEvent(null, pdfPageWithText);
+            yield* eventService.append(event);
 
             return pdfPageWithText;
           }),

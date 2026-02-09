@@ -2,11 +2,13 @@ import { Actor, Comment } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class CommentService extends Effect.Service<CommentService>()("CommentService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     /**
      * Get a comment by its ID.
@@ -81,6 +83,8 @@ export class CommentService extends Effect.Service<CommentService>()("CommentSer
     const insert = Effect.fn(function* (input: Comment.CreateComment) {
       const model = yield* Comment.make(input);
       yield* use((db) => db.insert(tables.comment).values(model));
+      const event = yield* Comment.makeCreateCommentEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -100,6 +104,8 @@ export class CommentService extends Effect.Service<CommentService>()("CommentSer
 
       const updatedModel = yield* Comment.update(model, data);
       yield* use((db) => db.insert(tables.comment).values(updatedModel));
+      const event = yield* Comment.makeUpdateCommentEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -112,6 +118,8 @@ export class CommentService extends Effect.Service<CommentService>()("CommentSer
       const model = yield* getById(id);
       const removedModel = yield* Comment.remove(model);
       yield* use((db) => db.insert(tables.comment).values(removedModel));
+      const event = yield* Comment.makeDeleteCommentEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

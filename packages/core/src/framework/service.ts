@@ -2,11 +2,13 @@ import { Actor, Framework } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class FrameworkService extends Effect.Service<FrameworkService>()("FrameworkService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     /**
      * Get a framework by its ID.
@@ -71,6 +73,8 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
     ) {
       const model = yield* Framework.make(input);
       yield* use((db) => db.insert(tables.framework).values(model));
+      const event = yield* Framework.makeCreateFrameworkEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -90,6 +94,8 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
 
       const updatedModel = yield* Framework.update(model, data);
       yield* use((db) => db.insert(tables.framework).values(updatedModel));
+      const event = yield* Framework.makeUpdateFrameworkEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -103,6 +109,8 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
 
       const removedModel = yield* Framework.remove(model);
       yield* use((db) => db.insert(tables.framework).values(removedModel));
+      const event = yield* Framework.makeDeleteFrameworkEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

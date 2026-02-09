@@ -2,11 +2,13 @@ import { Actor, Control, Risk } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class RiskService extends Effect.Service<RiskService>()("RiskService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Risk.RiskId>) {
       const actor = yield* Actor.Actor;
@@ -86,6 +88,8 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
     const insert = Effect.fn(function* (input: Risk.CreateRisk) {
       const model = yield* Risk.make(input);
       yield* use((db) => db.insert(tables.risk).values(model));
+      const event = yield* Risk.makeCreateRiskEvent(null, model);
+      yield* eventService.append(event);
       return model;
     });
 
@@ -99,6 +103,8 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
       const model = yield* getById(id);
       const updatedModel = yield* Risk.update(model, data);
       yield* use((db) => db.insert(tables.risk).values(updatedModel));
+      const event = yield* Risk.makeUpdateRiskEvent(model, updatedModel);
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -106,6 +112,8 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
       const model = yield* getById(id);
       const removedModel = yield* Risk.remove(model);
       yield* use((db) => db.insert(tables.risk).values(removedModel));
+      const event = yield* Risk.makeDeleteRiskEvent(model, removedModel);
+      yield* eventService.append(event);
     });
 
     return {

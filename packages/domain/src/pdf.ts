@@ -1,6 +1,8 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
+import * as Actor from "./actor";
 import * as Base from "./base";
+import * as Event from "./event";
 import * as Workflow from "./workflow";
 
 /**
@@ -49,6 +51,78 @@ export const PdfTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type PdfEvent = Workflow.EventOf<typeof PdfTemplate>;
+
+export class CreatePdfEvent extends Event.DomainEvent.extend<CreatePdfEvent>("CreatePdfEvent")({
+  name: Schema.Literal("pdf.created"),
+  entityType: Schema.Literal("pdf"),
+}) {}
+
+export class UpdatePdfEvent extends Event.DomainEvent.extend<UpdatePdfEvent>("UpdatePdfEvent")({
+  name: Schema.Literal("pdf.updated"),
+  entityType: Schema.Literal("pdf"),
+}) {}
+
+export class DeletePdfEvent extends Event.DomainEvent.extend<DeletePdfEvent>("DeletePdfEvent")({
+  name: Schema.Literal("pdf.deleted"),
+  entityType: Schema.Literal("pdf"),
+}) {}
+
+export const makeCreatePdfEvent = Effect.fn(function* (previous: Pdf | null, next: Pdf) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "pdf.created",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous?.revisionId ?? null,
+    revisionId: next.revisionId,
+    entityType: "pdf",
+    entityId: next.id,
+  });
+
+  return CreatePdfEvent.make({
+    ...event,
+    name: "pdf.created",
+    entityType: "pdf",
+  });
+});
+
+export const makeUpdatePdfEvent = Effect.fn(function* (previous: Pdf, next: Pdf) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "pdf.updated",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "pdf",
+    entityId: next.id,
+  });
+
+  return UpdatePdfEvent.make({
+    ...event,
+    name: "pdf.updated",
+    entityType: "pdf",
+  });
+});
+
+export const makeDeletePdfEvent = Effect.fn(function* (previous: Pdf, next: Pdf) {
+  const actor = yield* Actor.Actor;
+  const event = yield* Event.makeEvent({
+    name: "pdf.deleted",
+    actorId: actor.memberId,
+    orgId: actor.orgId,
+    revisionIdBefore: previous.revisionId,
+    revisionId: next.revisionId,
+    entityType: "pdf",
+    entityId: next.id,
+  });
+
+  return DeletePdfEvent.make({
+    ...event,
+    name: "pdf.deleted",
+    entityType: "pdf",
+  });
+});
 
 export const PdfContentType = Schema.Union(
   Schema.Literal("application/pdf"),
