@@ -14,6 +14,7 @@ import { riskTable } from "./risk/sql";
 import { scheduleTable, scheduleRunTable } from "./schedule/sql";
 import { assessmentTemplateTable } from "./assessment/template/sql";
 import { assessmentInstanceTable } from "./assessment/instance/sql";
+import { auditRunTable, auditTable } from "./audit/sql";
 import * as auth from "./auth/sql";
 import { DatabaseError } from "./db-error";
 
@@ -32,6 +33,8 @@ const tables = {
   scheduleRun: scheduleRunTable,
   assessmentTemplate: assessmentTemplateTable,
   assessmentInstance: assessmentInstanceTable,
+  audit: auditTable,
+  auditRun: auditRunTable,
   ...auth,
 } as const;
 

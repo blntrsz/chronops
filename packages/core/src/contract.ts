@@ -10,6 +10,7 @@ import { PdfContract } from "./pdf/contract";
 import { AssessmentTemplateContract } from "./assessment/template/contract";
 import { AssessmentInstanceContract } from "./assessment/instance/contract";
 import { RiskContract } from "./risk/contract";
+import { AuditContract } from "./audit/contract";
 import { RpcLogger } from "./logger";
 
 export class RpcContract extends RpcGroup.make()
@@ -24,4 +25,5 @@ export class RpcContract extends RpcGroup.make()
   .merge(AssessmentTemplateContract)
   .merge(AssessmentInstanceContract)
   .merge(RiskContract)
+  .merge(AuditContract)
   .middleware(RpcLogger) {}

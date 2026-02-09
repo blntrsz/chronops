@@ -30,6 +30,8 @@ import { AssessmentTemplateHandler } from "./assessment/template/handler";
 import { AssessmentTemplateService } from "./assessment/template/service";
 import { AssessmentInstanceHandler } from "./assessment/instance/handler";
 import { AssessmentInstanceService } from "./assessment/instance/service";
+import { AuditHandler } from "./audit/handler";
+import { AuditService } from "./audit/service";
 // import { S3 } from "@effect-aws/client-s3";
 
 const HandlersLayer = Layer.mergeAll(
@@ -44,6 +46,7 @@ const HandlersLayer = Layer.mergeAll(
   AssessmentTemplateHandler,
   AssessmentInstanceHandler,
   RiskHandler,
+  AuditHandler,
 ).pipe(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
@@ -57,6 +60,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(AssessmentTemplateService.Default),
   Layer.provide(AssessmentInstanceService.Default),
   Layer.provide(RiskService.Default),
+  Layer.provide(AuditService.Default),
   Layer.provide(StorageService.Default),
   Layer.provide(Database.Default),
   // TODO: Configure S3 client
