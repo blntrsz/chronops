@@ -68,10 +68,7 @@ export const make = Effect.fn(function* (input: CreateComment) {
  * Update an existing Comment
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (
-  model: Comment,
-  input: UpdateComment,
-) {
+export const update = Effect.fn(function* (model: Comment, input: UpdateComment) {
   const base = yield* Base.updateBase();
 
   return Comment.make({

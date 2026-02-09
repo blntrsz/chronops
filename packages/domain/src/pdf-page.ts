@@ -53,7 +53,6 @@ export const CreatePdfPage = Schema.Struct({
 });
 export type CreatePdfPage = typeof CreatePdfPage.Type;
 
-
 /**
  * Create a new PDF page entity.
  * @since 1.0.0
