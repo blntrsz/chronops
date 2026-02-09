@@ -1,11 +1,9 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Actor from "./actor";
 import * as AssessmentInstance from "./assessment-instance";
 import * as Base from "./base";
 import * as Control from "./control";
 import * as Evidence from "./evidence";
-import * as Event from "./event";
 import * as Workflow from "./workflow";
 
 export const IssueId = Schema.String.pipe(Schema.brand("IssueId"));
@@ -48,6 +46,12 @@ export class Issue extends Base.Base.extend<Issue>("Issue")({
   dueAt: Schema.NullOr(Schema.DateTimeUtc),
   resolvedAt: Schema.NullOr(Schema.DateTimeUtc),
 }) {}
+
+export const Event = {
+  created: "issue.created",
+  updated: "issue.updated",
+  deleted: "issue.deleted",
+} as const;
 
 export const CreateIssue = Issue.pipe(
   Schema.pick(
@@ -92,84 +96,6 @@ export const IssueTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type IssueEvent = Workflow.EventOf<typeof IssueTemplate>;
-
-export class CreateIssueEvent extends Event.DomainEvent.extend<CreateIssueEvent>(
-  "CreateIssueEvent",
-)({
-  name: Schema.Literal("issue.created"),
-  entityType: Schema.Literal("issue"),
-}) {}
-
-export class UpdateIssueEvent extends Event.DomainEvent.extend<UpdateIssueEvent>(
-  "UpdateIssueEvent",
-)({
-  name: Schema.Literal("issue.updated"),
-  entityType: Schema.Literal("issue"),
-}) {}
-
-export class DeleteIssueEvent extends Event.DomainEvent.extend<DeleteIssueEvent>(
-  "DeleteIssueEvent",
-)({
-  name: Schema.Literal("issue.deleted"),
-  entityType: Schema.Literal("issue"),
-}) {}
-
-export const makeCreateIssueEvent = Effect.fn(function* (previous: Issue | null, next: Issue) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "issue.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "issue",
-    entityId: next.id,
-  });
-
-  return CreateIssueEvent.make({
-    ...event,
-    name: "issue.created",
-    entityType: "issue",
-  });
-});
-
-export const makeUpdateIssueEvent = Effect.fn(function* (previous: Issue, next: Issue) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "issue.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "issue",
-    entityId: next.id,
-  });
-
-  return UpdateIssueEvent.make({
-    ...event,
-    name: "issue.updated",
-    entityType: "issue",
-  });
-});
-
-export const makeDeleteIssueEvent = Effect.fn(function* (previous: Issue, next: Issue) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "issue.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "issue",
-    entityId: next.id,
-  });
-
-  return DeleteIssueEvent.make({
-    ...event,
-    name: "issue.deleted",
-    entityType: "issue",
-  });
-});
 
 export const make = Effect.fn(function* (input: CreateIssue) {
   const base = yield* Base.makeBase();

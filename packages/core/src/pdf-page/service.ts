@@ -1,4 +1,4 @@
-import { Actor, Pdf, PdfPage } from "@chronops/domain";
+import { Actor, EntityType, Event, Pdf, PdfPage } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
@@ -140,7 +140,13 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
             const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
 
             yield* use((db) => db.insert(tables.pdfPage).values(pdfPageWithText));
-            const event = yield* PdfPage.makeCreatePdfPageEvent(null, pdfPageWithText);
+            const event = yield* Event.make({
+              name: PdfPage.Event.created,
+              entityId: pdfPageWithText.id,
+              entityType: EntityType.PdfPage,
+              revisionId: pdfPageWithText.revisionId,
+              revisionIdBefore: null,
+            });
             yield* eventService.append(event);
 
             return pdfPageWithText;

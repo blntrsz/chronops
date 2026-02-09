@@ -17,3 +17,19 @@ export * as PdfPage from "./pdf-page";
 export * as Schedule from "./schedule";
 export * as ScheduleRun from "./schedule-run";
 export * as Workflow from "./workflow";
+
+export const EntityType = {
+  Audit: "audit",
+  AuditRun: "audit-run",
+  Comment: "comment",
+  Control: "control",
+  Framework: "framework",
+  Issue: "issue",
+  Policy: "policy",
+  Risk: "risk",
+  AssessmentInstance: "assessment-instance",
+  AssessmentTemplate: "assessment-template",
+  Evidence: "evidence",
+  Pdf: "pdf",
+  PdfPage: "pdf-page",
+} as const;

@@ -1,4 +1,4 @@
-import { Actor, AssessmentTemplate, Control } from "@chronops/domain";
+import { Actor, AssessmentTemplate, Control, EntityType, Event } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
@@ -75,7 +75,13 @@ export class AssessmentTemplateService extends Effect.Service<AssessmentTemplate
       const insert = Effect.fn(function* (input: AssessmentTemplate.CreateAssessmentTemplate) {
         const model = yield* AssessmentTemplate.make(input);
         yield* use((db) => db.insert(tables.assessmentTemplate).values(model));
-        const event = yield* AssessmentTemplate.makeCreateAssessmentTemplateEvent(null, model);
+        const event = yield* Event.make({
+          name: AssessmentTemplate.Event.created,
+          entityId: model.id,
+          entityType: EntityType.AssessmentTemplate,
+          revisionId: model.revisionId,
+          revisionIdBefore: null,
+        });
         yield* eventService.append(event);
         return model;
       });
@@ -90,10 +96,13 @@ export class AssessmentTemplateService extends Effect.Service<AssessmentTemplate
         const model = yield* getById(id);
         const updatedModel = yield* AssessmentTemplate.update(model, data);
         yield* use((db) => db.insert(tables.assessmentTemplate).values(updatedModel));
-        const event = yield* AssessmentTemplate.makeUpdateAssessmentTemplateEvent(
-          model,
-          updatedModel,
-        );
+        const event = yield* Event.make({
+          name: AssessmentTemplate.Event.updated,
+          entityId: updatedModel.id,
+          entityType: EntityType.AssessmentTemplate,
+          revisionId: updatedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
         return updatedModel;
       });
@@ -104,10 +113,13 @@ export class AssessmentTemplateService extends Effect.Service<AssessmentTemplate
         const model = yield* getById(id);
         const removedModel = yield* AssessmentTemplate.remove(model);
         yield* use((db) => db.insert(tables.assessmentTemplate).values(removedModel));
-        const event = yield* AssessmentTemplate.makeDeleteAssessmentTemplateEvent(
-          model,
-          removedModel,
-        );
+        const event = yield* Event.make({
+          name: AssessmentTemplate.Event.deleted,
+          entityId: removedModel.id,
+          entityType: EntityType.AssessmentTemplate,
+          revisionId: removedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
       });
 

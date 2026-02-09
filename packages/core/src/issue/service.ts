@@ -1,4 +1,4 @@
-import { Actor, AssessmentInstance, Control, Evidence, Issue } from "@chronops/domain";
+import { Actor, AssessmentInstance, Control, EntityType, Event, Evidence, Issue } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
@@ -93,7 +93,13 @@ export class IssueService extends Effect.Service<IssueService>()("IssueService",
     const insert = Effect.fn(function* (input: Issue.CreateIssue) {
       const model = yield* Issue.make(input);
       yield* use((db) => db.insert(tables.issue).values(model));
-      const event = yield* Issue.makeCreateIssueEvent(null, model);
+      const event = yield* Event.make({
+        name: Issue.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Issue,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
       yield* eventService.append(event);
       return model;
     });
@@ -108,7 +114,13 @@ export class IssueService extends Effect.Service<IssueService>()("IssueService",
       const model = yield* getById(id);
       const updatedModel = yield* Issue.update(model, data);
       yield* use((db) => db.insert(tables.issue).values(updatedModel));
-      const event = yield* Issue.makeUpdateIssueEvent(model, updatedModel);
+      const event = yield* Event.make({
+        name: Issue.Event.updated,
+        entityId: updatedModel.id,
+        entityType: EntityType.Issue,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
       return updatedModel;
     });
@@ -117,7 +129,13 @@ export class IssueService extends Effect.Service<IssueService>()("IssueService",
       const model = yield* getById(id);
       const removedModel = yield* Issue.remove(model);
       yield* use((db) => db.insert(tables.issue).values(removedModel));
-      const event = yield* Issue.makeDeleteIssueEvent(model, removedModel);
+      const event = yield* Event.make({
+        name: Issue.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Issue,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
     });
 

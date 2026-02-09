@@ -1,12 +1,14 @@
-import { Actor, AssessmentTemplate, Audit } from "@chronops/domain";
+import { Actor, AssessmentTemplate, Audit, EntityType, Event } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 
 export class AuditService extends Effect.Service<AuditService>()("AuditService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const eventService = yield* EventService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Audit.AuditId>) {
       const actor = yield* Actor.Actor;
@@ -71,6 +73,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
     const insert = Effect.fn(function* (input: Audit.CreateAudit) {
       const model = yield* Audit.make(input);
       yield* use((db) => db.insert(tables.audit).values(model));
+      const event = yield* Event.make({
+        name: Audit.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Audit,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
+      yield* eventService.append(event);
       return model;
     });
 
@@ -84,6 +94,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
       const model = yield* getById(id);
       const updatedModel = yield* Audit.update(model, data);
       yield* use((db) => db.insert(tables.audit).values(updatedModel));
+      const event = yield* Event.make({
+        name: Audit.Event.updated,
+        entityId: updatedModel.id,
+        entityType: EntityType.Audit,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -91,6 +109,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
       const model = yield* getById(id);
       const removedModel = yield* Audit.remove(model);
       yield* use((db) => db.insert(tables.audit).values(removedModel));
+      const event = yield* Event.make({
+        name: Audit.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Audit,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(event);
     });
 
     const getRunById = Effect.fn(function* (id: Schema.Schema.Type<typeof Audit.AuditRunId>) {
@@ -162,6 +188,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
     const insertRun = Effect.fn(function* (input: Audit.CreateAuditRun) {
       const model = yield* Audit.makeRun(input);
       yield* use((db) => db.insert(tables.auditRun).values(model));
+      const event = yield* Event.make({
+        name: Audit.Event.runCreated,
+        entityId: model.id,
+        entityType: EntityType.AuditRun,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
+      yield* eventService.append(event);
       return model;
     });
 
@@ -169,6 +203,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
       const model = yield* getRunById(id);
       const updatedModel = yield* Audit.startRun(model);
       yield* use((db) => db.insert(tables.auditRun).values(updatedModel));
+      const event = yield* Event.make({
+        name: Audit.Event.runUpdated,
+        entityId: updatedModel.id,
+        entityType: EntityType.AuditRun,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -176,6 +218,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
       const model = yield* getRunById(id);
       const updatedModel = yield* Audit.markRunCompleted(model);
       yield* use((db) => db.insert(tables.auditRun).values(updatedModel));
+      const event = yield* Event.make({
+        name: Audit.Event.runUpdated,
+        entityId: updatedModel.id,
+        entityType: EntityType.AuditRun,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(event);
       return updatedModel;
     });
 
@@ -183,6 +233,14 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
       const model = yield* getRunById(id);
       const updatedModel = yield* Audit.markRunFailed(model);
       yield* use((db) => db.insert(tables.auditRun).values(updatedModel));
+      const event = yield* Event.make({
+        name: Audit.Event.runUpdated,
+        entityId: updatedModel.id,
+        entityType: EntityType.AuditRun,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(event);
       return updatedModel;
     });
 

@@ -1,4 +1,4 @@
-import { Actor, Control, Risk } from "@chronops/domain";
+import { Actor, Control, EntityType, Event, Risk } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
@@ -88,7 +88,13 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
     const insert = Effect.fn(function* (input: Risk.CreateRisk) {
       const model = yield* Risk.make(input);
       yield* use((db) => db.insert(tables.risk).values(model));
-      const event = yield* Risk.makeCreateRiskEvent(null, model);
+      const event = yield* Event.make({
+        name: Risk.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Risk,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
       yield* eventService.append(event);
       return model;
     });
@@ -103,7 +109,13 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
       const model = yield* getById(id);
       const updatedModel = yield* Risk.update(model, data);
       yield* use((db) => db.insert(tables.risk).values(updatedModel));
-      const event = yield* Risk.makeUpdateRiskEvent(model, updatedModel);
+      const event = yield* Event.make({
+        name: Risk.Event.updated,
+        entityId: updatedModel.id,
+        entityType: EntityType.Risk,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
       return updatedModel;
     });
@@ -112,7 +124,13 @@ export class RiskService extends Effect.Service<RiskService>()("RiskService", {
       const model = yield* getById(id);
       const removedModel = yield* Risk.remove(model);
       yield* use((db) => db.insert(tables.risk).values(removedModel));
-      const event = yield* Risk.makeDeleteRiskEvent(model, removedModel);
+      const event = yield* Event.make({
+        name: Risk.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Risk,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
     });
 

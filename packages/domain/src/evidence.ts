@@ -1,9 +1,7 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Actor from "./actor";
 import * as Base from "./base";
 import * as Control from "./control";
-import * as Event from "./event";
 import * as Pdf from "./pdf";
 import * as Workflow from "./workflow";
 
@@ -44,6 +42,12 @@ export class Evidence extends Base.Base.extend<Evidence>("Evidence")({
   retentionEndsAt: Schema.NullOr(Schema.DateTimeUtc),
   status: EvidenceStatus,
 }) {}
+
+export const Event = {
+  created: "evidence.created",
+  updated: "evidence.updated",
+  deleted: "evidence.deleted",
+} as const;
 
 export const CreateEvidence = Evidence.pipe(
   Schema.pick(
@@ -87,87 +91,6 @@ export const EvidenceTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type EvidenceEvent = Workflow.EventOf<typeof EvidenceTemplate>;
-
-export class CreateEvidenceEvent extends Event.DomainEvent.extend<CreateEvidenceEvent>(
-  "CreateEvidenceEvent",
-)({
-  name: Schema.Literal("evidence.created"),
-  entityType: Schema.Literal("evidence"),
-}) {}
-
-export class UpdateEvidenceEvent extends Event.DomainEvent.extend<UpdateEvidenceEvent>(
-  "UpdateEvidenceEvent",
-)({
-  name: Schema.Literal("evidence.updated"),
-  entityType: Schema.Literal("evidence"),
-}) {}
-
-export class DeleteEvidenceEvent extends Event.DomainEvent.extend<DeleteEvidenceEvent>(
-  "DeleteEvidenceEvent",
-)({
-  name: Schema.Literal("evidence.deleted"),
-  entityType: Schema.Literal("evidence"),
-}) {}
-
-export const makeCreateEvidenceEvent = Effect.fn(function* (
-  previous: Evidence | null,
-  next: Evidence,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "evidence.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "evidence",
-    entityId: next.id,
-  });
-
-  return CreateEvidenceEvent.make({
-    ...event,
-    name: "evidence.created",
-    entityType: "evidence",
-  });
-});
-
-export const makeUpdateEvidenceEvent = Effect.fn(function* (previous: Evidence, next: Evidence) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "evidence.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "evidence",
-    entityId: next.id,
-  });
-
-  return UpdateEvidenceEvent.make({
-    ...event,
-    name: "evidence.updated",
-    entityType: "evidence",
-  });
-});
-
-export const makeDeleteEvidenceEvent = Effect.fn(function* (previous: Evidence, next: Evidence) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "evidence.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "evidence",
-    entityId: next.id,
-  });
-
-  return DeleteEvidenceEvent.make({
-    ...event,
-    name: "evidence.deleted",
-    entityType: "evidence",
-  });
-});
 
 export const make = Effect.fn(function* (input: CreateEvidence) {
   const base = yield* Base.makeBase();

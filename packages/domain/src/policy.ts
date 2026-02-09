@@ -3,7 +3,6 @@ import * as Schema from "effect/Schema";
 import * as Actor from "./actor";
 import * as Base from "./base";
 import * as Control from "./control";
-import * as Event from "./event";
 import * as Workflow from "./workflow";
 
 export const PolicyId = Schema.String.pipe(Schema.brand("PolicyId"));
@@ -43,6 +42,12 @@ export class Policy extends Base.Base.extend<Policy>("Policy")({
   ownerId: Schema.NullOr(Actor.MemberId),
   controlId: Schema.NullOr(Control.ControlId),
 }) {}
+
+export const Event = {
+  created: "policy.created",
+  updated: "policy.updated",
+  deleted: "policy.deleted",
+} as const;
 
 export const CreatePolicy = Policy.pipe(
   Schema.pick(
@@ -84,84 +89,6 @@ export const PolicyTemplate = Workflow.WorkflowTemplate.make({
 });
 
 export type PolicyEvent = Workflow.EventOf<typeof PolicyTemplate>;
-
-export class CreatePolicyEvent extends Event.DomainEvent.extend<CreatePolicyEvent>(
-  "CreatePolicyEvent",
-)({
-  name: Schema.Literal("policy.created"),
-  entityType: Schema.Literal("policy"),
-}) {}
-
-export class UpdatePolicyEvent extends Event.DomainEvent.extend<UpdatePolicyEvent>(
-  "UpdatePolicyEvent",
-)({
-  name: Schema.Literal("policy.updated"),
-  entityType: Schema.Literal("policy"),
-}) {}
-
-export class DeletePolicyEvent extends Event.DomainEvent.extend<DeletePolicyEvent>(
-  "DeletePolicyEvent",
-)({
-  name: Schema.Literal("policy.deleted"),
-  entityType: Schema.Literal("policy"),
-}) {}
-
-export const makeCreatePolicyEvent = Effect.fn(function* (previous: Policy | null, next: Policy) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "policy.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "policy",
-    entityId: next.id,
-  });
-
-  return CreatePolicyEvent.make({
-    ...event,
-    name: "policy.created",
-    entityType: "policy",
-  });
-});
-
-export const makeUpdatePolicyEvent = Effect.fn(function* (previous: Policy, next: Policy) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "policy.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "policy",
-    entityId: next.id,
-  });
-
-  return UpdatePolicyEvent.make({
-    ...event,
-    name: "policy.updated",
-    entityType: "policy",
-  });
-});
-
-export const makeDeletePolicyEvent = Effect.fn(function* (previous: Policy, next: Policy) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "policy.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "policy",
-    entityId: next.id,
-  });
-
-  return DeletePolicyEvent.make({
-    ...event,
-    name: "policy.deleted",
-    entityType: "policy",
-  });
-});
 
 export const make = Effect.fn(function* (input: CreatePolicy) {
   const base = yield* Base.makeBase();

@@ -1,13 +1,11 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Actor from "./actor";
 import * as Base from "./base";
 import * as Control from "./control";
 import * as Framework from "./framework";
 import * as Issue from "./issue";
 import * as Policy from "./policy";
 import * as Risk from "./risk";
-import * as Event from "./event";
 
 export const CommentId = Schema.String.pipe(Schema.brand("CommentId"));
 export type CommentId = typeof CommentId.Type;
@@ -41,92 +39,17 @@ export class Comment extends Base.Base.extend<Comment>("Comment")({
   body: Schema.String,
 }) {}
 
+export const Event = {
+  created: "comment.created",
+  updated: "comment.updated",
+  deleted: "comment.deleted",
+} as const;
+
 export const CreateComment = Comment.pipe(Schema.pick("entityId", "body"));
 export type CreateComment = typeof CreateComment.Type;
 
 export const UpdateComment = Comment.pipe(Schema.pick("body"), Schema.partial);
 export type UpdateComment = typeof UpdateComment.Type;
-
-export class CreateCommentEvent extends Event.DomainEvent.extend<CreateCommentEvent>(
-  "CreateCommentEvent",
-)({
-  name: Schema.Literal("comment.created"),
-  entityType: Schema.Literal("comment"),
-}) {}
-
-export class UpdateCommentEvent extends Event.DomainEvent.extend<UpdateCommentEvent>(
-  "UpdateCommentEvent",
-)({
-  name: Schema.Literal("comment.updated"),
-  entityType: Schema.Literal("comment"),
-}) {}
-
-export class DeleteCommentEvent extends Event.DomainEvent.extend<DeleteCommentEvent>(
-  "DeleteCommentEvent",
-)({
-  name: Schema.Literal("comment.deleted"),
-  entityType: Schema.Literal("comment"),
-}) {}
-
-export const makeCreateCommentEvent = Effect.fn(function* (
-  previous: Comment | null,
-  next: Comment,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "comment.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "comment",
-    entityId: next.id,
-  });
-
-  return CreateCommentEvent.make({
-    ...event,
-    name: "comment.created",
-    entityType: "comment",
-  });
-});
-
-export const makeUpdateCommentEvent = Effect.fn(function* (previous: Comment, next: Comment) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "comment.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "comment",
-    entityId: next.id,
-  });
-
-  return UpdateCommentEvent.make({
-    ...event,
-    name: "comment.updated",
-    entityType: "comment",
-  });
-});
-
-export const makeDeleteCommentEvent = Effect.fn(function* (previous: Comment, next: Comment) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "comment.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "comment",
-    entityId: next.id,
-  });
-
-  return DeleteCommentEvent.make({
-    ...event,
-    name: "comment.deleted",
-    entityType: "comment",
-  });
-});
 
 /**
  * Create a new Comment
@@ -145,7 +68,10 @@ export const make = Effect.fn(function* (input: CreateComment) {
  * Update an existing Comment
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (model: Comment, input: UpdateComment) {
+export const update = Effect.fn(function* (
+  model: Comment,
+  input: UpdateComment,
+) {
   const base = yield* Base.updateBase();
 
   return Comment.make({

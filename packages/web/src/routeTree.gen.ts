@@ -8,590 +8,590 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as OrgRouteRouteImport } from "./routes/org/route";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as OrgCreateRouteImport } from "./routes/org/create";
-import { Route as authOtpRouteImport } from "./routes/(auth)/otp";
-import { Route as authLoginRouteImport } from "./routes/(auth)/login";
-import { Route as OrgSlugRouteRouteImport } from "./routes/org/$slug/route";
-import { Route as OrgSlugIndexRouteImport } from "./routes/org/$slug/index";
-import { Route as ApiRpcSplatRouteImport } from "./routes/api/rpc/$";
-import { Route as ApiAuthSplatRouteImport } from "./routes/api/auth/$";
-import { Route as OrgSlugPolicyRouteRouteImport } from "./routes/org/$slug/policy/route";
-import { Route as OrgSlugIssueRouteRouteImport } from "./routes/org/$slug/issue/route";
-import { Route as OrgSlugAuditRouteRouteImport } from "./routes/org/$slug/audit/route";
-import { Route as OrgSlugAssessmentRouteRouteImport } from "./routes/org/$slug/assessment/route";
-import { Route as OrgSlugPolicyIndexRouteImport } from "./routes/org/$slug/policy/index";
-import { Route as OrgSlugIssueIndexRouteImport } from "./routes/org/$slug/issue/index";
-import { Route as OrgSlugFrameworkIndexRouteImport } from "./routes/org/$slug/framework/index";
-import { Route as OrgSlugControlIndexRouteImport } from "./routes/org/$slug/control/index";
-import { Route as OrgSlugAuditIndexRouteImport } from "./routes/org/$slug/audit/index";
-import { Route as OrgSlugAssessmentIndexRouteImport } from "./routes/org/$slug/assessment/index";
-import { Route as OrgSlugPolicyIdRouteImport } from "./routes/org/$slug/policy/$id";
-import { Route as OrgSlugIssueIdRouteImport } from "./routes/org/$slug/issue/$id";
-import { Route as OrgSlugFrameworkIdRouteImport } from "./routes/org/$slug/framework/$id";
-import { Route as OrgSlugControlIdRouteImport } from "./routes/org/$slug/control/$id";
-import { Route as OrgSlugAuditIdRouteImport } from "./routes/org/$slug/audit/$id";
-import { Route as OrgSlugAssessmentIdRouteImport } from "./routes/org/$slug/assessment/$id";
-import { Route as OrgSlugAssessmentInstanceIdRouteImport } from "./routes/org/$slug/assessment-instance/$id";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as OrgRouteRouteImport } from './routes/org/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrgCreateRouteImport } from './routes/org/create'
+import { Route as authOtpRouteImport } from './routes/(auth)/otp'
+import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as OrgSlugRouteRouteImport } from './routes/org/$slug/route'
+import { Route as OrgSlugIndexRouteImport } from './routes/org/$slug/index'
+import { Route as ApiRpcSplatRouteImport } from './routes/api/rpc/$'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as OrgSlugPolicyRouteRouteImport } from './routes/org/$slug/policy/route'
+import { Route as OrgSlugIssueRouteRouteImport } from './routes/org/$slug/issue/route'
+import { Route as OrgSlugAuditRouteRouteImport } from './routes/org/$slug/audit/route'
+import { Route as OrgSlugAssessmentRouteRouteImport } from './routes/org/$slug/assessment/route'
+import { Route as OrgSlugPolicyIndexRouteImport } from './routes/org/$slug/policy/index'
+import { Route as OrgSlugIssueIndexRouteImport } from './routes/org/$slug/issue/index'
+import { Route as OrgSlugFrameworkIndexRouteImport } from './routes/org/$slug/framework/index'
+import { Route as OrgSlugControlIndexRouteImport } from './routes/org/$slug/control/index'
+import { Route as OrgSlugAuditIndexRouteImport } from './routes/org/$slug/audit/index'
+import { Route as OrgSlugAssessmentIndexRouteImport } from './routes/org/$slug/assessment/index'
+import { Route as OrgSlugPolicyIdRouteImport } from './routes/org/$slug/policy/$id'
+import { Route as OrgSlugIssueIdRouteImport } from './routes/org/$slug/issue/$id'
+import { Route as OrgSlugFrameworkIdRouteImport } from './routes/org/$slug/framework/$id'
+import { Route as OrgSlugControlIdRouteImport } from './routes/org/$slug/control/$id'
+import { Route as OrgSlugAuditIdRouteImport } from './routes/org/$slug/audit/$id'
+import { Route as OrgSlugAssessmentIdRouteImport } from './routes/org/$slug/assessment/$id'
+import { Route as OrgSlugAssessmentInstanceIdRouteImport } from './routes/org/$slug/assessment-instance/$id'
 
 const OrgRouteRoute = OrgRouteRouteImport.update({
-  id: "/org",
-  path: "/org",
+  id: '/org',
+  path: '/org',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const OrgCreateRoute = OrgCreateRouteImport.update({
-  id: "/create",
-  path: "/create",
+  id: '/create',
+  path: '/create',
   getParentRoute: () => OrgRouteRoute,
-} as any);
+} as any)
 const authOtpRoute = authOtpRouteImport.update({
-  id: "/(auth)/otp",
-  path: "/otp",
+  id: '/(auth)/otp',
+  path: '/otp',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const authLoginRoute = authLoginRouteImport.update({
-  id: "/(auth)/login",
-  path: "/login",
+  id: '/(auth)/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const OrgSlugRouteRoute = OrgSlugRouteRouteImport.update({
-  id: "/$slug",
-  path: "/$slug",
+  id: '/$slug',
+  path: '/$slug',
   getParentRoute: () => OrgRouteRoute,
-} as any);
+} as any)
 const OrgSlugIndexRoute = OrgSlugIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
-  id: "/api/rpc/$",
-  path: "/api/rpc/$",
+  id: '/api/rpc/$',
+  path: '/api/rpc/$',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: "/api/auth/$",
-  path: "/api/auth/$",
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const OrgSlugPolicyRouteRoute = OrgSlugPolicyRouteRouteImport.update({
-  id: "/policy",
-  path: "/policy",
+  id: '/policy',
+  path: '/policy',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugIssueRouteRoute = OrgSlugIssueRouteRouteImport.update({
-  id: "/issue",
-  path: "/issue",
+  id: '/issue',
+  path: '/issue',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugAuditRouteRoute = OrgSlugAuditRouteRouteImport.update({
-  id: "/audit",
-  path: "/audit",
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugAssessmentRouteRoute = OrgSlugAssessmentRouteRouteImport.update({
-  id: "/assessment",
-  path: "/assessment",
+  id: '/assessment',
+  path: '/assessment',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugPolicyIndexRoute = OrgSlugPolicyIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => OrgSlugPolicyRouteRoute,
-} as any);
+} as any)
 const OrgSlugIssueIndexRoute = OrgSlugIssueIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => OrgSlugIssueRouteRoute,
-} as any);
+} as any)
 const OrgSlugFrameworkIndexRoute = OrgSlugFrameworkIndexRouteImport.update({
-  id: "/framework/",
-  path: "/framework/",
+  id: '/framework/',
+  path: '/framework/',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugControlIndexRoute = OrgSlugControlIndexRouteImport.update({
-  id: "/control/",
-  path: "/control/",
+  id: '/control/',
+  path: '/control/',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugAuditIndexRoute = OrgSlugAuditIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => OrgSlugAuditRouteRoute,
-} as any);
+} as any)
 const OrgSlugAssessmentIndexRoute = OrgSlugAssessmentIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => OrgSlugAssessmentRouteRoute,
-} as any);
+} as any)
 const OrgSlugPolicyIdRoute = OrgSlugPolicyIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => OrgSlugPolicyRouteRoute,
-} as any);
+} as any)
 const OrgSlugIssueIdRoute = OrgSlugIssueIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => OrgSlugIssueRouteRoute,
-} as any);
+} as any)
 const OrgSlugFrameworkIdRoute = OrgSlugFrameworkIdRouteImport.update({
-  id: "/framework/$id",
-  path: "/framework/$id",
+  id: '/framework/$id',
+  path: '/framework/$id',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugControlIdRoute = OrgSlugControlIdRouteImport.update({
-  id: "/control/$id",
-  path: "/control/$id",
+  id: '/control/$id',
+  path: '/control/$id',
   getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
 const OrgSlugAuditIdRoute = OrgSlugAuditIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => OrgSlugAuditRouteRoute,
-} as any);
+} as any)
 const OrgSlugAssessmentIdRoute = OrgSlugAssessmentIdRouteImport.update({
-  id: "/$id",
-  path: "/$id",
+  id: '/$id',
+  path: '/$id',
   getParentRoute: () => OrgSlugAssessmentRouteRoute,
-} as any);
-const OrgSlugAssessmentInstanceIdRoute = OrgSlugAssessmentInstanceIdRouteImport.update({
-  id: "/assessment-instance/$id",
-  path: "/assessment-instance/$id",
-  getParentRoute: () => OrgSlugRouteRoute,
-} as any);
+} as any)
+const OrgSlugAssessmentInstanceIdRoute =
+  OrgSlugAssessmentInstanceIdRouteImport.update({
+    id: '/assessment-instance/$id',
+    path: '/assessment-instance/$id',
+    getParentRoute: () => OrgSlugRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/org": typeof OrgRouteRouteWithChildren;
-  "/org/$slug": typeof OrgSlugRouteRouteWithChildren;
-  "/login": typeof authLoginRoute;
-  "/otp": typeof authOtpRoute;
-  "/org/create": typeof OrgCreateRoute;
-  "/org/$slug/assessment": typeof OrgSlugAssessmentRouteRouteWithChildren;
-  "/org/$slug/audit": typeof OrgSlugAuditRouteRouteWithChildren;
-  "/org/$slug/issue": typeof OrgSlugIssueRouteRouteWithChildren;
-  "/org/$slug/policy": typeof OrgSlugPolicyRouteRouteWithChildren;
-  "/api/auth/$": typeof ApiAuthSplatRoute;
-  "/api/rpc/$": typeof ApiRpcSplatRoute;
-  "/org/$slug/": typeof OrgSlugIndexRoute;
-  "/org/$slug/assessment-instance/$id": typeof OrgSlugAssessmentInstanceIdRoute;
-  "/org/$slug/assessment/$id": typeof OrgSlugAssessmentIdRoute;
-  "/org/$slug/audit/$id": typeof OrgSlugAuditIdRoute;
-  "/org/$slug/control/$id": typeof OrgSlugControlIdRoute;
-  "/org/$slug/framework/$id": typeof OrgSlugFrameworkIdRoute;
-  "/org/$slug/issue/$id": typeof OrgSlugIssueIdRoute;
-  "/org/$slug/policy/$id": typeof OrgSlugPolicyIdRoute;
-  "/org/$slug/assessment/": typeof OrgSlugAssessmentIndexRoute;
-  "/org/$slug/audit/": typeof OrgSlugAuditIndexRoute;
-  "/org/$slug/control/": typeof OrgSlugControlIndexRoute;
-  "/org/$slug/framework/": typeof OrgSlugFrameworkIndexRoute;
-  "/org/$slug/issue/": typeof OrgSlugIssueIndexRoute;
-  "/org/$slug/policy/": typeof OrgSlugPolicyIndexRoute;
+  '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
+  '/org/$slug': typeof OrgSlugRouteRouteWithChildren
+  '/login': typeof authLoginRoute
+  '/otp': typeof authOtpRoute
+  '/org/create': typeof OrgCreateRoute
+  '/org/$slug/assessment': typeof OrgSlugAssessmentRouteRouteWithChildren
+  '/org/$slug/audit': typeof OrgSlugAuditRouteRouteWithChildren
+  '/org/$slug/issue': typeof OrgSlugIssueRouteRouteWithChildren
+  '/org/$slug/policy': typeof OrgSlugPolicyRouteRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
+  '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
+  '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
+  '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
+  '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
+  '/org/$slug/policy/$id': typeof OrgSlugPolicyIdRoute
+  '/org/$slug/assessment/': typeof OrgSlugAssessmentIndexRoute
+  '/org/$slug/audit/': typeof OrgSlugAuditIndexRoute
+  '/org/$slug/control/': typeof OrgSlugControlIndexRoute
+  '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
+  '/org/$slug/issue/': typeof OrgSlugIssueIndexRoute
+  '/org/$slug/policy/': typeof OrgSlugPolicyIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/org": typeof OrgRouteRouteWithChildren;
-  "/login": typeof authLoginRoute;
-  "/otp": typeof authOtpRoute;
-  "/org/create": typeof OrgCreateRoute;
-  "/api/auth/$": typeof ApiAuthSplatRoute;
-  "/api/rpc/$": typeof ApiRpcSplatRoute;
-  "/org/$slug": typeof OrgSlugIndexRoute;
-  "/org/$slug/assessment-instance/$id": typeof OrgSlugAssessmentInstanceIdRoute;
-  "/org/$slug/assessment/$id": typeof OrgSlugAssessmentIdRoute;
-  "/org/$slug/audit/$id": typeof OrgSlugAuditIdRoute;
-  "/org/$slug/control/$id": typeof OrgSlugControlIdRoute;
-  "/org/$slug/framework/$id": typeof OrgSlugFrameworkIdRoute;
-  "/org/$slug/issue/$id": typeof OrgSlugIssueIdRoute;
-  "/org/$slug/policy/$id": typeof OrgSlugPolicyIdRoute;
-  "/org/$slug/assessment": typeof OrgSlugAssessmentIndexRoute;
-  "/org/$slug/audit": typeof OrgSlugAuditIndexRoute;
-  "/org/$slug/control": typeof OrgSlugControlIndexRoute;
-  "/org/$slug/framework": typeof OrgSlugFrameworkIndexRoute;
-  "/org/$slug/issue": typeof OrgSlugIssueIndexRoute;
-  "/org/$slug/policy": typeof OrgSlugPolicyIndexRoute;
+  '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
+  '/login': typeof authLoginRoute
+  '/otp': typeof authOtpRoute
+  '/org/create': typeof OrgCreateRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
+  '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
+  '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
+  '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
+  '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
+  '/org/$slug/policy/$id': typeof OrgSlugPolicyIdRoute
+  '/org/$slug/assessment': typeof OrgSlugAssessmentIndexRoute
+  '/org/$slug/audit': typeof OrgSlugAuditIndexRoute
+  '/org/$slug/control': typeof OrgSlugControlIndexRoute
+  '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
+  '/org/$slug/issue': typeof OrgSlugIssueIndexRoute
+  '/org/$slug/policy': typeof OrgSlugPolicyIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/org": typeof OrgRouteRouteWithChildren;
-  "/org/$slug": typeof OrgSlugRouteRouteWithChildren;
-  "/(auth)/login": typeof authLoginRoute;
-  "/(auth)/otp": typeof authOtpRoute;
-  "/org/create": typeof OrgCreateRoute;
-  "/org/$slug/assessment": typeof OrgSlugAssessmentRouteRouteWithChildren;
-  "/org/$slug/audit": typeof OrgSlugAuditRouteRouteWithChildren;
-  "/org/$slug/issue": typeof OrgSlugIssueRouteRouteWithChildren;
-  "/org/$slug/policy": typeof OrgSlugPolicyRouteRouteWithChildren;
-  "/api/auth/$": typeof ApiAuthSplatRoute;
-  "/api/rpc/$": typeof ApiRpcSplatRoute;
-  "/org/$slug/": typeof OrgSlugIndexRoute;
-  "/org/$slug/assessment-instance/$id": typeof OrgSlugAssessmentInstanceIdRoute;
-  "/org/$slug/assessment/$id": typeof OrgSlugAssessmentIdRoute;
-  "/org/$slug/audit/$id": typeof OrgSlugAuditIdRoute;
-  "/org/$slug/control/$id": typeof OrgSlugControlIdRoute;
-  "/org/$slug/framework/$id": typeof OrgSlugFrameworkIdRoute;
-  "/org/$slug/issue/$id": typeof OrgSlugIssueIdRoute;
-  "/org/$slug/policy/$id": typeof OrgSlugPolicyIdRoute;
-  "/org/$slug/assessment/": typeof OrgSlugAssessmentIndexRoute;
-  "/org/$slug/audit/": typeof OrgSlugAuditIndexRoute;
-  "/org/$slug/control/": typeof OrgSlugControlIndexRoute;
-  "/org/$slug/framework/": typeof OrgSlugFrameworkIndexRoute;
-  "/org/$slug/issue/": typeof OrgSlugIssueIndexRoute;
-  "/org/$slug/policy/": typeof OrgSlugPolicyIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/org': typeof OrgRouteRouteWithChildren
+  '/org/$slug': typeof OrgSlugRouteRouteWithChildren
+  '/(auth)/login': typeof authLoginRoute
+  '/(auth)/otp': typeof authOtpRoute
+  '/org/create': typeof OrgCreateRoute
+  '/org/$slug/assessment': typeof OrgSlugAssessmentRouteRouteWithChildren
+  '/org/$slug/audit': typeof OrgSlugAuditRouteRouteWithChildren
+  '/org/$slug/issue': typeof OrgSlugIssueRouteRouteWithChildren
+  '/org/$slug/policy': typeof OrgSlugPolicyRouteRouteWithChildren
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/rpc/$': typeof ApiRpcSplatRoute
+  '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
+  '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
+  '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
+  '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
+  '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
+  '/org/$slug/policy/$id': typeof OrgSlugPolicyIdRoute
+  '/org/$slug/assessment/': typeof OrgSlugAssessmentIndexRoute
+  '/org/$slug/audit/': typeof OrgSlugAuditIndexRoute
+  '/org/$slug/control/': typeof OrgSlugControlIndexRoute
+  '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
+  '/org/$slug/issue/': typeof OrgSlugIssueIndexRoute
+  '/org/$slug/policy/': typeof OrgSlugPolicyIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/org"
-    | "/org/$slug"
-    | "/login"
-    | "/otp"
-    | "/org/create"
-    | "/org/$slug/assessment"
-    | "/org/$slug/audit"
-    | "/org/$slug/issue"
-    | "/org/$slug/policy"
-    | "/api/auth/$"
-    | "/api/rpc/$"
-    | "/org/$slug/"
-    | "/org/$slug/assessment-instance/$id"
-    | "/org/$slug/assessment/$id"
-    | "/org/$slug/audit/$id"
-    | "/org/$slug/control/$id"
-    | "/org/$slug/framework/$id"
-    | "/org/$slug/issue/$id"
-    | "/org/$slug/policy/$id"
-    | "/org/$slug/assessment/"
-    | "/org/$slug/audit/"
-    | "/org/$slug/control/"
-    | "/org/$slug/framework/"
-    | "/org/$slug/issue/"
-    | "/org/$slug/policy/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/org'
+    | '/org/$slug'
+    | '/login'
+    | '/otp'
+    | '/org/create'
+    | '/org/$slug/assessment'
+    | '/org/$slug/audit'
+    | '/org/$slug/issue'
+    | '/org/$slug/policy'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug/'
+    | '/org/$slug/assessment-instance/$id'
+    | '/org/$slug/assessment/$id'
+    | '/org/$slug/audit/$id'
+    | '/org/$slug/control/$id'
+    | '/org/$slug/framework/$id'
+    | '/org/$slug/issue/$id'
+    | '/org/$slug/policy/$id'
+    | '/org/$slug/assessment/'
+    | '/org/$slug/audit/'
+    | '/org/$slug/control/'
+    | '/org/$slug/framework/'
+    | '/org/$slug/issue/'
+    | '/org/$slug/policy/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/org"
-    | "/login"
-    | "/otp"
-    | "/org/create"
-    | "/api/auth/$"
-    | "/api/rpc/$"
-    | "/org/$slug"
-    | "/org/$slug/assessment-instance/$id"
-    | "/org/$slug/assessment/$id"
-    | "/org/$slug/audit/$id"
-    | "/org/$slug/control/$id"
-    | "/org/$slug/framework/$id"
-    | "/org/$slug/issue/$id"
-    | "/org/$slug/policy/$id"
-    | "/org/$slug/assessment"
-    | "/org/$slug/audit"
-    | "/org/$slug/control"
-    | "/org/$slug/framework"
-    | "/org/$slug/issue"
-    | "/org/$slug/policy";
+    | '/'
+    | '/org'
+    | '/login'
+    | '/otp'
+    | '/org/create'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug'
+    | '/org/$slug/assessment-instance/$id'
+    | '/org/$slug/assessment/$id'
+    | '/org/$slug/audit/$id'
+    | '/org/$slug/control/$id'
+    | '/org/$slug/framework/$id'
+    | '/org/$slug/issue/$id'
+    | '/org/$slug/policy/$id'
+    | '/org/$slug/assessment'
+    | '/org/$slug/audit'
+    | '/org/$slug/control'
+    | '/org/$slug/framework'
+    | '/org/$slug/issue'
+    | '/org/$slug/policy'
   id:
-    | "__root__"
-    | "/"
-    | "/org"
-    | "/org/$slug"
-    | "/(auth)/login"
-    | "/(auth)/otp"
-    | "/org/create"
-    | "/org/$slug/assessment"
-    | "/org/$slug/audit"
-    | "/org/$slug/issue"
-    | "/org/$slug/policy"
-    | "/api/auth/$"
-    | "/api/rpc/$"
-    | "/org/$slug/"
-    | "/org/$slug/assessment-instance/$id"
-    | "/org/$slug/assessment/$id"
-    | "/org/$slug/audit/$id"
-    | "/org/$slug/control/$id"
-    | "/org/$slug/framework/$id"
-    | "/org/$slug/issue/$id"
-    | "/org/$slug/policy/$id"
-    | "/org/$slug/assessment/"
-    | "/org/$slug/audit/"
-    | "/org/$slug/control/"
-    | "/org/$slug/framework/"
-    | "/org/$slug/issue/"
-    | "/org/$slug/policy/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/org'
+    | '/org/$slug'
+    | '/(auth)/login'
+    | '/(auth)/otp'
+    | '/org/create'
+    | '/org/$slug/assessment'
+    | '/org/$slug/audit'
+    | '/org/$slug/issue'
+    | '/org/$slug/policy'
+    | '/api/auth/$'
+    | '/api/rpc/$'
+    | '/org/$slug/'
+    | '/org/$slug/assessment-instance/$id'
+    | '/org/$slug/assessment/$id'
+    | '/org/$slug/audit/$id'
+    | '/org/$slug/control/$id'
+    | '/org/$slug/framework/$id'
+    | '/org/$slug/issue/$id'
+    | '/org/$slug/policy/$id'
+    | '/org/$slug/assessment/'
+    | '/org/$slug/audit/'
+    | '/org/$slug/control/'
+    | '/org/$slug/framework/'
+    | '/org/$slug/issue/'
+    | '/org/$slug/policy/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  OrgRouteRoute: typeof OrgRouteRouteWithChildren;
-  authLoginRoute: typeof authLoginRoute;
-  authOtpRoute: typeof authOtpRoute;
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute;
-  ApiRpcSplatRoute: typeof ApiRpcSplatRoute;
+  IndexRoute: typeof IndexRoute
+  OrgRouteRoute: typeof OrgRouteRouteWithChildren
+  authLoginRoute: typeof authLoginRoute
+  authOtpRoute: typeof authOtpRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/org": {
-      id: "/org";
-      path: "/org";
-      fullPath: "/org";
-      preLoaderRoute: typeof OrgRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/org/create": {
-      id: "/org/create";
-      path: "/create";
-      fullPath: "/org/create";
-      preLoaderRoute: typeof OrgCreateRouteImport;
-      parentRoute: typeof OrgRouteRoute;
-    };
-    "/(auth)/otp": {
-      id: "/(auth)/otp";
-      path: "/otp";
-      fullPath: "/otp";
-      preLoaderRoute: typeof authOtpRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(auth)/login": {
-      id: "/(auth)/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof authLoginRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/org/$slug": {
-      id: "/org/$slug";
-      path: "/$slug";
-      fullPath: "/org/$slug";
-      preLoaderRoute: typeof OrgSlugRouteRouteImport;
-      parentRoute: typeof OrgRouteRoute;
-    };
-    "/org/$slug/": {
-      id: "/org/$slug/";
-      path: "/";
-      fullPath: "/org/$slug/";
-      preLoaderRoute: typeof OrgSlugIndexRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/api/rpc/$": {
-      id: "/api/rpc/$";
-      path: "/api/rpc/$";
-      fullPath: "/api/rpc/$";
-      preLoaderRoute: typeof ApiRpcSplatRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/api/auth/$": {
-      id: "/api/auth/$";
-      path: "/api/auth/$";
-      fullPath: "/api/auth/$";
-      preLoaderRoute: typeof ApiAuthSplatRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/org/$slug/policy": {
-      id: "/org/$slug/policy";
-      path: "/policy";
-      fullPath: "/org/$slug/policy";
-      preLoaderRoute: typeof OrgSlugPolicyRouteRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/issue": {
-      id: "/org/$slug/issue";
-      path: "/issue";
-      fullPath: "/org/$slug/issue";
-      preLoaderRoute: typeof OrgSlugIssueRouteRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/audit": {
-      id: "/org/$slug/audit";
-      path: "/audit";
-      fullPath: "/org/$slug/audit";
-      preLoaderRoute: typeof OrgSlugAuditRouteRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/assessment": {
-      id: "/org/$slug/assessment";
-      path: "/assessment";
-      fullPath: "/org/$slug/assessment";
-      preLoaderRoute: typeof OrgSlugAssessmentRouteRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/policy/": {
-      id: "/org/$slug/policy/";
-      path: "/";
-      fullPath: "/org/$slug/policy/";
-      preLoaderRoute: typeof OrgSlugPolicyIndexRouteImport;
-      parentRoute: typeof OrgSlugPolicyRouteRoute;
-    };
-    "/org/$slug/issue/": {
-      id: "/org/$slug/issue/";
-      path: "/";
-      fullPath: "/org/$slug/issue/";
-      preLoaderRoute: typeof OrgSlugIssueIndexRouteImport;
-      parentRoute: typeof OrgSlugIssueRouteRoute;
-    };
-    "/org/$slug/framework/": {
-      id: "/org/$slug/framework/";
-      path: "/framework";
-      fullPath: "/org/$slug/framework/";
-      preLoaderRoute: typeof OrgSlugFrameworkIndexRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/control/": {
-      id: "/org/$slug/control/";
-      path: "/control";
-      fullPath: "/org/$slug/control/";
-      preLoaderRoute: typeof OrgSlugControlIndexRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/audit/": {
-      id: "/org/$slug/audit/";
-      path: "/";
-      fullPath: "/org/$slug/audit/";
-      preLoaderRoute: typeof OrgSlugAuditIndexRouteImport;
-      parentRoute: typeof OrgSlugAuditRouteRoute;
-    };
-    "/org/$slug/assessment/": {
-      id: "/org/$slug/assessment/";
-      path: "/";
-      fullPath: "/org/$slug/assessment/";
-      preLoaderRoute: typeof OrgSlugAssessmentIndexRouteImport;
-      parentRoute: typeof OrgSlugAssessmentRouteRoute;
-    };
-    "/org/$slug/policy/$id": {
-      id: "/org/$slug/policy/$id";
-      path: "/$id";
-      fullPath: "/org/$slug/policy/$id";
-      preLoaderRoute: typeof OrgSlugPolicyIdRouteImport;
-      parentRoute: typeof OrgSlugPolicyRouteRoute;
-    };
-    "/org/$slug/issue/$id": {
-      id: "/org/$slug/issue/$id";
-      path: "/$id";
-      fullPath: "/org/$slug/issue/$id";
-      preLoaderRoute: typeof OrgSlugIssueIdRouteImport;
-      parentRoute: typeof OrgSlugIssueRouteRoute;
-    };
-    "/org/$slug/framework/$id": {
-      id: "/org/$slug/framework/$id";
-      path: "/framework/$id";
-      fullPath: "/org/$slug/framework/$id";
-      preLoaderRoute: typeof OrgSlugFrameworkIdRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/control/$id": {
-      id: "/org/$slug/control/$id";
-      path: "/control/$id";
-      fullPath: "/org/$slug/control/$id";
-      preLoaderRoute: typeof OrgSlugControlIdRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
-    "/org/$slug/audit/$id": {
-      id: "/org/$slug/audit/$id";
-      path: "/$id";
-      fullPath: "/org/$slug/audit/$id";
-      preLoaderRoute: typeof OrgSlugAuditIdRouteImport;
-      parentRoute: typeof OrgSlugAuditRouteRoute;
-    };
-    "/org/$slug/assessment/$id": {
-      id: "/org/$slug/assessment/$id";
-      path: "/$id";
-      fullPath: "/org/$slug/assessment/$id";
-      preLoaderRoute: typeof OrgSlugAssessmentIdRouteImport;
-      parentRoute: typeof OrgSlugAssessmentRouteRoute;
-    };
-    "/org/$slug/assessment-instance/$id": {
-      id: "/org/$slug/assessment-instance/$id";
-      path: "/assessment-instance/$id";
-      fullPath: "/org/$slug/assessment-instance/$id";
-      preLoaderRoute: typeof OrgSlugAssessmentInstanceIdRouteImport;
-      parentRoute: typeof OrgSlugRouteRoute;
-    };
+    '/org': {
+      id: '/org'
+      path: '/org'
+      fullPath: '/org'
+      preLoaderRoute: typeof OrgRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org/create': {
+      id: '/org/create'
+      path: '/create'
+      fullPath: '/org/create'
+      preLoaderRoute: typeof OrgCreateRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
+    '/(auth)/otp': {
+      id: '/(auth)/otp'
+      path: '/otp'
+      fullPath: '/otp'
+      preLoaderRoute: typeof authOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/login': {
+      id: '/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org/$slug': {
+      id: '/org/$slug'
+      path: '/$slug'
+      fullPath: '/org/$slug'
+      preLoaderRoute: typeof OrgSlugRouteRouteImport
+      parentRoute: typeof OrgRouteRoute
+    }
+    '/org/$slug/': {
+      id: '/org/$slug/'
+      path: '/'
+      fullPath: '/org/$slug/'
+      preLoaderRoute: typeof OrgSlugIndexRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/api/rpc/$': {
+      id: '/api/rpc/$'
+      path: '/api/rpc/$'
+      fullPath: '/api/rpc/$'
+      preLoaderRoute: typeof ApiRpcSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/org/$slug/policy': {
+      id: '/org/$slug/policy'
+      path: '/policy'
+      fullPath: '/org/$slug/policy'
+      preLoaderRoute: typeof OrgSlugPolicyRouteRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/issue': {
+      id: '/org/$slug/issue'
+      path: '/issue'
+      fullPath: '/org/$slug/issue'
+      preLoaderRoute: typeof OrgSlugIssueRouteRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/audit': {
+      id: '/org/$slug/audit'
+      path: '/audit'
+      fullPath: '/org/$slug/audit'
+      preLoaderRoute: typeof OrgSlugAuditRouteRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/assessment': {
+      id: '/org/$slug/assessment'
+      path: '/assessment'
+      fullPath: '/org/$slug/assessment'
+      preLoaderRoute: typeof OrgSlugAssessmentRouteRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/policy/': {
+      id: '/org/$slug/policy/'
+      path: '/'
+      fullPath: '/org/$slug/policy/'
+      preLoaderRoute: typeof OrgSlugPolicyIndexRouteImport
+      parentRoute: typeof OrgSlugPolicyRouteRoute
+    }
+    '/org/$slug/issue/': {
+      id: '/org/$slug/issue/'
+      path: '/'
+      fullPath: '/org/$slug/issue/'
+      preLoaderRoute: typeof OrgSlugIssueIndexRouteImport
+      parentRoute: typeof OrgSlugIssueRouteRoute
+    }
+    '/org/$slug/framework/': {
+      id: '/org/$slug/framework/'
+      path: '/framework'
+      fullPath: '/org/$slug/framework/'
+      preLoaderRoute: typeof OrgSlugFrameworkIndexRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/control/': {
+      id: '/org/$slug/control/'
+      path: '/control'
+      fullPath: '/org/$slug/control/'
+      preLoaderRoute: typeof OrgSlugControlIndexRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/audit/': {
+      id: '/org/$slug/audit/'
+      path: '/'
+      fullPath: '/org/$slug/audit/'
+      preLoaderRoute: typeof OrgSlugAuditIndexRouteImport
+      parentRoute: typeof OrgSlugAuditRouteRoute
+    }
+    '/org/$slug/assessment/': {
+      id: '/org/$slug/assessment/'
+      path: '/'
+      fullPath: '/org/$slug/assessment/'
+      preLoaderRoute: typeof OrgSlugAssessmentIndexRouteImport
+      parentRoute: typeof OrgSlugAssessmentRouteRoute
+    }
+    '/org/$slug/policy/$id': {
+      id: '/org/$slug/policy/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/policy/$id'
+      preLoaderRoute: typeof OrgSlugPolicyIdRouteImport
+      parentRoute: typeof OrgSlugPolicyRouteRoute
+    }
+    '/org/$slug/issue/$id': {
+      id: '/org/$slug/issue/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/issue/$id'
+      preLoaderRoute: typeof OrgSlugIssueIdRouteImport
+      parentRoute: typeof OrgSlugIssueRouteRoute
+    }
+    '/org/$slug/framework/$id': {
+      id: '/org/$slug/framework/$id'
+      path: '/framework/$id'
+      fullPath: '/org/$slug/framework/$id'
+      preLoaderRoute: typeof OrgSlugFrameworkIdRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/control/$id': {
+      id: '/org/$slug/control/$id'
+      path: '/control/$id'
+      fullPath: '/org/$slug/control/$id'
+      preLoaderRoute: typeof OrgSlugControlIdRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
+    '/org/$slug/audit/$id': {
+      id: '/org/$slug/audit/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/audit/$id'
+      preLoaderRoute: typeof OrgSlugAuditIdRouteImport
+      parentRoute: typeof OrgSlugAuditRouteRoute
+    }
+    '/org/$slug/assessment/$id': {
+      id: '/org/$slug/assessment/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/assessment/$id'
+      preLoaderRoute: typeof OrgSlugAssessmentIdRouteImport
+      parentRoute: typeof OrgSlugAssessmentRouteRoute
+    }
+    '/org/$slug/assessment-instance/$id': {
+      id: '/org/$slug/assessment-instance/$id'
+      path: '/assessment-instance/$id'
+      fullPath: '/org/$slug/assessment-instance/$id'
+      preLoaderRoute: typeof OrgSlugAssessmentInstanceIdRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
   }
 }
 
 interface OrgSlugAssessmentRouteRouteChildren {
-  OrgSlugAssessmentIdRoute: typeof OrgSlugAssessmentIdRoute;
-  OrgSlugAssessmentIndexRoute: typeof OrgSlugAssessmentIndexRoute;
+  OrgSlugAssessmentIdRoute: typeof OrgSlugAssessmentIdRoute
+  OrgSlugAssessmentIndexRoute: typeof OrgSlugAssessmentIndexRoute
 }
 
-const OrgSlugAssessmentRouteRouteChildren: OrgSlugAssessmentRouteRouteChildren = {
-  OrgSlugAssessmentIdRoute: OrgSlugAssessmentIdRoute,
-  OrgSlugAssessmentIndexRoute: OrgSlugAssessmentIndexRoute,
-};
+const OrgSlugAssessmentRouteRouteChildren: OrgSlugAssessmentRouteRouteChildren =
+  {
+    OrgSlugAssessmentIdRoute: OrgSlugAssessmentIdRoute,
+    OrgSlugAssessmentIndexRoute: OrgSlugAssessmentIndexRoute,
+  }
 
-const OrgSlugAssessmentRouteRouteWithChildren = OrgSlugAssessmentRouteRoute._addFileChildren(
-  OrgSlugAssessmentRouteRouteChildren,
-);
+const OrgSlugAssessmentRouteRouteWithChildren =
+  OrgSlugAssessmentRouteRoute._addFileChildren(
+    OrgSlugAssessmentRouteRouteChildren,
+  )
 
 interface OrgSlugAuditRouteRouteChildren {
-  OrgSlugAuditIdRoute: typeof OrgSlugAuditIdRoute;
-  OrgSlugAuditIndexRoute: typeof OrgSlugAuditIndexRoute;
+  OrgSlugAuditIdRoute: typeof OrgSlugAuditIdRoute
+  OrgSlugAuditIndexRoute: typeof OrgSlugAuditIndexRoute
 }
 
 const OrgSlugAuditRouteRouteChildren: OrgSlugAuditRouteRouteChildren = {
   OrgSlugAuditIdRoute: OrgSlugAuditIdRoute,
   OrgSlugAuditIndexRoute: OrgSlugAuditIndexRoute,
-};
+}
 
-const OrgSlugAuditRouteRouteWithChildren = OrgSlugAuditRouteRoute._addFileChildren(
-  OrgSlugAuditRouteRouteChildren,
-);
+const OrgSlugAuditRouteRouteWithChildren =
+  OrgSlugAuditRouteRoute._addFileChildren(OrgSlugAuditRouteRouteChildren)
 
 interface OrgSlugIssueRouteRouteChildren {
-  OrgSlugIssueIdRoute: typeof OrgSlugIssueIdRoute;
-  OrgSlugIssueIndexRoute: typeof OrgSlugIssueIndexRoute;
+  OrgSlugIssueIdRoute: typeof OrgSlugIssueIdRoute
+  OrgSlugIssueIndexRoute: typeof OrgSlugIssueIndexRoute
 }
 
 const OrgSlugIssueRouteRouteChildren: OrgSlugIssueRouteRouteChildren = {
   OrgSlugIssueIdRoute: OrgSlugIssueIdRoute,
   OrgSlugIssueIndexRoute: OrgSlugIssueIndexRoute,
-};
+}
 
-const OrgSlugIssueRouteRouteWithChildren = OrgSlugIssueRouteRoute._addFileChildren(
-  OrgSlugIssueRouteRouteChildren,
-);
+const OrgSlugIssueRouteRouteWithChildren =
+  OrgSlugIssueRouteRoute._addFileChildren(OrgSlugIssueRouteRouteChildren)
 
 interface OrgSlugPolicyRouteRouteChildren {
-  OrgSlugPolicyIdRoute: typeof OrgSlugPolicyIdRoute;
-  OrgSlugPolicyIndexRoute: typeof OrgSlugPolicyIndexRoute;
+  OrgSlugPolicyIdRoute: typeof OrgSlugPolicyIdRoute
+  OrgSlugPolicyIndexRoute: typeof OrgSlugPolicyIndexRoute
 }
 
 const OrgSlugPolicyRouteRouteChildren: OrgSlugPolicyRouteRouteChildren = {
   OrgSlugPolicyIdRoute: OrgSlugPolicyIdRoute,
   OrgSlugPolicyIndexRoute: OrgSlugPolicyIndexRoute,
-};
+}
 
-const OrgSlugPolicyRouteRouteWithChildren = OrgSlugPolicyRouteRoute._addFileChildren(
-  OrgSlugPolicyRouteRouteChildren,
-);
+const OrgSlugPolicyRouteRouteWithChildren =
+  OrgSlugPolicyRouteRoute._addFileChildren(OrgSlugPolicyRouteRouteChildren)
 
 interface OrgSlugRouteRouteChildren {
-  OrgSlugAssessmentRouteRoute: typeof OrgSlugAssessmentRouteRouteWithChildren;
-  OrgSlugAuditRouteRoute: typeof OrgSlugAuditRouteRouteWithChildren;
-  OrgSlugIssueRouteRoute: typeof OrgSlugIssueRouteRouteWithChildren;
-  OrgSlugPolicyRouteRoute: typeof OrgSlugPolicyRouteRouteWithChildren;
-  OrgSlugIndexRoute: typeof OrgSlugIndexRoute;
-  OrgSlugAssessmentInstanceIdRoute: typeof OrgSlugAssessmentInstanceIdRoute;
-  OrgSlugControlIdRoute: typeof OrgSlugControlIdRoute;
-  OrgSlugFrameworkIdRoute: typeof OrgSlugFrameworkIdRoute;
-  OrgSlugControlIndexRoute: typeof OrgSlugControlIndexRoute;
-  OrgSlugFrameworkIndexRoute: typeof OrgSlugFrameworkIndexRoute;
+  OrgSlugAssessmentRouteRoute: typeof OrgSlugAssessmentRouteRouteWithChildren
+  OrgSlugAuditRouteRoute: typeof OrgSlugAuditRouteRouteWithChildren
+  OrgSlugIssueRouteRoute: typeof OrgSlugIssueRouteRouteWithChildren
+  OrgSlugPolicyRouteRoute: typeof OrgSlugPolicyRouteRouteWithChildren
+  OrgSlugIndexRoute: typeof OrgSlugIndexRoute
+  OrgSlugAssessmentInstanceIdRoute: typeof OrgSlugAssessmentInstanceIdRoute
+  OrgSlugControlIdRoute: typeof OrgSlugControlIdRoute
+  OrgSlugFrameworkIdRoute: typeof OrgSlugFrameworkIdRoute
+  OrgSlugControlIndexRoute: typeof OrgSlugControlIndexRoute
+  OrgSlugFrameworkIndexRoute: typeof OrgSlugFrameworkIndexRoute
 }
 
 const OrgSlugRouteRouteChildren: OrgSlugRouteRouteChildren = {
@@ -605,21 +605,25 @@ const OrgSlugRouteRouteChildren: OrgSlugRouteRouteChildren = {
   OrgSlugFrameworkIdRoute: OrgSlugFrameworkIdRoute,
   OrgSlugControlIndexRoute: OrgSlugControlIndexRoute,
   OrgSlugFrameworkIndexRoute: OrgSlugFrameworkIndexRoute,
-};
+}
 
-const OrgSlugRouteRouteWithChildren = OrgSlugRouteRoute._addFileChildren(OrgSlugRouteRouteChildren);
+const OrgSlugRouteRouteWithChildren = OrgSlugRouteRoute._addFileChildren(
+  OrgSlugRouteRouteChildren,
+)
 
 interface OrgRouteRouteChildren {
-  OrgSlugRouteRoute: typeof OrgSlugRouteRouteWithChildren;
-  OrgCreateRoute: typeof OrgCreateRoute;
+  OrgSlugRouteRoute: typeof OrgSlugRouteRouteWithChildren
+  OrgCreateRoute: typeof OrgCreateRoute
 }
 
 const OrgRouteRouteChildren: OrgRouteRouteChildren = {
   OrgSlugRouteRoute: OrgSlugRouteRouteWithChildren,
   OrgCreateRoute: OrgCreateRoute,
-};
+}
 
-const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(OrgRouteRouteChildren);
+const OrgRouteRouteWithChildren = OrgRouteRoute._addFileChildren(
+  OrgRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -628,16 +632,16 @@ const rootRouteChildren: RootRouteChildren = {
   authOtpRoute: authOtpRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiRpcSplatRoute: ApiRpcSplatRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx";
-import type { createStart } from "@tanstack/react-start";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }

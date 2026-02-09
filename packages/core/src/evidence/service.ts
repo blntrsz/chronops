@@ -1,4 +1,4 @@
-import { Actor, Control, Evidence, Pdf } from "@chronops/domain";
+import { Actor, Control, EntityType, Event, Evidence, Pdf } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
@@ -73,7 +73,13 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
     const insert = Effect.fn(function* (input: Evidence.CreateEvidence) {
       const model = yield* Evidence.make(input);
       yield* use((db) => db.insert(tables.evidence).values(model));
-      const event = yield* Evidence.makeCreateEvidenceEvent(null, model);
+      const event = yield* Event.make({
+        name: Evidence.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Evidence,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
       yield* eventService.append(event);
       return model;
     });
@@ -88,7 +94,13 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
       const model = yield* getById(id);
       const updatedModel = yield* Evidence.update(model, data);
       yield* use((db) => db.insert(tables.evidence).values(updatedModel));
-      const event = yield* Evidence.makeUpdateEvidenceEvent(model, updatedModel);
+      const event = yield* Event.make({
+        name: Evidence.Event.updated,
+        entityId: updatedModel.id,
+        entityType: EntityType.Evidence,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
       return updatedModel;
     });
@@ -97,7 +109,13 @@ export class EvidenceService extends Effect.Service<EvidenceService>()("Evidence
       const model = yield* getById(id);
       const removedModel = yield* Evidence.remove(model);
       yield* use((db) => db.insert(tables.evidence).values(removedModel));
-      const event = yield* Evidence.makeDeleteEvidenceEvent(model, removedModel);
+      const event = yield* Event.make({
+        name: Evidence.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Evidence,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
     });
 

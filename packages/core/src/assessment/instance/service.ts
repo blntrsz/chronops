@@ -1,4 +1,11 @@
-import { Actor, AssessmentInstance, AssessmentTemplate, Control } from "@chronops/domain";
+import {
+  Actor,
+  AssessmentInstance,
+  AssessmentTemplate,
+  Control,
+  EntityType,
+  Event,
+} from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
@@ -80,7 +87,13 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
       const insert = Effect.fn(function* (input: AssessmentInstance.CreateAssessmentInstance) {
         const model = yield* AssessmentInstance.make(input);
         yield* use((db) => db.insert(tables.assessmentInstance).values(model));
-        const event = yield* AssessmentInstance.makeCreateAssessmentInstanceEvent(null, model);
+        const event = yield* Event.make({
+          name: AssessmentInstance.Event.created,
+          entityId: model.id,
+          entityType: EntityType.AssessmentInstance,
+          revisionId: model.revisionId,
+          revisionIdBefore: null,
+        });
         yield* eventService.append(event);
         return model;
       });
@@ -95,10 +108,13 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         const model = yield* getById(id);
         const updatedModel = yield* AssessmentInstance.update(model, data);
         yield* use((db) => db.insert(tables.assessmentInstance).values(updatedModel));
-        const event = yield* AssessmentInstance.makeUpdateAssessmentInstanceEvent(
-          model,
-          updatedModel,
-        );
+        const event = yield* Event.make({
+          name: AssessmentInstance.Event.updated,
+          entityId: updatedModel.id,
+          entityType: EntityType.AssessmentInstance,
+          revisionId: updatedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
         return updatedModel;
       });
@@ -109,10 +125,13 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         const model = yield* getById(id);
         const removedModel = yield* AssessmentInstance.remove(model);
         yield* use((db) => db.insert(tables.assessmentInstance).values(removedModel));
-        const event = yield* AssessmentInstance.makeDeleteAssessmentInstanceEvent(
-          model,
-          removedModel,
-        );
+        const event = yield* Event.make({
+          name: AssessmentInstance.Event.deleted,
+          entityId: removedModel.id,
+          entityType: EntityType.AssessmentInstance,
+          revisionId: removedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
       });
 

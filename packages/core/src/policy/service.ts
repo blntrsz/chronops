@@ -1,4 +1,4 @@
-import { Actor, Control, Policy } from "@chronops/domain";
+import { Actor, Control, EntityType, Event, Policy } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
@@ -78,7 +78,13 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
     const insert = Effect.fn(function* (input: Policy.CreatePolicy) {
       const model = yield* Policy.make(input);
       yield* use((db) => db.insert(tables.policy).values(model));
-      const event = yield* Policy.makeCreatePolicyEvent(null, model);
+      const event = yield* Event.make({
+        name: Policy.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Policy,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
       yield* eventService.append(event);
       return model;
     });
@@ -93,7 +99,13 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
       const model = yield* getById(id);
       const updatedModel = yield* Policy.update(model, data);
       yield* use((db) => db.insert(tables.policy).values(updatedModel));
-      const event = yield* Policy.makeUpdatePolicyEvent(model, updatedModel);
+      const event = yield* Event.make({
+        name: Policy.Event.updated,
+        entityId: updatedModel.id,
+        entityType: EntityType.Policy,
+        revisionId: updatedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
       return updatedModel;
     });
@@ -102,7 +114,13 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
       const model = yield* getById(id);
       const removedModel = yield* Policy.remove(model);
       yield* use((db) => db.insert(tables.policy).values(removedModel));
-      const event = yield* Policy.makeDeletePolicyEvent(model, removedModel);
+      const event = yield* Event.make({
+        name: Policy.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Policy,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
     });
 

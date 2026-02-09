@@ -23,6 +23,14 @@ export const AuditTemplate = Workflow.WorkflowTemplate.make({
   },
 });
 
+export const Event = {
+  created: "audit.created",
+  updated: "audit.updated",
+  deleted: "audit.deleted",
+  runCreated: "audit-run.created",
+  runUpdated: "audit-run.updated",
+} as const;
+
 export type AuditEvent = Workflow.EventOf<typeof AuditTemplate>;
 
 export const auditId = Effect.fn(function* () {

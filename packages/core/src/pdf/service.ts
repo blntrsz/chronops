@@ -1,4 +1,4 @@
-import { Actor, Pdf } from "@chronops/domain";
+import { Actor, EntityType, Event, Pdf } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
@@ -49,7 +49,13 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
     const getUploadUrl = Effect.fn(function* (input: Schema.Schema.Type<typeof Pdf.CreatePdf>) {
       const model = yield* Pdf.make(input);
       yield* use((db) => db.insert(tables.pdf).values(model));
-      const event = yield* Pdf.makeCreatePdfEvent(null, model);
+      const event = yield* Event.make({
+        name: Pdf.Event.created,
+        entityId: model.id,
+        entityType: EntityType.Pdf,
+        revisionId: model.revisionId,
+        revisionIdBefore: null,
+      });
       yield* eventService.append(event);
 
       const uploadUrl = yield* storage.getSignedUploadUrl(model.storageKey, model.contentType);
@@ -73,6 +79,15 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
         Effect.catchAll(() => Effect.succeed({ ...model, status: "processing" as const })),
       );
       yield* use((db) => db.insert(tables.pdf).values(processingModel));
+
+      const processingEvent = yield* Event.make({
+        name: Pdf.Event.updated,
+        entityId: processingModel.id,
+        entityType: EntityType.Pdf,
+        revisionId: processingModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
+      yield* eventService.append(processingEvent);
 
       yield* Effect.forkDaemon(processPdf(id));
     });
@@ -103,6 +118,15 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
         );
         yield* use((db) => db.insert(tables.pdf).values(readyModel));
 
+        const readyEvent = yield* Event.make({
+          name: Pdf.Event.updated,
+          entityId: readyModel.id,
+          entityType: EntityType.Pdf,
+          revisionId: readyModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
+        yield* eventService.append(readyEvent);
+
         yield* Effect.log(`PDF ${id} processed successfully with ${pages.length} pages`);
       });
 
@@ -116,6 +140,15 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
           Effect.catchAll(() => Effect.succeed({ ...model, status: "failed" as const })),
         );
         yield* use((db) => db.insert(tables.pdf).values(failedModel));
+
+        const failedEvent = yield* Event.make({
+          name: Pdf.Event.updated,
+          entityId: failedModel.id,
+          entityType: EntityType.Pdf,
+          revisionId: failedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
+        yield* eventService.append(failedEvent);
 
         return;
       }
@@ -131,7 +164,13 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
       const removedModel = yield* Pdf.remove(model);
       yield* use((db) => db.insert(tables.pdf).values(removedModel));
-      const event = yield* Pdf.makeDeletePdfEvent(model, removedModel);
+      const event = yield* Event.make({
+        name: Pdf.Event.deleted,
+        entityId: removedModel.id,
+        entityType: EntityType.Pdf,
+        revisionId: removedModel.revisionId,
+        revisionIdBefore: model.revisionId,
+      });
       yield* eventService.append(event);
 
       yield* use((db) =>

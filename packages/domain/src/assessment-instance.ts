@@ -1,9 +1,7 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Actor from "./actor";
 import * as Base from "./base";
 import * as Control from "./control";
-import * as Event from "./event";
 import * as Workflow from "./workflow";
 import { AssessmentTemplateId } from "./assessment-template";
 
@@ -34,94 +32,13 @@ export const AssessmentInstanceWorkflow = Workflow.WorkflowTemplate.make({
   },
 });
 
+export const Event = {
+  created: "assessment-instance.created",
+  updated: "assessment-instance.updated",
+  deleted: "assessment-instance.deleted",
+} as const;
+
 export type AssessmentInstanceEvent = Workflow.EventOf<typeof AssessmentInstanceWorkflow>;
-
-export class CreateAssessmentInstanceEvent extends Event.DomainEvent.extend<CreateAssessmentInstanceEvent>(
-  "CreateAssessmentInstanceEvent",
-)({
-  name: Schema.Literal("assessment-instance.created"),
-  entityType: Schema.Literal("assessment-instance"),
-}) {}
-
-export class UpdateAssessmentInstanceEvent extends Event.DomainEvent.extend<UpdateAssessmentInstanceEvent>(
-  "UpdateAssessmentInstanceEvent",
-)({
-  name: Schema.Literal("assessment-instance.updated"),
-  entityType: Schema.Literal("assessment-instance"),
-}) {}
-
-export class DeleteAssessmentInstanceEvent extends Event.DomainEvent.extend<DeleteAssessmentInstanceEvent>(
-  "DeleteAssessmentInstanceEvent",
-)({
-  name: Schema.Literal("assessment-instance.deleted"),
-  entityType: Schema.Literal("assessment-instance"),
-}) {}
-
-export const makeCreateAssessmentInstanceEvent = Effect.fn(function* (
-  previous: AssessmentInstance | null,
-  next: AssessmentInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "assessment-instance.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "assessment-instance",
-    entityId: next.id,
-  });
-
-  return CreateAssessmentInstanceEvent.make({
-    ...event,
-    name: "assessment-instance.created",
-    entityType: "assessment-instance",
-  });
-});
-
-export const makeUpdateAssessmentInstanceEvent = Effect.fn(function* (
-  previous: AssessmentInstance,
-  next: AssessmentInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "assessment-instance.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "assessment-instance",
-    entityId: next.id,
-  });
-
-  return UpdateAssessmentInstanceEvent.make({
-    ...event,
-    name: "assessment-instance.updated",
-    entityType: "assessment-instance",
-  });
-});
-
-export const makeDeleteAssessmentInstanceEvent = Effect.fn(function* (
-  previous: AssessmentInstance,
-  next: AssessmentInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "assessment-instance.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "assessment-instance",
-    entityId: next.id,
-  });
-
-  return DeleteAssessmentInstanceEvent.make({
-    ...event,
-    name: "assessment-instance.deleted",
-    entityType: "assessment-instance",
-  });
-});
 
 export const assessmentInstanceId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;

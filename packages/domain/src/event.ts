@@ -22,20 +22,21 @@ export const eventId = Effect.fn(function* () {
   return EventId.make(Base.buildId("evt", createId));
 });
 
-export const makeEvent = Effect.fn(function* (input: {
+export const make = Effect.fn(function* (input: {
   name: string;
-  actorId: Actor.MemberId;
-  orgId: Actor.OrgId;
   revisionIdBefore: Base.RevisionId | null;
   revisionId: Base.RevisionId;
   entityType: string;
   entityId: string;
 }) {
   const now = yield* DateTime.now;
+  const actor = yield* Actor.Actor;
 
   return DomainEvent.make({
     id: yield* eventId(),
     typeStamp: now,
+    actorId: actor.memberId,
+    orgId: actor.orgId,
     ...input,
   });
 });
