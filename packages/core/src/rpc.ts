@@ -57,7 +57,6 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(FrameworkService.Default),
   Layer.provide(ControlService.Default),
   Layer.provide(EvidenceService.Default),
-  Layer.provide(EventService.Default),
   Layer.provide(CommentService.Default),
   Layer.provide(PdfService.Default),
   Layer.provide(IssueService.Default),
@@ -70,6 +69,7 @@ const HandlersLayer = Layer.mergeAll(
   Layer.provide(QuestionerTemplateService.Default),
   Layer.provide(QuestionerInstanceService.Default),
   Layer.provide(StorageService.Default),
+  Layer.provide(EventService.Default),
   Layer.provide(Database.Default),
   // TODO: Configure S3 client
   // Layer.provide(S3.defaultLayer),
