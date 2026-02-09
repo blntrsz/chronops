@@ -15,6 +15,8 @@ import { scheduleTable, scheduleRunTable } from "./schedule/sql";
 import { assessmentTemplateTable } from "./assessment/template/sql";
 import { assessmentInstanceTable } from "./assessment/instance/sql";
 import { auditRunTable, auditTable } from "./audit/sql";
+import { questionerTemplateTable } from "./questioner/template/sql";
+import { questionerInstanceTable } from "./questioner/instance/sql";
 import * as auth from "./auth/sql";
 import { DatabaseError } from "./db-error";
 
@@ -35,6 +37,8 @@ const tables = {
   assessmentInstance: assessmentInstanceTable,
   audit: auditTable,
   auditRun: auditRunTable,
+  questionerTemplate: questionerTemplateTable,
+  questionerInstance: questionerInstanceTable,
   ...auth,
 } as const;
 

@@ -6,6 +6,8 @@ type ActiveDialog =
   | "createControl"
   | "createAssessmentTemplate"
   | "createAssessmentInstance"
+  | "createQuestionerTemplate"
+  | "createQuestionerInstance"
   | "createIssue"
   | "createPolicy"
   | "createAudit"

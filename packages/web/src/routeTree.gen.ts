@@ -35,6 +35,10 @@ import { Route as OrgSlugControlIdRouteImport } from './routes/org/$slug/control
 import { Route as OrgSlugAuditIdRouteImport } from './routes/org/$slug/audit/$id'
 import { Route as OrgSlugAssessmentIdRouteImport } from './routes/org/$slug/assessment/$id'
 import { Route as OrgSlugAssessmentInstanceIdRouteImport } from './routes/org/$slug/assessment-instance/$id'
+import { Route as OrgSlugAssessmentQuestionerInstanceRouteRouteImport } from './routes/org/$slug/assessment/questioner-instance/route'
+import { Route as OrgSlugAssessmentQuestionerRouteRouteImport } from './routes/org/$slug/assessment/questioner/route'
+import { Route as OrgSlugAssessmentQuestionerIdRouteImport } from './routes/org/$slug/assessment/questioner/$id'
+import { Route as OrgSlugAssessmentQuestionerInstanceIdRouteImport } from './routes/org/$slug/assessment/questioner-instance/$id'
 
 const OrgRouteRoute = OrgRouteRouteImport.update({
   id: '/org',
@@ -167,6 +171,30 @@ const OrgSlugAssessmentInstanceIdRoute =
     path: '/assessment-instance/$id',
     getParentRoute: () => OrgSlugRouteRoute,
   } as any)
+const OrgSlugAssessmentQuestionerInstanceRouteRoute =
+  OrgSlugAssessmentQuestionerInstanceRouteRouteImport.update({
+    id: '/questioner-instance',
+    path: '/questioner-instance',
+    getParentRoute: () => OrgSlugAssessmentRouteRoute,
+  } as any)
+const OrgSlugAssessmentQuestionerRouteRoute =
+  OrgSlugAssessmentQuestionerRouteRouteImport.update({
+    id: '/questioner',
+    path: '/questioner',
+    getParentRoute: () => OrgSlugAssessmentRouteRoute,
+  } as any)
+const OrgSlugAssessmentQuestionerIdRoute =
+  OrgSlugAssessmentQuestionerIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => OrgSlugAssessmentQuestionerRouteRoute,
+  } as any)
+const OrgSlugAssessmentQuestionerInstanceIdRoute =
+  OrgSlugAssessmentQuestionerInstanceIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => OrgSlugAssessmentQuestionerInstanceRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -182,6 +210,8 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment/questioner': typeof OrgSlugAssessmentQuestionerRouteRouteWithChildren
+  '/org/$slug/assessment/questioner-instance': typeof OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
@@ -195,6 +225,8 @@ export interface FileRoutesByFullPath {
   '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
   '/org/$slug/issue/': typeof OrgSlugIssueIndexRoute
   '/org/$slug/policy/': typeof OrgSlugPolicyIndexRoute
+  '/org/$slug/assessment/questioner-instance/$id': typeof OrgSlugAssessmentQuestionerInstanceIdRoute
+  '/org/$slug/assessment/questioner/$id': typeof OrgSlugAssessmentQuestionerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -205,6 +237,8 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment/questioner': typeof OrgSlugAssessmentQuestionerRouteRouteWithChildren
+  '/org/$slug/assessment/questioner-instance': typeof OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
@@ -218,6 +252,8 @@ export interface FileRoutesByTo {
   '/org/$slug/framework': typeof OrgSlugFrameworkIndexRoute
   '/org/$slug/issue': typeof OrgSlugIssueIndexRoute
   '/org/$slug/policy': typeof OrgSlugPolicyIndexRoute
+  '/org/$slug/assessment/questioner-instance/$id': typeof OrgSlugAssessmentQuestionerInstanceIdRoute
+  '/org/$slug/assessment/questioner/$id': typeof OrgSlugAssessmentQuestionerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -234,6 +270,8 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/org/$slug/': typeof OrgSlugIndexRoute
+  '/org/$slug/assessment/questioner': typeof OrgSlugAssessmentQuestionerRouteRouteWithChildren
+  '/org/$slug/assessment/questioner-instance': typeof OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
@@ -247,6 +285,8 @@ export interface FileRoutesById {
   '/org/$slug/framework/': typeof OrgSlugFrameworkIndexRoute
   '/org/$slug/issue/': typeof OrgSlugIssueIndexRoute
   '/org/$slug/policy/': typeof OrgSlugPolicyIndexRoute
+  '/org/$slug/assessment/questioner-instance/$id': typeof OrgSlugAssessmentQuestionerInstanceIdRoute
+  '/org/$slug/assessment/questioner/$id': typeof OrgSlugAssessmentQuestionerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -264,6 +304,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
+    | '/org/$slug/assessment/questioner'
+    | '/org/$slug/assessment/questioner-instance'
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
@@ -277,6 +319,8 @@ export interface FileRouteTypes {
     | '/org/$slug/framework/'
     | '/org/$slug/issue/'
     | '/org/$slug/policy/'
+    | '/org/$slug/assessment/questioner-instance/$id'
+    | '/org/$slug/assessment/questioner/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -287,6 +331,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug'
+    | '/org/$slug/assessment/questioner'
+    | '/org/$slug/assessment/questioner-instance'
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
@@ -300,6 +346,8 @@ export interface FileRouteTypes {
     | '/org/$slug/framework'
     | '/org/$slug/issue'
     | '/org/$slug/policy'
+    | '/org/$slug/assessment/questioner-instance/$id'
+    | '/org/$slug/assessment/questioner/$id'
   id:
     | '__root__'
     | '/'
@@ -315,6 +363,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/org/$slug/'
+    | '/org/$slug/assessment/questioner'
+    | '/org/$slug/assessment/questioner-instance'
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
@@ -328,6 +378,8 @@ export interface FileRouteTypes {
     | '/org/$slug/framework/'
     | '/org/$slug/issue/'
     | '/org/$slug/policy/'
+    | '/org/$slug/assessment/questioner-instance/$id'
+    | '/org/$slug/assessment/questioner/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -523,16 +575,79 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugAssessmentInstanceIdRouteImport
       parentRoute: typeof OrgSlugRouteRoute
     }
+    '/org/$slug/assessment/questioner-instance': {
+      id: '/org/$slug/assessment/questioner-instance'
+      path: '/questioner-instance'
+      fullPath: '/org/$slug/assessment/questioner-instance'
+      preLoaderRoute: typeof OrgSlugAssessmentQuestionerInstanceRouteRouteImport
+      parentRoute: typeof OrgSlugAssessmentRouteRoute
+    }
+    '/org/$slug/assessment/questioner': {
+      id: '/org/$slug/assessment/questioner'
+      path: '/questioner'
+      fullPath: '/org/$slug/assessment/questioner'
+      preLoaderRoute: typeof OrgSlugAssessmentQuestionerRouteRouteImport
+      parentRoute: typeof OrgSlugAssessmentRouteRoute
+    }
+    '/org/$slug/assessment/questioner/$id': {
+      id: '/org/$slug/assessment/questioner/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/assessment/questioner/$id'
+      preLoaderRoute: typeof OrgSlugAssessmentQuestionerIdRouteImport
+      parentRoute: typeof OrgSlugAssessmentQuestionerRouteRoute
+    }
+    '/org/$slug/assessment/questioner-instance/$id': {
+      id: '/org/$slug/assessment/questioner-instance/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/assessment/questioner-instance/$id'
+      preLoaderRoute: typeof OrgSlugAssessmentQuestionerInstanceIdRouteImport
+      parentRoute: typeof OrgSlugAssessmentQuestionerInstanceRouteRoute
+    }
   }
 }
 
+interface OrgSlugAssessmentQuestionerRouteRouteChildren {
+  OrgSlugAssessmentQuestionerIdRoute: typeof OrgSlugAssessmentQuestionerIdRoute
+}
+
+const OrgSlugAssessmentQuestionerRouteRouteChildren: OrgSlugAssessmentQuestionerRouteRouteChildren =
+  {
+    OrgSlugAssessmentQuestionerIdRoute: OrgSlugAssessmentQuestionerIdRoute,
+  }
+
+const OrgSlugAssessmentQuestionerRouteRouteWithChildren =
+  OrgSlugAssessmentQuestionerRouteRoute._addFileChildren(
+    OrgSlugAssessmentQuestionerRouteRouteChildren,
+  )
+
+interface OrgSlugAssessmentQuestionerInstanceRouteRouteChildren {
+  OrgSlugAssessmentQuestionerInstanceIdRoute: typeof OrgSlugAssessmentQuestionerInstanceIdRoute
+}
+
+const OrgSlugAssessmentQuestionerInstanceRouteRouteChildren: OrgSlugAssessmentQuestionerInstanceRouteRouteChildren =
+  {
+    OrgSlugAssessmentQuestionerInstanceIdRoute:
+      OrgSlugAssessmentQuestionerInstanceIdRoute,
+  }
+
+const OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren =
+  OrgSlugAssessmentQuestionerInstanceRouteRoute._addFileChildren(
+    OrgSlugAssessmentQuestionerInstanceRouteRouteChildren,
+  )
+
 interface OrgSlugAssessmentRouteRouteChildren {
+  OrgSlugAssessmentQuestionerRouteRoute: typeof OrgSlugAssessmentQuestionerRouteRouteWithChildren
+  OrgSlugAssessmentQuestionerInstanceRouteRoute: typeof OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren
   OrgSlugAssessmentIdRoute: typeof OrgSlugAssessmentIdRoute
   OrgSlugAssessmentIndexRoute: typeof OrgSlugAssessmentIndexRoute
 }
 
 const OrgSlugAssessmentRouteRouteChildren: OrgSlugAssessmentRouteRouteChildren =
   {
+    OrgSlugAssessmentQuestionerRouteRoute:
+      OrgSlugAssessmentQuestionerRouteRouteWithChildren,
+    OrgSlugAssessmentQuestionerInstanceRouteRoute:
+      OrgSlugAssessmentQuestionerInstanceRouteRouteWithChildren,
     OrgSlugAssessmentIdRoute: OrgSlugAssessmentIdRoute,
     OrgSlugAssessmentIndexRoute: OrgSlugAssessmentIndexRoute,
   }
