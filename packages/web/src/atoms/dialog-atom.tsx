@@ -8,6 +8,7 @@ type ActiveDialog =
   | "createAssessmentInstance"
   | "createIssue"
   | "createPolicy"
+  | "createAudit"
   | null;
 
 const activeDialogAtom = Atom.make<ActiveDialog>(null);

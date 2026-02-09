@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   AlertTriangle,
   FileText,
+  ClipboardList,
 } from "lucide-react";
 import * as React from "react";
 
@@ -38,7 +39,8 @@ type NavItem = {
     | "/org/$slug/control"
     | "/org/$slug/issue"
     | "/org/$slug/assessment"
-    | "/org/$slug/policy";
+    | "/org/$slug/policy"
+    | "/org/$slug/audit";
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
 };
@@ -60,6 +62,7 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
     { title: "Policies", to: "/org/$slug/policy", icon: FileText },
     { title: "Issues", to: "/org/$slug/issue", icon: AlertTriangle },
     { title: "Assessments", to: "/org/$slug/assessment", icon: ClipboardCheck },
+    { title: "Audits", to: "/org/$slug/audit", icon: ClipboardList },
   ];
 
   return (
