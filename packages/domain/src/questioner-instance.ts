@@ -2,7 +2,6 @@ import { DateTime, Effect } from "effect";
 import * as Schema from "effect/Schema";
 import * as Actor from "./actor";
 import * as Base from "./base";
-import * as Event from "./event";
 import * as Workflow from "./workflow";
 import { QuestionerTemplateId, QuestionerQuestionType } from "./questioner-template";
 
@@ -25,6 +24,13 @@ export const QuestionerWorkflow = Workflow.WorkflowTemplate.make({
   },
 });
 
+export const Event = {
+  created: "questioner-instance.created",
+  updated: "questioner-instance.updated",
+  deleted: "questioner-instance.deleted",
+  submitted: "questioner-instance.submitted",
+} as const;
+
 export type QuestionerInstanceEvent = Workflow.EventOf<typeof QuestionerWorkflow>;
 
 export const QuestionerResponseValue = Schema.Union(
@@ -44,122 +50,6 @@ export const QuestionerResponse = Schema.mutable(
   }),
 );
 export type QuestionerResponse = typeof QuestionerResponse.Type;
-
-export class CreateQuestionerInstanceEvent extends Event.DomainEvent.extend<CreateQuestionerInstanceEvent>(
-  "CreateQuestionerInstanceEvent",
-)({
-  name: Schema.Literal("questioner-instance.created"),
-  entityType: Schema.Literal("questioner-instance"),
-}) {}
-
-export class UpdateQuestionerInstanceEvent extends Event.DomainEvent.extend<UpdateQuestionerInstanceEvent>(
-  "UpdateQuestionerInstanceEvent",
-)({
-  name: Schema.Literal("questioner-instance.updated"),
-  entityType: Schema.Literal("questioner-instance"),
-}) {}
-
-export class DeleteQuestionerInstanceEvent extends Event.DomainEvent.extend<DeleteQuestionerInstanceEvent>(
-  "DeleteQuestionerInstanceEvent",
-)({
-  name: Schema.Literal("questioner-instance.deleted"),
-  entityType: Schema.Literal("questioner-instance"),
-}) {}
-
-export class SubmitQuestionerInstanceEvent extends Event.DomainEvent.extend<SubmitQuestionerInstanceEvent>(
-  "SubmitQuestionerInstanceEvent",
-)({
-  name: Schema.Literal("questioner-instance.submitted"),
-  entityType: Schema.Literal("questioner-instance"),
-}) {}
-
-export const makeCreateQuestionerInstanceEvent = Effect.fn(function* (
-  previous: QuestionerInstance | null,
-  next: QuestionerInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-instance.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "questioner-instance",
-    entityId: next.id,
-  });
-
-  return CreateQuestionerInstanceEvent.make({
-    ...event,
-    name: "questioner-instance.created",
-    entityType: "questioner-instance",
-  });
-});
-
-export const makeUpdateQuestionerInstanceEvent = Effect.fn(function* (
-  previous: QuestionerInstance,
-  next: QuestionerInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-instance.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "questioner-instance",
-    entityId: next.id,
-  });
-
-  return UpdateQuestionerInstanceEvent.make({
-    ...event,
-    name: "questioner-instance.updated",
-    entityType: "questioner-instance",
-  });
-});
-
-export const makeDeleteQuestionerInstanceEvent = Effect.fn(function* (
-  previous: QuestionerInstance,
-  next: QuestionerInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-instance.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "questioner-instance",
-    entityId: next.id,
-  });
-
-  return DeleteQuestionerInstanceEvent.make({
-    ...event,
-    name: "questioner-instance.deleted",
-    entityType: "questioner-instance",
-  });
-});
-
-export const makeSubmitQuestionerInstanceEvent = Effect.fn(function* (
-  previous: QuestionerInstance,
-  next: QuestionerInstance,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-instance.submitted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "questioner-instance",
-    entityId: next.id,
-  });
-
-  return SubmitQuestionerInstanceEvent.make({
-    ...event,
-    name: "questioner-instance.submitted",
-    entityType: "questioner-instance",
-  });
-});
 
 export const questionerInstanceId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;

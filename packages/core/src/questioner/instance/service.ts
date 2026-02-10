@@ -1,4 +1,4 @@
-import { Actor, QuestionerInstance, QuestionerTemplate } from "@chronops/domain";
+import { Actor, EntityType, Event, QuestionerInstance, QuestionerTemplate } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
@@ -100,7 +100,13 @@ export class QuestionerInstanceService extends Effect.Service<QuestionerInstance
       const insert = Effect.fn(function* (input: QuestionerInstance.CreateQuestionerInstance) {
         const model = yield* QuestionerInstance.make(input);
         yield* use((db) => db.insert(tables.questionerInstance).values(toInsert(model)));
-        const event = yield* QuestionerInstance.makeCreateQuestionerInstanceEvent(null, model);
+        const event = yield* Event.make({
+          name: QuestionerInstance.Event.created,
+          entityId: model.id,
+          entityType: EntityType.QuestionerInstance,
+          revisionId: model.revisionId,
+          revisionIdBefore: null,
+        });
         yield* eventService.append(event);
         return model;
       });
@@ -118,10 +124,13 @@ export class QuestionerInstanceService extends Effect.Service<QuestionerInstance
         }
         const updatedModel = yield* QuestionerInstance.update(model, data);
         yield* use((db) => db.insert(tables.questionerInstance).values(toInsert(updatedModel)));
-        const event = yield* QuestionerInstance.makeUpdateQuestionerInstanceEvent(
-          model,
-          updatedModel,
-        );
+        const event = yield* Event.make({
+          name: QuestionerInstance.Event.updated,
+          entityId: updatedModel.id,
+          entityType: EntityType.QuestionerInstance,
+          revisionId: updatedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
         return updatedModel;
       });
@@ -133,10 +142,13 @@ export class QuestionerInstanceService extends Effect.Service<QuestionerInstance
         if (model.workflowStatus === "submitted") return model;
         const updatedModel = yield* QuestionerInstance.submit(model);
         yield* use((db) => db.insert(tables.questionerInstance).values(toInsert(updatedModel)));
-        const event = yield* QuestionerInstance.makeSubmitQuestionerInstanceEvent(
-          model,
-          updatedModel,
-        );
+        const event = yield* Event.make({
+          name: QuestionerInstance.Event.submitted,
+          entityId: updatedModel.id,
+          entityType: EntityType.QuestionerInstance,
+          revisionId: updatedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
         return updatedModel;
       });
@@ -148,10 +160,13 @@ export class QuestionerInstanceService extends Effect.Service<QuestionerInstance
         if (model.workflowStatus === "submitted") return;
         const removedModel = yield* QuestionerInstance.remove(model);
         yield* use((db) => db.insert(tables.questionerInstance).values(toInsert(removedModel)));
-        const event = yield* QuestionerInstance.makeDeleteQuestionerInstanceEvent(
-          model,
-          removedModel,
-        );
+        const event = yield* Event.make({
+          name: QuestionerInstance.Event.deleted,
+          entityId: removedModel.id,
+          entityType: EntityType.QuestionerInstance,
+          revisionId: removedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
       });
 

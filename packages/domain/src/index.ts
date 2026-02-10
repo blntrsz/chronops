@@ -35,4 +35,6 @@ export const EntityType = {
   Evidence: "evidence",
   Pdf: "pdf",
   PdfPage: "pdf-page",
+  QuestionerInstance: "questioner-instance",
+  QuestionerTemplate: "questioner-template",
 } as const;

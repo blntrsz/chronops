@@ -1,4 +1,4 @@
-import { Actor, QuestionerTemplate } from "@chronops/domain";
+import { Actor, EntityType, Event, QuestionerTemplate } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
@@ -91,7 +91,13 @@ export class QuestionerTemplateService extends Effect.Service<QuestionerTemplate
       const insert = Effect.fn(function* (input: QuestionerTemplate.CreateQuestionerTemplate) {
         const model = yield* QuestionerTemplate.make(input);
         yield* use((db) => db.insert(tables.questionerTemplate).values(toInsert(model)));
-        const event = yield* QuestionerTemplate.makeCreateQuestionerTemplateEvent(null, model);
+        const event = yield* Event.make({
+          name: QuestionerTemplate.Event.created,
+          entityId: model.id,
+          entityType: EntityType.QuestionerTemplate,
+          revisionId: model.revisionId,
+          revisionIdBefore: null,
+        });
         yield* eventService.append(event);
         return model;
       });
@@ -106,10 +112,13 @@ export class QuestionerTemplateService extends Effect.Service<QuestionerTemplate
         const model = yield* getById(id);
         const updatedModel = yield* QuestionerTemplate.update(model, data);
         yield* use((db) => db.insert(tables.questionerTemplate).values(toInsert(updatedModel)));
-        const event = yield* QuestionerTemplate.makeUpdateQuestionerTemplateEvent(
-          model,
-          updatedModel,
-        );
+        const event = yield* Event.make({
+          name: QuestionerTemplate.Event.updated,
+          entityId: updatedModel.id,
+          entityType: EntityType.QuestionerTemplate,
+          revisionId: updatedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
         return updatedModel;
       });
@@ -120,10 +129,13 @@ export class QuestionerTemplateService extends Effect.Service<QuestionerTemplate
         const model = yield* getById(id);
         const removedModel = yield* QuestionerTemplate.remove(model);
         yield* use((db) => db.insert(tables.questionerTemplate).values(toInsert(removedModel)));
-        const event = yield* QuestionerTemplate.makeDeleteQuestionerTemplateEvent(
-          model,
-          removedModel,
-        );
+        const event = yield* Event.make({
+          name: QuestionerTemplate.Event.deleted,
+          entityId: removedModel.id,
+          entityType: EntityType.QuestionerTemplate,
+          revisionId: removedModel.revisionId,
+          revisionIdBefore: model.revisionId,
+        });
         yield* eventService.append(event);
       });
 

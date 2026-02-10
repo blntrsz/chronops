@@ -1,8 +1,6 @@
 import { Effect } from "effect";
 import * as Schema from "effect/Schema";
-import * as Actor from "./actor";
 import * as Base from "./base";
-import * as Event from "./event";
 import { QuestionerInvalidQuestionError } from "./questioner-errors";
 
 export const QuestionerTemplateId = Schema.String.pipe(Schema.brand("QuestionerTemplateId"));
@@ -32,92 +30,11 @@ export const QuestionerQuestion = Schema.mutable(
 );
 export type QuestionerQuestion = typeof QuestionerQuestion.Type;
 
-export class CreateQuestionerTemplateEvent extends Event.DomainEvent.extend<CreateQuestionerTemplateEvent>(
-  "CreateQuestionerTemplateEvent",
-)({
-  name: Schema.Literal("questioner-template.created"),
-  entityType: Schema.Literal("questioner-template"),
-}) {}
-
-export class UpdateQuestionerTemplateEvent extends Event.DomainEvent.extend<UpdateQuestionerTemplateEvent>(
-  "UpdateQuestionerTemplateEvent",
-)({
-  name: Schema.Literal("questioner-template.updated"),
-  entityType: Schema.Literal("questioner-template"),
-}) {}
-
-export class DeleteQuestionerTemplateEvent extends Event.DomainEvent.extend<DeleteQuestionerTemplateEvent>(
-  "DeleteQuestionerTemplateEvent",
-)({
-  name: Schema.Literal("questioner-template.deleted"),
-  entityType: Schema.Literal("questioner-template"),
-}) {}
-
-export const makeCreateQuestionerTemplateEvent = Effect.fn(function* (
-  previous: QuestionerTemplate | null,
-  next: QuestionerTemplate,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-template.created",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous?.revisionId ?? null,
-    revisionId: next.revisionId,
-    entityType: "questioner-template",
-    entityId: next.id,
-  });
-
-  return CreateQuestionerTemplateEvent.make({
-    ...event,
-    name: "questioner-template.created",
-    entityType: "questioner-template",
-  });
-});
-
-export const makeUpdateQuestionerTemplateEvent = Effect.fn(function* (
-  previous: QuestionerTemplate,
-  next: QuestionerTemplate,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-template.updated",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "questioner-template",
-    entityId: next.id,
-  });
-
-  return UpdateQuestionerTemplateEvent.make({
-    ...event,
-    name: "questioner-template.updated",
-    entityType: "questioner-template",
-  });
-});
-
-export const makeDeleteQuestionerTemplateEvent = Effect.fn(function* (
-  previous: QuestionerTemplate,
-  next: QuestionerTemplate,
-) {
-  const actor = yield* Actor.Actor;
-  const event = yield* Event.makeEvent({
-    name: "questioner-template.deleted",
-    actorId: actor.memberId,
-    orgId: actor.orgId,
-    revisionIdBefore: previous.revisionId,
-    revisionId: next.revisionId,
-    entityType: "questioner-template",
-    entityId: next.id,
-  });
-
-  return DeleteQuestionerTemplateEvent.make({
-    ...event,
-    name: "questioner-template.deleted",
-    entityType: "questioner-template",
-  });
-});
+export const Event = {
+  created: "questioner-template.created",
+  updated: "questioner-template.updated",
+  deleted: "questioner-template.deleted",
+} as const;
 
 export const questionerTemplateId = Effect.fn(function* () {
   const { createId } = yield* Base.ULID;
