@@ -2,10 +2,10 @@ import { AssessmentTemplate, Control } from "@chronops/domain";
 import { Rpc, RpcGroup } from "@effect/rpc";
 import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
-import { AuthMiddleware } from "../../auth/middleware-interface";
-import { Pagination } from "../../common/repository";
-import { DatabaseError } from "../../db-error";
-import { Paginated } from "../../common/pagination";
+import { AuthMiddleware } from "../auth/middleware-interface";
+import { Pagination } from "../common/repository";
+import { DatabaseError } from "../db-error";
+import { Paginated } from "../common/pagination";
 
 export class AssessmentTemplateContract extends RpcGroup.make(
   Rpc.make("AssessmentTemplateCreate", {

@@ -1,9 +1,12 @@
 import { pgTable, text } from "drizzle-orm/pg-core";
 import { Actor, AssessmentTemplate, Base, Control } from "@chronops/domain";
-import { timestampUtc, timestampUtcNullable } from "../../common/db-type";
+import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
 export const assessmentTemplateTable = pgTable("assessment_template", {
-  id: text().notNull().$type<AssessmentTemplate.AssessmentTemplateId>().primaryKey(),
+  id: text()
+    .notNull()
+    .$type<AssessmentTemplate.AssessmentTemplateId>()
+    .primaryKey(),
   controlId: text().notNull().$type<Control.ControlId>(),
   name: text().notNull(),
   description: text(),

@@ -26,10 +26,10 @@ import { RiskService } from "./risk/service";
 import { StorageService } from "./storage/service";
 import { RpcLoggerLayer } from "./logger";
 import { Database } from "./db";
-import { AssessmentTemplateHandler } from "./assessment/template/handler";
-import { AssessmentTemplateService } from "./assessment/template/service";
-import { AssessmentInstanceHandler } from "./assessment/instance/handler";
-import { AssessmentInstanceService } from "./assessment/instance/service";
+import { AssessmentTemplateHandler } from "./assessment-template/handler";
+import { AssessmentTemplateService } from "./assessment-template/service";
+import { AssessmentInstanceHandler } from "./assessment-instance/handler";
+import { AssessmentInstanceService } from "./assessment-instance/service";
 import { AuditHandler } from "./audit/handler";
 import { AuditService } from "./audit/service";
 import { QuestionerTemplateHandler } from "./questioner/template/handler";
@@ -91,4 +91,6 @@ const RpcRouter = RpcServer.layerHttpRouter({
 
 const AllRoutes = RpcRouter.pipe(Layer.provide(Logger.pretty));
 
-export const { handler, dispose } = HttpLayerRouter.toWebHandler(AllRoutes as any);
+export const { handler, dispose } = HttpLayerRouter.toWebHandler(
+  AllRoutes as any,
+);

@@ -1,6 +1,5 @@
 import {
   Actor,
-  AssessmentInstance,
   AssessmentTemplate,
   Control,
   EntityType,
@@ -8,61 +7,60 @@ import {
 } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
-import { Pagination } from "../../common/repository";
-import { EventService } from "../../common/service/event-service";
-import { Database } from "../../db";
+import { Pagination } from "../common/repository";
+import { EventService } from "../common/service/event-service";
+import { Database } from "../db";
 
-export class AssessmentInstanceService extends Effect.Service<AssessmentInstanceService>()(
-  "AssessmentInstanceService",
+export class AssessmentTemplateService extends Effect.Service<AssessmentTemplateService>()(
+  "AssessmentTemplateService",
   {
     effect: Effect.gen(function* () {
       const { use, tables } = yield* Database;
       const eventService = yield* EventService;
 
       const getById = Effect.fn(function* (
-        id: Schema.Schema.Type<typeof AssessmentInstance.AssessmentInstanceId>,
+        id: Schema.Schema.Type<typeof AssessmentTemplate.AssessmentTemplateId>,
       ) {
         const actor = yield* Actor.Actor;
         const model = yield* use((db) =>
-          db.query.assessmentInstance.findFirst({
+          db.query.assessmentTemplate.findFirst({
             where: and(
-              eq(tables.assessmentInstance.id, id),
-              eq(tables.assessmentInstance.orgId, actor.orgId),
-              isNull(tables.assessmentInstance.deletedAt),
+              eq(tables.assessmentTemplate.id, id),
+              eq(tables.assessmentTemplate.orgId, actor.orgId),
+              isNull(tables.assessmentTemplate.deletedAt),
             ),
           }),
         );
 
         if (!model) {
-          throw yield* AssessmentInstance.AssessmentInstanceNotFoundError.fromId(id);
+          throw yield* AssessmentTemplate.AssessmentTemplateNotFoundError.fromId(
+            id,
+          );
         }
 
-        return AssessmentInstance.AssessmentInstance.make(model);
+        return AssessmentTemplate.AssessmentTemplate.make(model);
       });
 
       const list = Effect.fn(function* (
         pagination: Schema.Schema.Type<typeof Pagination>,
         filter?: {
           controlId?: Schema.Schema.Type<typeof Control.ControlId>;
-          templateId?: Schema.Schema.Type<typeof AssessmentTemplate.AssessmentTemplateId>;
         },
       ) {
         const actor = yield* Actor.Actor;
         const filters = [
-          eq(tables.assessmentInstance.orgId, actor.orgId),
-          isNull(tables.assessmentInstance.deletedAt),
+          eq(tables.assessmentTemplate.orgId, actor.orgId),
+          isNull(tables.assessmentTemplate.deletedAt),
         ];
 
         if (filter?.controlId) {
-          filters.push(eq(tables.assessmentInstance.controlId, filter.controlId));
-        }
-
-        if (filter?.templateId) {
-          filters.push(eq(tables.assessmentInstance.templateId, filter.templateId));
+          filters.push(
+            eq(tables.assessmentTemplate.controlId, filter.controlId),
+          );
         }
 
         const models = yield* use((db) =>
-          db.query.assessmentInstance.findMany({
+          db.query.assessmentTemplate.findMany({
             where: and(...filters),
             offset: (pagination.page - 1) * pagination.size,
             limit: pagination.size,
@@ -72,25 +70,29 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         const [total] = yield* use((db) =>
           db
             .select({ count: count() })
-            .from(tables.assessmentInstance)
+            .from(tables.assessmentTemplate)
             .where(and(...filters)),
         );
 
         return {
-          data: models.map((model) => AssessmentInstance.AssessmentInstance.make(model)),
+          data: models.map((model) =>
+            AssessmentTemplate.AssessmentTemplate.make(model),
+          ),
           total: total?.count ?? 0,
           page: pagination.page,
           size: pagination.size,
         };
       });
 
-      const insert = Effect.fn(function* (input: AssessmentInstance.CreateAssessmentInstance) {
-        const model = yield* AssessmentInstance.make(input);
-        yield* use((db) => db.insert(tables.assessmentInstance).values(model));
+      const insert = Effect.fn(function* (
+        input: AssessmentTemplate.CreateAssessmentTemplate,
+      ) {
+        const model = yield* AssessmentTemplate.make(input);
+        yield* use((db) => db.insert(tables.assessmentTemplate).values(model));
         const event = yield* Event.make({
-          name: AssessmentInstance.Event.created,
+          name: AssessmentTemplate.Event.created,
           entityId: model.id,
-          entityType: EntityType.AssessmentInstance,
+          entityType: EntityType.AssessmentTemplate,
           revisionId: model.revisionId,
           revisionIdBefore: null,
         });
@@ -102,16 +104,20 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
         id,
         data,
       }: {
-        id: Schema.Schema.Type<typeof AssessmentInstance.AssessmentInstanceId>;
-        data: Schema.Schema.Type<typeof AssessmentInstance.UpdateAssessmentInstance>;
+        id: Schema.Schema.Type<typeof AssessmentTemplate.AssessmentTemplateId>;
+        data: Schema.Schema.Type<
+          typeof AssessmentTemplate.UpdateAssessmentTemplate
+        >;
       }) {
         const model = yield* getById(id);
-        const updatedModel = yield* AssessmentInstance.update(model, data);
-        yield* use((db) => db.insert(tables.assessmentInstance).values(updatedModel));
+        const updatedModel = yield* AssessmentTemplate.update(model, data);
+        yield* use((db) =>
+          db.insert(tables.assessmentTemplate).values(updatedModel),
+        );
         const event = yield* Event.make({
-          name: AssessmentInstance.Event.updated,
+          name: AssessmentTemplate.Event.updated,
           entityId: updatedModel.id,
-          entityType: EntityType.AssessmentInstance,
+          entityType: EntityType.AssessmentTemplate,
           revisionId: updatedModel.revisionId,
           revisionIdBefore: model.revisionId,
         });
@@ -120,15 +126,17 @@ export class AssessmentInstanceService extends Effect.Service<AssessmentInstance
       });
 
       const remove = Effect.fn(function* (
-        id: Schema.Schema.Type<typeof AssessmentInstance.AssessmentInstanceId>,
+        id: Schema.Schema.Type<typeof AssessmentTemplate.AssessmentTemplateId>,
       ) {
         const model = yield* getById(id);
-        const removedModel = yield* AssessmentInstance.remove(model);
-        yield* use((db) => db.insert(tables.assessmentInstance).values(removedModel));
+        const removedModel = yield* AssessmentTemplate.remove(model);
+        yield* use((db) =>
+          db.insert(tables.assessmentTemplate).values(removedModel),
+        );
         const event = yield* Event.make({
-          name: AssessmentInstance.Event.deleted,
+          name: AssessmentTemplate.Event.deleted,
           entityId: removedModel.id,
-          entityType: EntityType.AssessmentInstance,
+          entityType: EntityType.AssessmentTemplate,
           revisionId: removedModel.revisionId,
           revisionIdBefore: model.revisionId,
         });
