@@ -10,6 +10,26 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;
 
+    const normalizeVersion = (version: unknown): Framework.SemVer | null => {
+      if (typeof version !== "string") {
+        return null;
+      }
+      const trimmed = version.trim();
+      if (!trimmed) {
+        return null;
+      }
+      const candidate = /^\d+$/.test(trimmed)
+        ? `${trimmed}.0.0`
+        : /^\d+\.\d+$/.test(trimmed)
+          ? `${trimmed}.0`
+          : trimmed;
+      const parsed = Schema.decodeUnknownEither(Framework.SemVer)(candidate);
+      if (parsed._tag === "Left") {
+        return null;
+      }
+      return parsed.right;
+    };
+
     /**
      * Get a framework by its ID.
      * @since 1.0.0
@@ -30,7 +50,10 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
         throw yield* Framework.FrameworkNotFoundError.fromId(id);
       }
 
-      return Framework.Framework.make(model);
+      return Framework.Framework.make({
+        ...model,
+        version: normalizeVersion(model.version),
+      });
     });
 
     /**
@@ -56,7 +79,12 @@ export class FrameworkService extends Effect.Service<FrameworkService>()("Framew
       );
 
       return {
-        data: models.map((model) => Framework.Framework.make(model)),
+        data: models.map((model) =>
+          Framework.Framework.make({
+            ...model,
+            version: normalizeVersion(model.version),
+          }),
+        ),
         total: total?.count ?? 0,
         page: pagination.page,
         size: pagination.size,

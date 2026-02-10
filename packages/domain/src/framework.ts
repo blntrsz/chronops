@@ -6,10 +6,7 @@ import * as Workflow from "./workflow";
 export const FrameworkId = Schema.String.pipe(Schema.brand("FrameworkId"));
 export type FrameworkId = typeof FrameworkId.Type;
 
-export const SemVer = Schema.String.pipe(
-  Schema.pattern(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/),
-  Schema.brand("SemVer"),
-);
+export const SemVer = Schema.String.pipe(Schema.brand("SemVer"));
 export type SemVer = typeof SemVer.Type;
 
 /**
