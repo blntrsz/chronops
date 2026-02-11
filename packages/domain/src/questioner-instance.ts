@@ -58,6 +58,7 @@ export const questionerInstanceId = Effect.fn(function* () {
 
 export class QuestionerInstance extends Base.Base.extend<QuestionerInstance>("QuestionerInstance")({
   id: QuestionerInstanceId,
+  ticket: Base.Ticket,
   templateId: QuestionerTemplateId,
   name: Schema.String,
   workflowStatus: QuestionerWorkflowStatus,
@@ -75,6 +76,8 @@ export const CreateQuestionerInstance = Schema.mutable(
 );
 export type CreateQuestionerInstance = typeof CreateQuestionerInstance.Type;
 
+export type CreateQuestionerInstanceInput = CreateQuestionerInstance & { ticket: Base.Ticket };
+
 export const UpdateQuestionerInstance = Schema.mutable(
   Schema.Struct({
     name: Schema.optional(Schema.String),
@@ -84,7 +87,7 @@ export const UpdateQuestionerInstance = Schema.mutable(
 );
 export type UpdateQuestionerInstance = typeof UpdateQuestionerInstance.Type;
 
-export const make = Effect.fn(function* (input: CreateQuestionerInstance) {
+export const make = Effect.fn(function* (input: CreateQuestionerInstanceInput) {
   const base = yield* Base.makeBase();
 
   return QuestionerInstance.make({
@@ -107,6 +110,7 @@ export const update = Effect.fn(function* (
     return QuestionerInstance.make({
       ...model,
       ...base,
+      ticket: model.ticket,
     });
   }
   if (input.workflowStatus && input.workflowStatus !== model.workflowStatus) {
@@ -123,6 +127,7 @@ export const update = Effect.fn(function* (
     ...input,
     responses: input.responses ?? model.responses,
     ...base,
+    ticket: model.ticket,
   });
 });
 
@@ -142,6 +147,7 @@ export const submit = Effect.fn(function* (model: QuestionerInstance) {
     submittedAt: now,
     submittedBy: actor.memberId,
     ...base,
+    ticket: model.ticket,
   });
 });
 

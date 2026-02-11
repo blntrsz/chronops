@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as AssessmentInstance from "../assessment-instance";
 import * as AssessmentTemplate from "../assessment-template";
 import * as Control from "../control";
@@ -15,6 +16,7 @@ describe("AssessmentInstance", () => {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const templateId = AssessmentTemplate.AssessmentTemplateId.make("ast_01TEST777");
         const created = yield* AssessmentInstance.make({
+          ticket: Base.Ticket.make("ASI-1"),
           templateId,
           controlId,
           name: "Q1 access review",
@@ -39,6 +41,7 @@ describe("AssessmentInstance", () => {
             "orgId": "org_1",
             "revisionId": "01TEST000",
             "status": "planned",
+            "ticket": "ASI-1",
             "templateId": "ast_01TEST777",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -59,6 +62,7 @@ describe("AssessmentInstance", () => {
             "orgId": "org_1",
             "revisionId": "01TEST002",
             "status": "in_progress",
+            "ticket": "ASI-1",
             "templateId": "ast_01TEST777",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -79,6 +83,7 @@ describe("AssessmentInstance", () => {
             "orgId": "org_1",
             "revisionId": "01TEST003",
             "status": "in_progress",
+            "ticket": "ASI-1",
             "templateId": "ast_01TEST777",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

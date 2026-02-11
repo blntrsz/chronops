@@ -1,14 +1,16 @@
-import { Actor, Control, EntityType, Event, Policy } from "@chronops/domain";
+import { Actor, Base, Control, EntityType, Event, Policy } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
 import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
+import { TicketService } from "../ticket/service";
 
 export class PolicyService extends Effect.Service<PolicyService>()("PolicyService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;
+    const ticketService = yield* TicketService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Policy.PolicyId>) {
       const actor = yield* Actor.Actor;
@@ -76,7 +78,12 @@ export class PolicyService extends Effect.Service<PolicyService>()("PolicyServic
     });
 
     const insert = Effect.fn(function* (input: Policy.CreatePolicy) {
-      const model = yield* Policy.make(input);
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("POL"));
+      const model = yield* Policy.make({
+        ...input,
+        ticket,
+      } as Policy.CreatePolicyInput);
       yield* use((db) => db.insert(tables.policy).values(model));
       const event = yield* Event.make({
         name: Policy.Event.created,

@@ -81,6 +81,7 @@ export type PdfFileSize = typeof PdfFileSize.Type;
  */
 export class Pdf extends Base.Base.extend<Pdf>("Pdf")({
   id: PdfId,
+  ticket: Base.Ticket,
   title: Schema.String,
   filename: Schema.String,
   fileSize: PdfFileSize,
@@ -108,11 +109,13 @@ export const CreatePdf = Schema.Struct({
 });
 export type CreatePdf = typeof CreatePdf.Type;
 
+export type CreatePdfInput = CreatePdf & { ticket: Base.Ticket };
+
 /**
  * Create a new PDF entity.
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreatePdf) {
+export const make = Effect.fn(function* (input: CreatePdfInput) {
   const base = yield* Base.makeBase();
 
   return Pdf.make({

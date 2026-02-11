@@ -51,6 +51,7 @@ export const scheduleRunId = Effect.fn(function* () {
  */
 export class ScheduleRun extends Base.Base.extend<ScheduleRun>("ScheduleRun")({
   id: ScheduleRunId,
+  ticket: Base.Ticket,
   scheduleId: ScheduleId,
   status: ScheduleRunStatus,
   finishedAt: Schema.NullOr(Schema.DateTimeUtc),
@@ -59,6 +60,8 @@ export class ScheduleRun extends Base.Base.extend<ScheduleRun>("ScheduleRun")({
 export const CreateScheduleRun = ScheduleRun.pipe(Schema.pick("scheduleId"));
 export type CreateScheduleRun = typeof CreateScheduleRun.Type;
 
+export type CreateScheduleRunInput = CreateScheduleRun & { ticket: Base.Ticket };
+
 export const UpdateScheduleRun = Schema.partial(ScheduleRun.pipe(Schema.pick("finishedAt")));
 export type UpdateScheduleRun = typeof UpdateScheduleRun.Type;
 
@@ -66,14 +69,15 @@ export type UpdateScheduleRun = typeof UpdateScheduleRun.Type;
  * Create a new ScheduleRun
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreateScheduleRun) {
+export const make = Effect.fn(function* (input: CreateScheduleRunInput) {
   const base = yield* Base.makeBase();
 
   return ScheduleRun.make({
     id: yield* scheduleRunId(),
-    scheduleId: input.scheduleId,
     status: "in_progress",
     finishedAt: null,
+    ticket: input.ticket,
+    scheduleId: input.scheduleId,
     ...base,
   });
 });

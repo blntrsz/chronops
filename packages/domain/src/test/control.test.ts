@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Control from "../control";
 import * as Framework from "../framework";
 import { makeTestRuntime, snapshot } from "./runtime";
@@ -13,6 +14,7 @@ describe("Control", () => {
       Effect.gen(function* () {
         const frameworkId = Framework.FrameworkId.make("fwk_01TEST999");
         const created = yield* Control.make({
+          ticket: Base.Ticket.make("CTR-1"),
           name: "Access",
           description: null,
           frameworkId,
@@ -34,6 +36,7 @@ describe("Control", () => {
             "orgId": "org_1",
             "revisionId": "01TEST000",
             "status": "draft",
+            "ticket": "CTR-1",
             "testingFrequency": null,
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -53,6 +56,7 @@ describe("Control", () => {
             "orgId": "org_1",
             "revisionId": "01TEST002",
             "status": "draft",
+            "ticket": "CTR-1",
             "testingFrequency": "monthly",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -72,6 +76,7 @@ describe("Control", () => {
             "orgId": "org_1",
             "revisionId": "01TEST003",
             "status": "draft",
+            "ticket": "CTR-1",
             "testingFrequency": "monthly",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

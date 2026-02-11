@@ -40,6 +40,7 @@ export const auditId = Effect.fn(function* () {
 
 export class Audit extends Base.Base.extend<Audit>("Audit")({
   id: AuditId,
+  ticket: Base.Ticket,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
   scope: Schema.NullOr(Schema.String),
@@ -52,13 +53,15 @@ export const CreateAudit = Audit.pipe(
 );
 export type CreateAudit = typeof CreateAudit.Type;
 
+export type CreateAuditInput = CreateAudit & { ticket: Base.Ticket };
+
 export const UpdateAudit = Audit.pipe(
   Schema.pick("name", "description", "scope", "assessmentMethodId", "status"),
   Schema.partial,
 );
 export type UpdateAudit = typeof UpdateAudit.Type;
 
-export const make = Effect.fn(function* (input: CreateAudit) {
+export const make = Effect.fn(function* (input: CreateAuditInput) {
   const base = yield* Base.makeBase();
 
   return Audit.make({
@@ -128,6 +131,7 @@ export const auditRunId = Effect.fn(function* () {
 
 export class AuditRun extends Base.Base.extend<AuditRun>("AuditRun")({
   id: AuditRunId,
+  ticket: Base.Ticket,
   auditId: AuditId,
   assessmentMethodId: AssessmentTemplate.AssessmentTemplateId,
   status: AuditRunStatus,
@@ -138,7 +142,9 @@ export class AuditRun extends Base.Base.extend<AuditRun>("AuditRun")({
 export const CreateAuditRun = AuditRun.pipe(Schema.pick("auditId", "assessmentMethodId"));
 export type CreateAuditRun = typeof CreateAuditRun.Type;
 
-export const makeRun = Effect.fn(function* (input: CreateAuditRun) {
+export type CreateAuditRunInput = CreateAuditRun & { ticket: Base.Ticket };
+
+export const makeRun = Effect.fn(function* (input: CreateAuditRunInput) {
   const base = yield* Base.makeBase();
 
   return AuditRun.make({

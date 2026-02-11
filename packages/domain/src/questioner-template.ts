@@ -43,6 +43,7 @@ export const questionerTemplateId = Effect.fn(function* () {
 
 export class QuestionerTemplate extends Base.Base.extend<QuestionerTemplate>("QuestionerTemplate")({
   id: QuestionerTemplateId,
+  ticket: Base.Ticket,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
   questions: Schema.Array(QuestionerQuestion),
@@ -57,6 +58,8 @@ export const CreateQuestionerTemplate = Schema.mutable(
 );
 export type CreateQuestionerTemplate = typeof CreateQuestionerTemplate.Type;
 
+export type CreateQuestionerTemplateInput = CreateQuestionerTemplate & { ticket: Base.Ticket };
+
 export const UpdateQuestionerTemplate = Schema.mutable(
   Schema.Struct({
     name: Schema.optional(Schema.String),
@@ -66,7 +69,7 @@ export const UpdateQuestionerTemplate = Schema.mutable(
 );
 export type UpdateQuestionerTemplate = typeof UpdateQuestionerTemplate.Type;
 
-export const make = Effect.fn(function* (input: CreateQuestionerTemplate) {
+export const make = Effect.fn(function* (input: CreateQuestionerTemplateInput) {
   const base = yield* Base.makeBase();
   const questions = input.questions ?? [];
 
@@ -86,6 +89,7 @@ export const make = Effect.fn(function* (input: CreateQuestionerTemplate) {
     name: input.name,
     description: input.description,
     questions,
+    ticket: input.ticket,
     ...base,
   });
 });
@@ -113,6 +117,7 @@ export const update = Effect.fn(function* (
     ...input,
     questions,
     ...base,
+    ticket: model.ticket,
   });
 });
 

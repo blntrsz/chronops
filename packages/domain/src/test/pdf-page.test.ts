@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Pdf from "../pdf";
 import * as PdfPage from "../pdf-page";
 import { makeTestRuntime, snapshot } from "./runtime";
@@ -13,6 +14,7 @@ describe("PdfPage", () => {
       Effect.gen(function* () {
         const pdfId = Pdf.PdfId.make("pdf_01TEST999");
         const created = yield* PdfPage.make({
+          ticket: Base.Ticket.make("PG-1"),
           pdfId,
           pageNumber: 1,
           storageKey: "key",
@@ -34,6 +36,7 @@ describe("PdfPage", () => {
             "revisionId": "01TEST000",
             "storageKey": "key",
             "storageProvider": "s3",
+            "ticket": "PG-1",
             "textContent": null,
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -53,6 +56,7 @@ describe("PdfPage", () => {
             "revisionId": "01TEST002",
             "storageKey": "key",
             "storageProvider": "s3",
+            "ticket": "PG-1",
             "textContent": "text",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -72,6 +76,7 @@ describe("PdfPage", () => {
             "revisionId": "01TEST003",
             "storageKey": "key",
             "storageProvider": "s3",
+            "ticket": "PG-1",
             "textContent": "text",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

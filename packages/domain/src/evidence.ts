@@ -31,6 +31,7 @@ export type EvidenceRetentionDays = typeof EvidenceRetentionDays.Type;
 
 export class Evidence extends Base.Base.extend<Evidence>("Evidence")({
   id: EvidenceId,
+  ticket: Base.Ticket,
   title: Schema.String,
   description: Schema.NullOr(Schema.String),
   controlId: Schema.NullOr(Control.ControlId),
@@ -64,6 +65,8 @@ export const CreateEvidence = Evidence.pipe(
 );
 export type CreateEvidence = typeof CreateEvidence.Type;
 
+export type CreateEvidenceInput = CreateEvidence & { ticket: Base.Ticket };
+
 export const UpdateEvidence = Evidence.pipe(
   Schema.pick(
     "title",
@@ -92,7 +95,7 @@ export const EvidenceTemplate = Workflow.WorkflowTemplate.make({
 
 export type EvidenceEvent = Workflow.EventOf<typeof EvidenceTemplate>;
 
-export const make = Effect.fn(function* (input: CreateEvidence) {
+export const make = Effect.fn(function* (input: CreateEvidenceInput) {
   const base = yield* Base.makeBase();
 
   return Evidence.make({

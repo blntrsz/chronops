@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as AssessmentTemplate from "../assessment-template";
 import * as Control from "../control";
 import { makeTestRuntime, snapshot } from "./runtime";
@@ -13,6 +14,7 @@ describe("AssessmentTemplate", () => {
       Effect.gen(function* () {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const created = yield* AssessmentTemplate.make({
+          ticket: Base.Ticket.make("AST-1"),
           controlId,
           name: "Quarterly access review",
           description: null,
@@ -36,6 +38,7 @@ describe("AssessmentTemplate", () => {
             "orgId": "org_1",
             "revisionId": "01TEST000",
             "status": "draft",
+            "ticket": "AST-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -54,6 +57,7 @@ describe("AssessmentTemplate", () => {
             "orgId": "org_1",
             "revisionId": "01TEST002",
             "status": "active",
+            "ticket": "AST-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -72,6 +76,7 @@ describe("AssessmentTemplate", () => {
             "orgId": "org_1",
             "revisionId": "01TEST003",
             "status": "active",
+            "ticket": "AST-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }

@@ -38,6 +38,7 @@ export const assessmentTemplateId = Effect.fn(function* () {
 
 export class AssessmentTemplate extends Base.Base.extend<AssessmentTemplate>("AssessmentTemplate")({
   id: AssessmentTemplateId,
+  ticket: Base.Ticket,
   controlId: Control.ControlId,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
@@ -49,13 +50,15 @@ export const CreateAssessmentTemplate = AssessmentTemplate.pipe(
 );
 export type CreateAssessmentTemplate = typeof CreateAssessmentTemplate.Type;
 
+export type CreateAssessmentTemplateInput = CreateAssessmentTemplate & { ticket: Base.Ticket };
+
 export const UpdateAssessmentTemplate = AssessmentTemplate.pipe(
   Schema.pick("name", "description", "status"),
   Schema.partial,
 );
 export type UpdateAssessmentTemplate = typeof UpdateAssessmentTemplate.Type;
 
-export const make = Effect.fn(function* (input: CreateAssessmentTemplate) {
+export const make = Effect.fn(function* (input: CreateAssessmentTemplateInput) {
   const base = yield* Base.makeBase();
 
   return AssessmentTemplate.make({

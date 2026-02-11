@@ -37,6 +37,7 @@ export type WorkflowStatus = typeof WorkflowStatus.Type;
  */
 export class Framework extends Base.Base.extend<Framework>("Framework")({
   id: FrameworkId,
+  ticket: Base.Ticket,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
   version: Schema.NullOr(SemVer),
@@ -51,6 +52,8 @@ export const Event = {
 
 export const CreateFramework = Framework.pipe(Schema.pick("name", "description", "version"));
 export type CreateFramework = typeof CreateFramework.Type;
+
+export type CreateFrameworkInput = CreateFramework & { ticket: Base.Ticket };
 
 export const UpdateFramework = CreateFramework.pipe(Schema.partial);
 export type UpdateFramework = typeof UpdateFramework.Type;
@@ -75,7 +78,7 @@ export type WorkflowEvent = Workflow.EventOf<typeof FrameworkTemplate>;
  * Create a new Framework
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreateFramework) {
+export const make = Effect.fn(function* (input: CreateFrameworkInput) {
   const base = yield* Base.makeBase();
 
   return Framework.make({

@@ -1,9 +1,10 @@
-import { Actor, EntityType, Event, QuestionerTemplate } from "@chronops/domain";
+import { Actor, Base, EntityType, Event, QuestionerTemplate } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../../common/repository";
 import { EventService } from "../../common/service/event-service";
 import { Database } from "../../db";
+import { TicketService } from "../../ticket/service";
 
 const stringifyQuestions = (questions: readonly QuestionerTemplate.QuestionerQuestion[]) =>
   JSON.stringify([...questions]);
@@ -25,6 +26,7 @@ export class QuestionerTemplateService extends Effect.Service<QuestionerTemplate
     effect: Effect.gen(function* () {
       const { use, tables } = yield* Database;
       const eventService = yield* EventService;
+      const ticketService = yield* TicketService;
 
       const toModel = (model: typeof tables.questionerTemplate.$inferSelect) =>
         QuestionerTemplate.QuestionerTemplate.make({
@@ -89,7 +91,12 @@ export class QuestionerTemplateService extends Effect.Service<QuestionerTemplate
       });
 
       const insert = Effect.fn(function* (input: QuestionerTemplate.CreateQuestionerTemplate) {
-        const model = yield* QuestionerTemplate.make(input);
+        const actor = yield* Actor.Actor;
+        const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("QST"));
+        const model = yield* QuestionerTemplate.make({
+          ...input,
+          ticket,
+        } as QuestionerTemplate.CreateQuestionerTemplateInput);
         yield* use((db) => db.insert(tables.questionerTemplate).values(toInsert(model)));
         const event = yield* Event.make({
           name: QuestionerTemplate.Event.created,

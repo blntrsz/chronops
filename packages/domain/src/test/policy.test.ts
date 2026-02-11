@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Control from "../control";
 import * as Policy from "../policy";
 import * as Workflow from "../workflow";
@@ -14,6 +15,7 @@ describe("Policy", () => {
       Effect.gen(function* () {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const created = yield* Policy.make({
+          ticket: Base.Ticket.make("POL-1"),
           title: "Access control policy",
           description: null,
           version: "1.0.0",
@@ -42,6 +44,7 @@ describe("Policy", () => {
             "reviewFrequency": "annual",
             "revisionId": "01TEST000",
             "status": "draft",
+            "ticket": "POL-1",
             "title": "Access control policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -65,6 +68,7 @@ describe("Policy", () => {
             "reviewFrequency": "annual",
             "revisionId": "01TEST002",
             "status": "active",
+            "ticket": "POL-1",
             "title": "Access control policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -88,6 +92,7 @@ describe("Policy", () => {
             "reviewFrequency": "annual",
             "revisionId": "01TEST003",
             "status": "active",
+            "ticket": "POL-1",
             "title": "Access control policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

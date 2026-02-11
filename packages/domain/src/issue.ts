@@ -35,6 +35,7 @@ export type IssueType = typeof IssueType.Type;
 
 export class Issue extends Base.Base.extend<Issue>("Issue")({
   id: IssueId,
+  ticket: Base.Ticket,
   title: Schema.String,
   description: Schema.NullOr(Schema.String),
   type: IssueType,
@@ -68,6 +69,8 @@ export const CreateIssue = Issue.pipe(
 );
 export type CreateIssue = typeof CreateIssue.Type;
 
+export type CreateIssueInput = CreateIssue & { ticket: Base.Ticket };
+
 export const UpdateIssue = Issue.pipe(
   Schema.pick(
     "title",
@@ -97,7 +100,7 @@ export const IssueTemplate = Workflow.WorkflowTemplate.make({
 
 export type IssueEvent = Workflow.EventOf<typeof IssueTemplate>;
 
-export const make = Effect.fn(function* (input: CreateIssue) {
+export const make = Effect.fn(function* (input: CreateIssueInput) {
   const base = yield* Base.makeBase();
 
   return Issue.make({

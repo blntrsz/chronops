@@ -1,14 +1,16 @@
-import { Actor, AssessmentTemplate, Audit, EntityType, Event } from "@chronops/domain";
+import { Actor, AssessmentTemplate, Audit, Base, EntityType, Event } from "@chronops/domain";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
 import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
+import { TicketService } from "../ticket/service";
 
 export class AuditService extends Effect.Service<AuditService>()("AuditService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;
+    const ticketService = yield* TicketService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Audit.AuditId>) {
       const actor = yield* Actor.Actor;
@@ -71,7 +73,12 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
     });
 
     const insert = Effect.fn(function* (input: Audit.CreateAudit) {
-      const model = yield* Audit.make(input);
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("AUD"));
+      const model = yield* Audit.make({
+        ...input,
+        ticket,
+      } as Audit.CreateAuditInput);
       yield* use((db) => db.insert(tables.audit).values(model));
       const event = yield* Event.make({
         name: Audit.Event.created,
@@ -186,7 +193,12 @@ export class AuditService extends Effect.Service<AuditService>()("AuditService",
     });
 
     const insertRun = Effect.fn(function* (input: Audit.CreateAuditRun) {
-      const model = yield* Audit.makeRun(input);
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("ADR"));
+      const model = yield* Audit.makeRun({
+        ...input,
+        ticket,
+      } as Audit.CreateAuditRunInput);
       yield* use((db) => db.insert(tables.auditRun).values(model));
       const event = yield* Event.make({
         name: Audit.Event.runCreated,

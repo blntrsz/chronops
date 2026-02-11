@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Pdf from "../pdf";
 import { makeTestRuntime, snapshot } from "./runtime";
 
@@ -11,6 +12,7 @@ describe("Pdf", () => {
     runTest(
       Effect.gen(function* () {
         const created = yield* Pdf.make({
+          ticket: Base.Ticket.make("PDF-1"),
           title: "Policy",
           filename: "policy.pdf",
           fileSize: 100,
@@ -41,6 +43,7 @@ describe("Pdf", () => {
             "status": "uploaded",
             "storageKey": "key",
             "storageProvider": "local",
+            "ticket": "PDF-1",
             "title": "Policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -64,6 +67,7 @@ describe("Pdf", () => {
             "status": "processing",
             "storageKey": "key",
             "storageProvider": "local",
+            "ticket": "PDF-1",
             "title": "Policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -87,6 +91,7 @@ describe("Pdf", () => {
             "status": "ready",
             "storageKey": "key",
             "storageProvider": "local",
+            "ticket": "PDF-1",
             "title": "Policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -110,6 +115,7 @@ describe("Pdf", () => {
             "status": "failed",
             "storageKey": "key",
             "storageProvider": "local",
+            "ticket": "PDF-1",
             "title": "Policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -133,6 +139,7 @@ describe("Pdf", () => {
             "status": "ready",
             "storageKey": "key",
             "storageProvider": "local",
+            "ticket": "PDF-1",
             "title": "Policy",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

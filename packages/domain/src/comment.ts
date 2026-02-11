@@ -35,6 +35,7 @@ export type CommentEntityId = typeof CommentEntityId.Type;
  */
 export class Comment extends Base.Base.extend<Comment>("Comment")({
   id: CommentId,
+  ticket: Base.Ticket,
   entityId: CommentEntityId,
   body: Schema.String,
 }) {}
@@ -48,6 +49,8 @@ export const Event = {
 export const CreateComment = Comment.pipe(Schema.pick("entityId", "body"));
 export type CreateComment = typeof CreateComment.Type;
 
+export type CreateCommentInput = CreateComment & { ticket: Base.Ticket };
+
 export const UpdateComment = Comment.pipe(Schema.pick("body"), Schema.partial);
 export type UpdateComment = typeof UpdateComment.Type;
 
@@ -55,7 +58,7 @@ export type UpdateComment = typeof UpdateComment.Type;
  * Create a new Comment
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreateComment) {
+export const make = Effect.fn(function* (input: CreateCommentInput) {
   const base = yield* Base.makeBase();
   return Comment.make({
     id: yield* commentId(),

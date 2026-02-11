@@ -47,6 +47,7 @@ export type RiskTreatment = typeof RiskTreatment.Type;
 
 export class Risk extends Base.Base.extend<Risk>("Risk")({
   id: RiskId,
+  ticket: Base.Ticket,
   title: Schema.String,
   description: Schema.NullOr(Schema.String),
   status: RiskStatus,
@@ -67,6 +68,8 @@ export const CreateRisk = Risk.pipe(
   Schema.pick("title", "description", "likelihood", "impact", "score", "treatment", "controlId"),
 );
 export type CreateRisk = typeof CreateRisk.Type;
+
+export type CreateRiskInput = CreateRisk & { ticket: Base.Ticket };
 
 export const UpdateRisk = Risk.pipe(
   Schema.pick(
@@ -95,7 +98,7 @@ export const RiskTemplate = Workflow.WorkflowTemplate.make({
 
 export type RiskEvent = Workflow.EventOf<typeof RiskTemplate>;
 
-export const make = Effect.fn(function* (input: CreateRisk) {
+export const make = Effect.fn(function* (input: CreateRiskInput) {
   const base = yield* Base.makeBase();
 
   return Risk.make({

@@ -27,6 +27,7 @@ export const pdfPageId = Effect.fn(function* () {
  */
 export class PdfPage extends Base.Base.extend<PdfPage>("PdfPage")({
   id: PdfPageId,
+  ticket: Base.Ticket,
   pdfId: Pdf.PdfId,
   pageNumber: Schema.Number.pipe(Schema.int(), Schema.greaterThanOrEqualTo(1)),
   textContent: Schema.NullOr(Schema.String),
@@ -53,11 +54,13 @@ export const CreatePdfPage = Schema.Struct({
 });
 export type CreatePdfPage = typeof CreatePdfPage.Type;
 
+export type CreatePdfPageInput = CreatePdfPage & { ticket: Base.Ticket };
+
 /**
  * Create a new PDF page entity.
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreatePdfPage) {
+export const make = Effect.fn(function* (input: CreatePdfPageInput) {
   const base = yield* Base.makeBase();
 
   return PdfPage.make({
@@ -79,6 +82,7 @@ export const updateText = Effect.fn(function* (model: PdfPage, textContent: stri
     ...model,
     textContent,
     ...base,
+    ticket: model.ticket,
   });
 });
 
@@ -92,6 +96,7 @@ export const remove = Effect.fn(function* (model: PdfPage) {
   return PdfPage.make({
     ...model,
     ...base,
+    ticket: model.ticket,
   });
 });
 

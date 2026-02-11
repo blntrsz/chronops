@@ -5,6 +5,18 @@ import * as Actor from "./actor";
 export const RevisionId = Schema.String.pipe(Schema.brand("RevisionId"));
 export type RevisionId = typeof RevisionId.Type;
 
+export const TicketPrefix = Schema.String.pipe(
+  Schema.pattern(/^[A-Z]{2,3}$/),
+  Schema.brand("TicketPrefix"),
+);
+export type TicketPrefix = typeof TicketPrefix.Type;
+
+export const Ticket = Schema.String.pipe(
+  Schema.pattern(/^[A-Z]{2,3}-\d+$/),
+  Schema.brand("Ticket"),
+);
+export type Ticket = typeof Ticket.Type;
+
 export class Base extends Schema.Class<Base>("BaseSchema")({
   createdAt: Schema.DateTimeUtc,
   updatedAt: Schema.DateTimeUtc,

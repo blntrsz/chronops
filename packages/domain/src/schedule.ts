@@ -31,12 +31,15 @@ export type CronExpression = typeof CronExpression.Type;
  */
 export class Schedule extends Base.Base.extend<Schedule>("Schedule")({
   id: ScheduleId,
+  ticket: Base.Ticket,
   cron: CronExpression,
   triggerType: TriggerType,
 }) {}
 
 export const CreateSchedule = Schedule.pipe(Schema.pick("cron", "triggerType"));
 export type CreateSchedule = typeof CreateSchedule.Type;
+
+export type CreateScheduleInput = CreateSchedule & { ticket: Base.Ticket };
 
 export const UpdateSchedule = Schema.partial(Schedule.pipe(Schema.pick("cron", "triggerType")));
 export type UpdateSchedule = typeof UpdateSchedule.Type;
@@ -45,7 +48,7 @@ export type UpdateSchedule = typeof UpdateSchedule.Type;
  * Create a new Schedule
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreateSchedule) {
+export const make = Effect.fn(function* (input: CreateScheduleInput) {
   const base = yield* Base.makeBase();
 
   return Schedule.make({

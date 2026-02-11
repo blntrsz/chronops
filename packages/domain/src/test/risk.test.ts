@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Control from "../control";
 import * as Risk from "../risk";
 import * as Workflow from "../workflow";
@@ -14,6 +15,7 @@ describe("Risk", () => {
       Effect.gen(function* () {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const created = yield* Risk.make({
+          ticket: Base.Ticket.make("RSK-1"),
           title: "Third-party outage",
           description: null,
           likelihood: "medium",
@@ -40,6 +42,7 @@ describe("Risk", () => {
             "revisionId": "01TEST000",
             "score": 10,
             "status": "open",
+            "ticket": "RSK-1",
             "title": "Third-party outage",
             "treatment": "mitigate",
             "updatedAt": "2024-01-01T00:00:00.000Z",
@@ -62,6 +65,7 @@ describe("Risk", () => {
             "revisionId": "01TEST002",
             "score": 6,
             "status": "mitigated",
+            "ticket": "RSK-1",
             "title": "Third-party outage",
             "treatment": "mitigate",
             "updatedAt": "2024-01-01T00:00:00.000Z",
@@ -84,6 +88,7 @@ describe("Risk", () => {
             "revisionId": "01TEST003",
             "score": 6,
             "status": "mitigated",
+            "ticket": "RSK-1",
             "title": "Third-party outage",
             "treatment": "mitigate",
             "updatedAt": "2024-01-01T00:00:00.000Z",

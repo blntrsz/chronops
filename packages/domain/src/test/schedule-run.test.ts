@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Schedule from "../schedule";
 import * as ScheduleRun from "../schedule-run";
 import { makeTestRuntime, snapshot } from "./runtime";
@@ -12,7 +13,10 @@ describe("ScheduleRun", () => {
     runTest(
       Effect.gen(function* () {
         const scheduleId = Schedule.ScheduleId.make("sch_01TEST999");
-        const created = yield* ScheduleRun.make({ scheduleId });
+        const created = yield* ScheduleRun.make({
+          scheduleId,
+          ticket: Base.Ticket.make("SRN-1"),
+        });
         const succeeded = yield* ScheduleRun.markSuccess(created);
         const failed = yield* ScheduleRun.markFailure(created);
 
@@ -28,6 +32,7 @@ describe("ScheduleRun", () => {
             "revisionId": "01TEST000",
             "scheduleId": "sch_01TEST999",
             "status": "in_progress",
+            "ticket": "SRN-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -45,6 +50,7 @@ describe("ScheduleRun", () => {
             "revisionId": "01TEST002",
             "scheduleId": "sch_01TEST999",
             "status": "success",
+            "ticket": "SRN-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -62,6 +68,7 @@ describe("ScheduleRun", () => {
             "revisionId": "01TEST003",
             "scheduleId": "sch_01TEST999",
             "status": "failed",
+            "ticket": "SRN-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }

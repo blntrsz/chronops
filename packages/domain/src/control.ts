@@ -45,6 +45,7 @@ export type ControlTestingFrequency = typeof ControlTestingFrequency.Type;
  */
 export class Control extends Base.Base.extend<Control>("Control")({
   id: ControlId,
+  ticket: Base.Ticket,
   name: Schema.String,
   description: Schema.NullOr(Schema.String),
   frameworkId: FrameworkId,
@@ -62,6 +63,8 @@ export const CreateControl = Control.pipe(
   Schema.pick("name", "description", "frameworkId", "testingFrequency"),
 );
 export type CreateControl = typeof CreateControl.Type;
+
+export type CreateControlInput = CreateControl & { ticket: Base.Ticket };
 
 export const UpdateControl = CreateControl.pipe(Schema.partial);
 export type UpdateControl = typeof UpdateControl.Type;
@@ -86,7 +89,7 @@ export type ControlEvent = Workflow.EventOf<typeof ControlTemplate>;
  * Create a new Control
  * @since 1.0.0
  */
-export const make = Effect.fn(function* (input: CreateControl) {
+export const make = Effect.fn(function* (input: CreateControlInput) {
   const base = yield* Base.makeBase();
 
   return Control.make({
@@ -101,10 +104,7 @@ export const make = Effect.fn(function* (input: CreateControl) {
  * Update an existing Control
  * @since 1.0.0
  */
-export const update = Effect.fn(function* (
-  model: Control,
-  input: UpdateControl,
-) {
+export const update = Effect.fn(function* (model: Control, input: UpdateControl) {
   const base = yield* Base.updateBase();
 
   return Control.make({

@@ -18,6 +18,7 @@ import { auditRunTable, auditTable } from "./audit/sql";
 import { questionerTemplateTable } from "./questioner/template/sql";
 import { questionerInstanceTable } from "./questioner/instance/sql";
 import * as auth from "./auth/sql";
+import { ticketCounterTable } from "./ticket/sql";
 import { DatabaseError } from "./db-error";
 
 const tables = {
@@ -39,6 +40,7 @@ const tables = {
   auditRun: auditRunTable,
   questionerTemplate: questionerTemplateTable,
   questionerInstance: questionerInstanceTable,
+  ticketCounter: ticketCounterTable,
   ...auth,
 } as const;
 

@@ -1,10 +1,11 @@
-import { Actor, EntityType, Event, Pdf } from "@chronops/domain";
+import { Actor, Base, EntityType, Event, Pdf } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
 import { EventService } from "../common/service/event-service";
 import { StorageService } from "../storage/service";
 import * as PdfPageService from "../pdf-page/service";
+import { TicketService } from "../ticket/service";
 
 /**
  * Service for managing PDF documents and their processing lifecycle.
@@ -17,6 +18,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
     const storage = yield* StorageService;
     const pdfPageService = yield* PdfPageService.PdfPageService;
     const eventService = yield* EventService;
+    const ticketService = yield* TicketService;
 
     /**
      * Get a PDF by its ID.
@@ -47,7 +49,9 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @category service-method
      */
     const getUploadUrl = Effect.fn(function* (input: Schema.Schema.Type<typeof Pdf.CreatePdf>) {
-      const model = yield* Pdf.make(input);
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("PDF"));
+      const model = yield* Pdf.make({ ...input, ticket } as Pdf.CreatePdfInput);
       yield* use((db) => db.insert(tables.pdf).values(model));
       const event = yield* Event.make({
         name: Pdf.Event.created,

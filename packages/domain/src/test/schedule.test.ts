@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Schedule from "../schedule";
 import { makeTestRuntime, snapshot } from "./runtime";
 
@@ -11,6 +12,7 @@ describe("Schedule", () => {
     runTest(
       Effect.gen(function* () {
         const created = yield* Schedule.make({
+          ticket: Base.Ticket.make("SCH-1"),
           cron: Schedule.CronExpression.make("0 0 * * *"),
           triggerType: "once",
         });
@@ -27,6 +29,7 @@ describe("Schedule", () => {
             "id": "sch_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST000",
+            "ticket": "SCH-1",
             "triggerType": "once",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -43,6 +46,7 @@ describe("Schedule", () => {
             "id": "sch_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST002",
+            "ticket": "SCH-1",
             "triggerType": "forever",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
@@ -59,6 +63,7 @@ describe("Schedule", () => {
             "id": "sch_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST003",
+            "ticket": "SCH-1",
             "triggerType": "forever",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",

@@ -1,10 +1,11 @@
-import { Actor, EntityType, Event, Pdf, PdfPage } from "@chronops/domain";
+import { Actor, Base, EntityType, Event, Pdf, PdfPage } from "@chronops/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Database } from "../db";
 import { EventService } from "../common/service/event-service";
 import { StorageService } from "../storage/service";
 import { resolvePDFJS } from "pdfjs-serverless";
+import { TicketService } from "../ticket/service";
 
 /**
  * Service for managing PDF page content and text extraction.
@@ -16,6 +17,7 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
     const { use, tables } = yield* Database;
     const storage = yield* StorageService;
     const eventService = yield* EventService;
+    const ticketService = yield* TicketService;
 
     /**
      * Get a specific page by PDF ID and page number.
@@ -130,12 +132,15 @@ export class PdfPageService extends Effect.Service<PdfPageService>()("PdfPageSer
                 new Error(`Failed to extract text from page ${pageNum}: ${error}`),
             });
 
+            const actor = yield* Actor.Actor;
+            const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("PG"));
             const pdfPage = yield* PdfPage.make({
               pdfId: pdf.id,
               pageNumber: pageNum,
               storageKey: `${pdf.storageKey}/page-${pageNum}`,
               storageProvider: pdf.storageProvider,
-            });
+              ticket,
+            } as PdfPage.CreatePdfPageInput);
 
             const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
 

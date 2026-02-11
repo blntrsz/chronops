@@ -32,6 +32,7 @@ export type PolicyReviewFrequency = typeof PolicyReviewFrequency.Type;
 
 export class Policy extends Base.Base.extend<Policy>("Policy")({
   id: PolicyId,
+  ticket: Base.Ticket,
   title: Schema.String,
   description: Schema.NullOr(Schema.String),
   status: PolicyStatus,
@@ -63,6 +64,8 @@ export const CreatePolicy = Policy.pipe(
 );
 export type CreatePolicy = typeof CreatePolicy.Type;
 
+export type CreatePolicyInput = CreatePolicy & { ticket: Base.Ticket };
+
 export const UpdatePolicy = Policy.pipe(
   Schema.pick(
     "title",
@@ -90,7 +93,7 @@ export const PolicyTemplate = Workflow.WorkflowTemplate.make({
 
 export type PolicyEvent = Workflow.EventOf<typeof PolicyTemplate>;
 
-export const make = Effect.fn(function* (input: CreatePolicy) {
+export const make = Effect.fn(function* (input: CreatePolicyInput) {
   const base = yield* Base.makeBase();
 
   return Policy.make({

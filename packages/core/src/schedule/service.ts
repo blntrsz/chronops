@@ -1,11 +1,13 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { DateTime, Effect } from "effect";
-import { Schedule, ScheduleRun } from "@chronops/domain";
+import { Actor, Base, Schedule, ScheduleRun } from "@chronops/domain";
 import { Database } from "../db";
+import { TicketService } from "../ticket/service";
 
 export class ScheduleService extends Effect.Service<ScheduleService>()("ScheduleService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
+    const ticketService = yield* TicketService;
 
     const listDueSchedules = Effect.fn(function* () {
       const now = yield* DateTime.now;
@@ -44,7 +46,12 @@ export class ScheduleService extends Effect.Service<ScheduleService>()("Schedule
       schedule: Schedule.Schedule,
       callback: Effect.Effect<A, E, R>,
     ) {
-      const run = yield* ScheduleRun.make({ scheduleId: schedule.id });
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("SRN"));
+      const run = yield* ScheduleRun.make({
+        scheduleId: schedule.id,
+        ticket,
+      } as ScheduleRun.CreateScheduleRunInput);
       yield* use((db) => db.insert(tables.scheduleRun).values(run));
 
       const result = yield* Effect.either(callback);

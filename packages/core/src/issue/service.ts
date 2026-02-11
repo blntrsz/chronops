@@ -1,6 +1,7 @@
 import {
   Actor,
   AssessmentInstance,
+  Base,
   Control,
   EntityType,
   Event,
@@ -12,11 +13,13 @@ import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
 import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
+import { TicketService } from "../ticket/service";
 
 export class IssueService extends Effect.Service<IssueService>()("IssueService", {
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;
+    const ticketService = yield* TicketService;
 
     const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Issue.IssueId>) {
       const actor = yield* Actor.Actor;
@@ -99,7 +102,9 @@ export class IssueService extends Effect.Service<IssueService>()("IssueService",
     });
 
     const insert = Effect.fn(function* (input: Issue.CreateIssue) {
-      const model = yield* Issue.make(input);
+      const actor = yield* Actor.Actor;
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("ISS"));
+      const model = yield* Issue.make({ ...input, ticket } as Issue.CreateIssueInput);
       yield* use((db) => db.insert(tables.issue).values(model));
       const event = yield* Event.make({
         name: Issue.Event.created,

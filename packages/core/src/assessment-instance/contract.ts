@@ -1,8 +1,4 @@
-import {
-  AssessmentInstance,
-  AssessmentTemplate,
-  Control,
-} from "@chronops/domain";
+import { AssessmentInstance, AssessmentTemplate, Control } from "@chronops/domain";
 import { Rpc, RpcGroup } from "@effect/rpc";
 import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";

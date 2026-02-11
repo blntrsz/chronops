@@ -91,6 +91,4 @@ const RpcRouter = RpcServer.layerHttpRouter({
 
 const AllRoutes = RpcRouter.pipe(Layer.provide(Logger.pretty));
 
-export const { handler, dispose } = HttpLayerRouter.toWebHandler(
-  AllRoutes as any,
-);
+export const { handler, dispose } = HttpLayerRouter.toWebHandler(AllRoutes as any);

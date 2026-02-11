@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Control from "../control";
 import * as Issue from "../issue";
 import * as Workflow from "../workflow";
@@ -14,6 +15,7 @@ describe("Issue", () => {
       Effect.gen(function* () {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const created = yield* Issue.make({
+          ticket: Base.Ticket.make("ISS-1"),
           title: "Finding A",
           description: null,
           type: "finding",
@@ -44,6 +46,7 @@ describe("Issue", () => {
             "revisionId": "01TEST000",
             "severity": "high",
             "status": "open",
+            "ticket": "ISS-1",
             "title": "Finding A",
             "type": "finding",
             "updatedAt": "2024-01-01T00:00:00.000Z",
@@ -68,6 +71,7 @@ describe("Issue", () => {
             "revisionId": "01TEST002",
             "severity": "high",
             "status": "in_progress",
+            "ticket": "ISS-1",
             "title": "Finding A",
             "type": "finding",
             "updatedAt": "2024-01-01T00:00:00.000Z",
@@ -92,6 +96,7 @@ describe("Issue", () => {
             "revisionId": "01TEST003",
             "severity": "high",
             "status": "in_progress",
+            "ticket": "ISS-1",
             "title": "Finding A",
             "type": "finding",
             "updatedAt": "2024-01-01T00:00:00.000Z",

@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as Comment from "../comment";
 import * as Framework from "../framework";
 import { makeTestRuntime, snapshot } from "./runtime";
@@ -13,6 +14,7 @@ describe("Comment", () => {
       Effect.gen(function* () {
         const frameworkId = Framework.FrameworkId.make("fwk_01TEST999");
         const created = yield* Comment.make({
+          ticket: Base.Ticket.make("CMT-1"),
           entityId: frameworkId,
           body: "hello",
         });
@@ -30,6 +32,7 @@ describe("Comment", () => {
             "id": "cmt_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST000",
+            "ticket": "CMT-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -46,6 +49,7 @@ describe("Comment", () => {
             "id": "cmt_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST002",
+            "ticket": "CMT-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -62,6 +66,7 @@ describe("Comment", () => {
             "id": "cmt_01TEST001",
             "orgId": "org_1",
             "revisionId": "01TEST003",
+            "ticket": "CMT-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }

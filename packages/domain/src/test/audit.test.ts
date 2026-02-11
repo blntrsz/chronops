@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { describe } from "vitest";
 import { expect, it } from "@effect/vitest";
+import * as Base from "../base";
 import * as AssessmentTemplate from "../assessment-template";
 import * as Audit from "../audit";
 import * as Control from "../control";
@@ -14,6 +15,7 @@ describe("Audit", () => {
       Effect.gen(function* () {
         const assessmentMethodId = AssessmentTemplate.AssessmentTemplateId.make("ast_01TEST999");
         const created = yield* Audit.make({
+          ticket: Base.Ticket.make("AUD-1"),
           name: "SOC 2 FY25",
           description: null,
           scope: "Security + Availability",
@@ -36,6 +38,7 @@ describe("Audit", () => {
             "revisionId": "01TEST000",
             "scope": "Security + Availability",
             "status": "draft",
+            "ticket": "AUD-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -55,6 +58,7 @@ describe("Audit", () => {
             "revisionId": "01TEST002",
             "scope": "Security + Availability",
             "status": "active",
+            "ticket": "AUD-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -74,6 +78,7 @@ describe("Audit", () => {
             "revisionId": "01TEST003",
             "scope": "Security + Availability",
             "status": "active",
+            "ticket": "AUD-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -87,17 +92,20 @@ describe("Audit", () => {
       Effect.gen(function* () {
         const controlId = Control.ControlId.make("ctr_01TEST999");
         const template = yield* AssessmentTemplate.make({
+          ticket: Base.Ticket.make("AST-1"),
           controlId,
           name: "Access review",
           description: null,
         });
         const audit = yield* Audit.make({
+          ticket: Base.Ticket.make("AUD-2"),
           name: "SOC 2 FY25",
           description: null,
           scope: null,
           assessmentMethodId: template.id,
         });
         const run = yield* Audit.makeRun({
+          ticket: Base.Ticket.make("ADR-1"),
           auditId: audit.id,
           assessmentMethodId: template.id,
         });
@@ -118,6 +126,7 @@ describe("Audit", () => {
             "revisionId": "01TEST004",
             "startedAt": null,
             "status": "planned",
+            "ticket": "ADR-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -137,6 +146,7 @@ describe("Audit", () => {
             "revisionId": "01TEST006",
             "startedAt": "2024-01-01T00:00:00.000Z",
             "status": "in_progress",
+            "ticket": "ADR-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
@@ -156,6 +166,7 @@ describe("Audit", () => {
             "revisionId": "01TEST007",
             "startedAt": "2024-01-01T00:00:00.000Z",
             "status": "completed",
+            "ticket": "ADR-1",
             "updatedAt": "2024-01-01T00:00:00.000Z",
             "updatedBy": "mem_1",
           }
