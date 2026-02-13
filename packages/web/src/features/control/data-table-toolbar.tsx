@@ -20,6 +20,7 @@ interface DataTableToolbarProps<TData> {
   placeholder?: string;
   filterColumnId?: string;
   showFrameworkFilter?: boolean;
+  showFilters?: boolean;
 }
 
 export function DataTableToolbar<TData>({
@@ -27,6 +28,7 @@ export function DataTableToolbar<TData>({
   placeholder = "Filter...",
   filterColumnId = "name",
   showFrameworkFilter = true,
+  showFilters = true,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -37,47 +39,53 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center gap-2">
-        <Input
-          placeholder={placeholder}
-          value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn(filterColumnId)?.setFilterValue(event.target.value)}
-          className="h-8 w-[150px] lg:w-[250px]"
-        />
+        {showFilters ? (
+          <>
+            <Input
+              placeholder={placeholder}
+              value={(table.getColumn(filterColumnId)?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn(filterColumnId)?.setFilterValue(event.target.value)
+              }
+              className="h-8 w-[150px] lg:w-[250px]"
+            />
 
-        {showFrameworkFilter ? (
-          <Select
-            value={(frameworkIdCol?.getFilterValue() as string | undefined) ?? "__all"}
-            onValueChange={(value) => {
-              if (!frameworkIdCol) return;
-              const nextFrameworkId = value === "__all" ? undefined : value;
-              frameworkIdCol.setFilterValue(nextFrameworkId);
-            }}
-          >
-            <SelectTrigger className="h-8 w-[180px]">
-              <SelectValue placeholder="Framework" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__all">All frameworks</SelectItem>
-              {frameworkOptions.map((f) => (
-                <SelectItem key={f.id} value={f.id}>
-                  {f.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : null}
+            {showFrameworkFilter ? (
+              <Select
+                value={(frameworkIdCol?.getFilterValue() as string | undefined) ?? "__all"}
+                onValueChange={(value) => {
+                  if (!frameworkIdCol) return;
+                  const nextFrameworkId = value === "__all" ? undefined : value;
+                  frameworkIdCol.setFilterValue(nextFrameworkId);
+                }}
+              >
+                <SelectTrigger className="h-8 w-[180px]">
+                  <SelectValue placeholder="Framework" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all">All frameworks</SelectItem>
+                  {frameworkOptions.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : null}
 
-        {isFiltered ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              table.resetColumnFilters();
-            }}
-          >
-            Reset
-            <X />
-          </Button>
+            {isFiltered ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  table.resetColumnFilters();
+                }}
+              >
+                Reset
+                <X />
+              </Button>
+            ) : null}
+          </>
         ) : null}
       </div>
       <div className="flex items-center gap-2">

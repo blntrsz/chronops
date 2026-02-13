@@ -26,13 +26,15 @@ import {
 import { DataTablePagination } from "@/features/control/data-table-pagination";
 import { DataTableToolbar } from "@/features/control/data-table-toolbar";
 
-type DataTableToolbarVariant = "default" | "noFrameworkFilter";
+type DataTableToolbarVariant = "default" | "noFrameworkFilter" | "noFilters";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   frameworkId?: string;
   toolbarVariant?: DataTableToolbarVariant;
+  filterColumnId?: string;
+  filterPlaceholder?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,6 +42,8 @@ export function DataTable<TData, TValue>({
   data,
   frameworkId,
   toolbarVariant = "default",
+  filterColumnId,
+  filterPlaceholder,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -83,7 +87,10 @@ export function DataTable<TData, TValue>({
     <div className="flex flex-col gap-4">
       <DataTableToolbar
         table={table}
-        showFrameworkFilter={toolbarVariant !== "noFrameworkFilter"}
+        showFrameworkFilter={toolbarVariant === "default"}
+        showFilters={toolbarVariant !== "noFilters"}
+        filterColumnId={filterColumnId}
+        placeholder={filterPlaceholder}
       />
       <div className="overflow-hidden rounded-md border">
         <Table>

@@ -11,6 +11,8 @@ import {
   AlertTriangle,
   FileText,
   ClipboardList,
+  ShieldAlert,
+  FileSearch,
 } from "lucide-react";
 import * as React from "react";
 
@@ -40,7 +42,9 @@ type NavItem = {
     | "/org/$slug/issue"
     | "/org/$slug/assessment"
     | "/org/$slug/policy"
-    | "/org/$slug/audit";
+    | "/org/$slug/audit"
+    | "/org/$slug/risk"
+    | "/org/$slug/evidence";
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
 };
@@ -61,8 +65,10 @@ export function AppSidebar({ className, ...props }: React.ComponentProps<typeof 
     { title: "Controls", to: "/org/$slug/control", icon: SlidersHorizontal },
     { title: "Policies", to: "/org/$slug/policy", icon: FileText },
     { title: "Issues", to: "/org/$slug/issue", icon: AlertTriangle },
+    { title: "Risks", to: "/org/$slug/risk", icon: ShieldAlert },
     { title: "Assessments", to: "/org/$slug/assessment", icon: ClipboardCheck },
     { title: "Audits", to: "/org/$slug/audit", icon: ClipboardList },
+    { title: "Evidence", to: "/org/$slug/evidence", icon: FileSearch },
   ];
 
   return (

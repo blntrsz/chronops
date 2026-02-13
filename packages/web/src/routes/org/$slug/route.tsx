@@ -1,6 +1,8 @@
 import { CreateControl } from "@/features/control/create-control";
+import { CreateEvidence } from "@/features/evidence/create-evidence";
 import { CreateFramework } from "@/features/framework/create-framework";
 import { CreatePolicy } from "@/features/policy/create-policy";
+import { CreateRisk } from "@/features/risk/create-risk";
 import { authClient } from "@/features/auth/client";
 import { OrgShell } from "@/widgets/sidebar/org-shell";
 import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -37,6 +39,8 @@ function RouteComponent() {
       <CreateFramework />
       <CreateControl />
       <CreatePolicy />
+      <CreateRisk />
+      <CreateEvidence />
       <Outlet />
     </OrgShell>
   );
