@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { AuditContract } from "./contract";
 import { AuditService } from "./service";
 
@@ -22,4 +22,4 @@ export const AuditHandler = AuditContract.toLayer(
       AuditRunFail: ({ id }) => service.failRun(id),
     };
   }),
-);
+).pipe(Layer.provide(AuditService.Default));

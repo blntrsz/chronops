@@ -1,4 +1,4 @@
-import { Context, DateTime, Effect, Schema } from "effect";
+import { DateTime, Effect, Schema } from "effect";
 import { ulid } from "ulid";
 import * as Actor from "./actor";
 
@@ -32,16 +32,14 @@ export class Base extends Schema.Class<Base>("BaseSchema")({
 
 export const buildId = (prefix: string, createId: () => string) => `${prefix}_${createId()}`;
 
-export class ULID extends Context.Tag("ULID")<
-  ULID,
-  {
-    createId: () => string;
-  }
->() {}
-
-export const ULIDLayer = ULID.of({
-  createId: ulid,
-});
+export class ULID extends Effect.Service<ULID>()("ULID", {
+  // oxlint-disable-next-line eslint(require-yield)
+  effect: Effect.gen(function* () {
+    return {
+      createId: ulid,
+    };
+  }),
+}) {}
 
 export class NotFoundError extends Schema.TaggedError<NotFoundError>("NotFoundError")(
   "NotFoundError",

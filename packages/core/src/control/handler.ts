@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { ControlContract } from "./contract";
 import { ControlService } from "./service";
 
@@ -14,4 +14,4 @@ export const ControlHandler = ControlContract.toLayer(
       ControlRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(ControlService.Default));

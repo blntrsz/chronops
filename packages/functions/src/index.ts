@@ -4,7 +4,6 @@ import { Actor, Base } from "@chronops/domain";
 import { Scheduler } from "./scheduler";
 import { ScheduleService } from "@chronops/core/schedule/service";
 import { TicketService } from "@chronops/core/ticket/service";
-import { ulid } from "ulid";
 const program = Effect.gen(function* () {
   const scheduler = yield* Scheduler;
   const result = yield* scheduler.run();
@@ -14,7 +13,7 @@ const program = Effect.gen(function* () {
   Effect.provide(ScheduleService.Default),
   Effect.provide(TicketService.Default),
   Effect.provide(Database.Default),
-  Effect.provideService(Base.ULID, { createId: ulid }),
+  Effect.provide(Base.ULID.Default),
   Effect.provideService(Actor.Actor, {
     memberId: Actor.MemberId.make("system"),
     orgId: Actor.OrgId.make("system"),

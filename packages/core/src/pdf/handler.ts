@@ -1,7 +1,6 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { PdfContract } from "./contract";
 import { PdfService } from "./service";
-import { PdfPageService } from "../pdf-page/service";
 
 /**
  * RPC handler layer for PDF operations.
@@ -11,16 +10,15 @@ import { PdfPageService } from "../pdf-page/service";
  */
 export const PdfHandler = PdfContract.toLayer(
   Effect.gen(function* () {
-    const pdfService = yield* PdfService;
-    const pdfPageService = yield* PdfPageService;
+    const service = yield* PdfService;
 
     return {
-      PdfGetUploadUrl: (payload) => pdfService.getUploadUrl(payload),
-      PdfStartProcessing: ({ pdfId }) => pdfService.startProcessing(pdfId),
-      PdfById: ({ pdfId }) => pdfService.getById(pdfId),
-      PdfPageByNumber: ({ pdfId, pageNumber }) => pdfPageService.getPage(pdfId, pageNumber),
-      PdfPagesList: ({ pdfId }) => pdfPageService.listByPdfId(pdfId),
-      PdfRemove: ({ pdfId }) => pdfService.remove(pdfId),
+      PdfGetUploadUrl: (payload) => service.getUploadUrl(payload),
+      PdfStartProcessing: ({ pdfId }) => service.startProcessing(pdfId),
+      PdfById: ({ pdfId }) => service.getById(pdfId),
+      PdfPageByNumber: ({ pdfId, pageNumber }) => service.getPage(pdfId, pageNumber),
+      PdfPagesList: ({ pdfId }) => service.listByPdfId(pdfId),
+      PdfRemove: ({ pdfId }) => service.remove(pdfId),
     };
   }),
-);
+).pipe(Layer.provide(PdfService.Default));

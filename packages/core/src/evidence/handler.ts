@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { EvidenceContract } from "./contract";
 import { EvidenceService } from "./service";
 
@@ -15,4 +15,4 @@ export const EvidenceHandler = EvidenceContract.toLayer(
       EvidenceRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(EvidenceService.Default));

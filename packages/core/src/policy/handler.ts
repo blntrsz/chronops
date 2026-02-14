@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { PolicyContract } from "./contract";
 import { PolicyService } from "./service";
 
@@ -15,4 +15,4 @@ export const PolicyHandler = PolicyContract.toLayer(
       PolicyRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(PolicyService.Default));

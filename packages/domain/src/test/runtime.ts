@@ -24,7 +24,7 @@ export const makeTestRuntime = () => {
 
   const TestRuntime = ManagedRuntime.make(
     Layer.mergeAll(
-      Layer.succeed(Base.ULID, { createId }),
+      Base.ULID.Default,
       Layer.succeed(Actor.Actor, {
         memberId: Actor.MemberId.make("mem_1"),
         orgId: Actor.OrgId.make("org_1"),

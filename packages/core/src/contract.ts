@@ -5,14 +5,12 @@ import { EvidenceContract } from "./evidence/contract";
 import { EventContract } from "./event/contract";
 import { FrameworkContract } from "./framework/contract";
 import { IssueContract } from "./issue/contract";
-import { PolicyContract } from "./policy/contract";
 import { PdfContract } from "./pdf/contract";
-import { AssessmentTemplateContract } from "./assessment-template/contract";
-import { AssessmentInstanceContract } from "./assessment-instance/contract";
+import { PolicyContract } from "./policy/contract";
+import { AssessmentContract } from "./assessment/contract";
 import { RiskContract } from "./risk/contract";
 import { AuditContract } from "./audit/contract";
-import { QuestionerTemplateContract } from "./questioner/template/contract";
-import { QuestionerInstanceContract } from "./questioner/instance/contract";
+import { QuestionerContract } from "./questioner/contract";
 import { RpcLogger } from "./logger";
 
 export class RpcContract extends RpcGroup.make()
@@ -21,13 +19,11 @@ export class RpcContract extends RpcGroup.make()
   .merge(EvidenceContract)
   .merge(EventContract)
   .merge(CommentContract)
-  .merge(PdfContract)
+  // .merge(PdfContract)
   .merge(IssueContract)
   .merge(PolicyContract)
-  .merge(AssessmentTemplateContract)
-  .merge(AssessmentInstanceContract)
+  .merge(AssessmentContract)
   .merge(RiskContract)
   .merge(AuditContract)
-  .merge(QuestionerTemplateContract)
-  .merge(QuestionerInstanceContract)
+  .merge(QuestionerContract)
   .middleware(RpcLogger) {}

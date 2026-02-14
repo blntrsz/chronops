@@ -2,8 +2,10 @@ import { Actor, Base } from "@chronops/domain";
 import { and, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import { Database } from "../db";
+import { ULID } from "@chronops/domain/src/base";
 
 export class TicketService extends Effect.Service<TicketService>()("TicketService", {
+  dependencies: [Database.Default, ULID.Default],
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
 

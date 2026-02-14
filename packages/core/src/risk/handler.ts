@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { RiskContract } from "./contract";
 import { RiskService } from "./service";
 
@@ -15,4 +15,4 @@ export const RiskHandler = RiskContract.toLayer(
       RiskRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(RiskService.Default));

@@ -1,4 +1,5 @@
 import { Actor, Base, Comment, EntityType, Event } from "@chronops/domain";
+import { ULID } from "@chronops/domain/src/base";
 import { and, count, eq, isNull } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../common/repository";
@@ -7,6 +8,7 @@ import { Database } from "../db";
 import { TicketService } from "../ticket/service";
 
 export class CommentService extends Effect.Service<CommentService>()("CommentService", {
+  dependencies: [ULID.Default, Database.Default, EventService.Default, TicketService.Default],
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;

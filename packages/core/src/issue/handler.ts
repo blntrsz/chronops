@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { IssueContract } from "./contract";
 import { IssueService } from "./service";
 
@@ -27,4 +27,4 @@ export const IssueHandler = IssueContract.toLayer(
       IssueRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(IssueService.Default));

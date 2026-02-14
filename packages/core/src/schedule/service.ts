@@ -1,10 +1,12 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { DateTime, Effect } from "effect";
 import { Actor, Base, Schedule, ScheduleRun } from "@chronops/domain";
+import { ULID } from "@chronops/domain/src/base";
 import { Database } from "../db";
 import { TicketService } from "../ticket/service";
 
 export class ScheduleService extends Effect.Service<ScheduleService>()("ScheduleService", {
+  dependencies: [ULID.Default, Database.Default, TicketService.Default],
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const ticketService = yield* TicketService;

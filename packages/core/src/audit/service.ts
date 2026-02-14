@@ -5,8 +5,10 @@ import { Pagination } from "../common/repository";
 import { EventService } from "../common/service/event-service";
 import { Database } from "../db";
 import { TicketService } from "../ticket/service";
+import { ULID } from "@chronops/domain/src/base";
 
 export class AuditService extends Effect.Service<AuditService>()("AuditService", {
+  dependencies: [Database.Default, ULID.Default, EventService.Default, TicketService.Default],
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
     const eventService = yield* EventService;

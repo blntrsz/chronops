@@ -3,8 +3,10 @@ import { and, count, eq } from "drizzle-orm";
 import { Effect, Schema } from "effect";
 import { Pagination } from "../repository";
 import { Database } from "../../db";
+import { ULID } from "@chronops/domain/src/base";
 
 export class EventService extends Effect.Service<EventService>()("EventService", {
+  dependencies: [Database.Default, ULID.Default],
   effect: Effect.gen(function* () {
     const { use, tables } = yield* Database;
 

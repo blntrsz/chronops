@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { FrameworkContract } from "./contract";
 import { FrameworkService } from "./service";
 
@@ -14,4 +14,4 @@ export const FrameworkHandler = FrameworkContract.toLayer(
       FrameworkRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(FrameworkService.Default));

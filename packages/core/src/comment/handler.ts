@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { CommentContract } from "./contract";
 import { CommentService } from "./service";
 
@@ -14,4 +14,4 @@ export const CommentHandler = CommentContract.toLayer(
       CommentRemove: ({ id }) => service.remove(id),
     };
   }),
-);
+).pipe(Layer.provide(CommentService.Default));

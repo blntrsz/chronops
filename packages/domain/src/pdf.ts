@@ -212,3 +212,32 @@ export class PdfNotFoundError extends Base.NotFoundError {
     });
   }
 }
+
+/**
+ * PDF processing error.
+ * @since 1.0.0
+ * @category errors
+ */
+export class PdfProcessingError extends Schema.TaggedError<PdfProcessingError>("PdfProcessingError")(
+  "PdfProcessingError",
+  {
+    message: Schema.String,
+    pdfId: Schema.optional(PdfId),
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {
+  static fromCause(cause: unknown, pdfId?: PdfId) {
+    return new PdfProcessingError({
+      message: `Failed to process PDF: ${cause}`,
+      pdfId,
+      cause,
+    });
+  }
+
+  static libraryInitFailed(cause: unknown) {
+    return new PdfProcessingError({
+      message: `Failed to initialize PDF library: ${cause}`,
+      cause,
+    });
+  }
+}
