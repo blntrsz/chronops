@@ -5,7 +5,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { db } from "../db";
 
 export const auth = betterAuth({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
