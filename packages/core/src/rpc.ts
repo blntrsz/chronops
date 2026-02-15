@@ -10,7 +10,6 @@ import { EventHandler } from "./event";
 import { FrameworkHandler } from "./framework";
 import { IssueHandler } from "./issue";
 import { PolicyHandler } from "./policy";
-import { PdfHandler } from "./pdf";
 import { RiskHandler } from "./risk";
 import { RpcLoggerLayer } from "./logger";
 import { AssessmentHandler } from "./assessment";
@@ -24,7 +23,6 @@ const HandlersLayer = Layer.mergeAll(
   EvidenceHandler,
   EventHandler,
   CommentHandler,
-  // PdfHandler,
   IssueHandler,
   PolicyHandler,
   AssessmentHandler,

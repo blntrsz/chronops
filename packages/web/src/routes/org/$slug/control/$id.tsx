@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
 import { CreateAssessmentTemplate } from "@/features/assessment/create-template";
 import { CommentsSection } from "@/features/comment/comments-section";
+import { ListRisk } from "@/features/risk/list-risk";
 import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
@@ -162,7 +164,7 @@ export const Route = createFileRoute("/org/$slug/control/$id")({
 });
 
 function RouteComponent() {
-  const { id } = Route.useParams();
+  const { id, slug } = Route.useParams();
   const ctrl = useAtomValue(getControlById(id as never));
   const mutate = useAtomSet(updateControl(), { mode: "promise" });
   const refreshDetail = useAtomRefresh(getControlById(id as never));
@@ -219,27 +221,34 @@ function RouteComponent() {
     return <FieldDescription>Control not found</FieldDescription>;
   }
 
-  const mainContent = (
-    <ControlMainContent
-      id={id}
-      name={name}
-      description={description}
-      onNameChange={setName}
-      onDescriptionChange={setDescription}
-    />
-  );
-
   return (
     <OrgListLayout title={null} action={null} className="gap-0 pr-0">
       <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
         <div className="min-w-0 flex-1">
-          {mainContent}
-          <div className="mt-8">
-            <CreateAssessmentTemplate
-              controlId={id as never}
-              trigger={<Button type="button">Create assessment</Button>}
-            />
-          </div>
+          <Tabs defaultValue="overview" className="flex flex-col gap-6 py-6">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="risks">Risks</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="m-0">
+              <ControlMainContent
+                id={id}
+                name={name}
+                description={description}
+                onNameChange={setName}
+                onDescriptionChange={setDescription}
+              />
+              <div className="mt-8">
+                <CreateAssessmentTemplate
+                  controlId={id as never}
+                  trigger={<Button type="button">Create assessment</Button>}
+                />
+              </div>
+            </TabsContent>
+            <TabsContent value="risks" className="m-0">
+              <ListRisk slug={slug} filter={{ controlId: id as never }} />
+            </TabsContent>
+          </Tabs>
         </div>
         <Sidebar
           id="control-metadata"

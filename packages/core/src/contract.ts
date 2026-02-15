@@ -5,7 +5,6 @@ import { EvidenceContract } from "./evidence/contract";
 import { EventContract } from "./event/contract";
 import { FrameworkContract } from "./framework/contract";
 import { IssueContract } from "./issue/contract";
-import { PdfContract } from "./pdf/contract";
 import { PolicyContract } from "./policy/contract";
 import { AssessmentContract } from "./assessment/contract";
 import { RiskContract } from "./risk/contract";
@@ -19,7 +18,6 @@ export class RpcContract extends RpcGroup.make()
   .merge(EvidenceContract)
   .merge(EventContract)
   .merge(CommentContract)
-  // .merge(PdfContract)
   .merge(IssueContract)
   .merge(PolicyContract)
   .merge(AssessmentContract)
