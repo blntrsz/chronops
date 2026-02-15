@@ -14,13 +14,13 @@ function OrgShellContent({
   children: React.ReactNode;
   className?: string;
 }) {
-  const { left, right } = useAppHeaderSlotsState();
+  const { left, right, breadcrumbLabel } = useAppHeaderSlotsState();
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <AppHeader hasSidebar left={left} right={right} />
+        <AppHeader hasSidebar left={left} right={right} breadcrumbLabel={breadcrumbLabel} />
         <div className={cn("pt-4 px-4", className)}>{children}</div>
       </SidebarInset>
     </SidebarProvider>

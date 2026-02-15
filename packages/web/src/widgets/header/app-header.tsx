@@ -20,6 +20,7 @@ type AppHeaderProps = {
   className?: string;
   left?: React.ReactNode;
   right?: React.ReactNode;
+  breadcrumbLabel?: string;
 };
 
 const SECTION_LABEL: Record<string, string> = {
@@ -29,7 +30,7 @@ const SECTION_LABEL: Record<string, string> = {
   "assessment-instance": "Assessment Instances",
 };
 
-export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps) {
+export function AppHeader({ hasSidebar, className, left, right, breadcrumbLabel }: AppHeaderProps) {
   const { slug } = useParams({ from: "/org/$slug" });
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -89,7 +90,9 @@ export function AppHeader({ hasSidebar, className, left, right }: AppHeaderProps
                     <>
                       <BreadcrumbSeparator />
                       <BreadcrumbItem>
-                        <BreadcrumbPage className="truncate">{maybeId}</BreadcrumbPage>
+                        <BreadcrumbPage className="truncate">
+                          {breadcrumbLabel ?? maybeId}
+                        </BreadcrumbPage>
                       </BreadcrumbItem>
                     </>
                   )}
