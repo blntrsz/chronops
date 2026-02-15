@@ -84,50 +84,6 @@ function ControlHeaderRight({ statusLabel, isMetaOpen, onToggle }: ControlHeader
   );
 }
 
-type ControlMainContentProps = {
-  id: string;
-  name: string;
-  description: string;
-  onNameChange: (value: string) => void;
-  onDescriptionChange: (value: string) => void;
-};
-
-function ControlMainContent({
-  id,
-  name,
-  description,
-  onNameChange,
-  onDescriptionChange,
-}: ControlMainContentProps) {
-  return (
-    <div className="flex flex-col gap-6 py-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <GhostInput
-          value={name}
-          onChange={(e) => onNameChange(e.target.value)}
-          className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
-        />
-        <GhostTextArea
-          value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
-          className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
-          placeholder="Description"
-          rows={1}
-        />
-      </div>
-
-      <div className="space-y-3">
-        <h2 className="text-lg font-semibold">Overview</h2>
-        <p className="text-muted-foreground text-sm">
-          Minimal control dashboard placeholder; add widgets next.
-        </p>
-      </div>
-
-      <CommentsSection entityId={id as never} />
-    </div>
-  );
-}
-
 type ControlMetadataPanelProps = {
   control: ControlModel;
 };
@@ -227,20 +183,34 @@ function RouteComponent() {
   return (
     <OrgListLayout title={null} action={null} className="gap-0 pr-0">
       <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
-        <div className="min-w-0 flex-1">
-          <Tabs defaultValue="overview" className="flex flex-col gap-6 py-6">
+        <div className="min-w-0 flex-1 py-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <GhostInput
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
+            />
+            <GhostTextArea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
+              placeholder="Description"
+              rows={1}
+            />
+          </div>
+          <Tabs defaultValue="overview" className="mt-6 flex flex-col gap-6">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="risks">Risks</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="m-0">
-              <ControlMainContent
-                id={id}
-                name={name}
-                description={description}
-                onNameChange={setName}
-                onDescriptionChange={setDescription}
-              />
+              <div className="space-y-3">
+                <h2 className="text-lg font-semibold">Overview</h2>
+                <p className="text-muted-foreground text-sm">
+                  Minimal control dashboard placeholder; add widgets next.
+                </p>
+              </div>
+              <CommentsSection entityId={id as never} />
               <div className="mt-8">
                 <CreateAssessmentTemplate
                   controlId={id as never}
