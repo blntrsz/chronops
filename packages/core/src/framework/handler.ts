@@ -12,6 +12,10 @@ export const FrameworkHandler = FrameworkContract.toLayer(
       FrameworkList: (payload) => service.list(payload),
       FrameworkUpdate: (payload) => service.update(payload),
       FrameworkRemove: ({ id }) => service.remove(id),
+      FrameworkSummaryList: () => service.summaryList(),
+      AuditFrameworkLink: (payload) => service.linkAudit(payload),
+      AuditFrameworkUnlink: (payload) => service.unlinkAudit(payload),
+      AuditFrameworkList: (payload) => service.listAuditLinks(payload),
     };
   }),
 ).pipe(Layer.provide(FrameworkService.Default));

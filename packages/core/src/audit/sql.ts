@@ -1,5 +1,5 @@
-import { index, pgTable, text, uniqueIndex } from "drizzle-orm/pg-core";
-import { Actor, AssessmentTemplate, Audit, Base } from "@chronops/domain";
+import { index, pgTable, primaryKey, text, uniqueIndex } from "drizzle-orm/pg-core";
+import { Actor, AssessmentTemplate, Audit, Base, Framework } from "@chronops/domain";
 import { timestampUtc, timestampUtcNullable } from "../common/db-type";
 
 export const auditTable = pgTable(
@@ -60,5 +60,20 @@ export const auditRunTable = pgTable(
     index("audit_run_audit_id_idx").on(table.auditId),
     index("audit_run_status_idx").on(table.status),
     index("audit_run_assessment_method_id_idx").on(table.assessmentMethodId),
+  ],
+);
+
+export const auditFrameworkTable = pgTable(
+  "audit_framework",
+  {
+    auditId: text().notNull().$type<Audit.AuditId>(),
+    frameworkId: text().notNull().$type<Framework.FrameworkId>(),
+    orgId: text().$type<Actor.OrgId>().notNull(),
+    createdAt: timestampUtc({ withTimezone: true }).notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.auditId, table.frameworkId] }),
+    index("audit_framework_framework_id_idx").on(table.frameworkId),
+    index("audit_framework_org_id_idx").on(table.orgId),
   ],
 );

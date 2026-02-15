@@ -12,7 +12,7 @@ import { pdfTable, pdfPageTable } from "./pdf/sql";
 import { riskTable } from "./risk/sql";
 import { scheduleTable, scheduleRunTable } from "./schedule/sql";
 import { assessmentTemplateTable, assessmentInstanceTable } from "./assessment/sql";
-import { auditRunTable, auditTable } from "./audit/sql";
+import { auditFrameworkTable, auditRunTable, auditTable } from "./audit/sql";
 import { questionerTemplateTable, questionerInstanceTable } from "./questioner/sql";
 import * as auth from "./auth/sql";
 import { ticketCounterTable } from "./ticket/sql";
@@ -35,6 +35,7 @@ const tables = {
   assessmentInstance: assessmentInstanceTable,
   audit: auditTable,
   auditRun: auditRunTable,
+  auditFramework: auditFrameworkTable,
   questionerTemplate: questionerTemplateTable,
   questionerInstance: questionerInstanceTable,
   ticketCounter: ticketCounterTable,

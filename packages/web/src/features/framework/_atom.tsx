@@ -44,3 +44,12 @@ export const countFrameworks = () =>
       reactivityKeys: [...frameworkReactiveKeys.all, "count"],
     },
   );
+
+export const listFrameworkSummaries = () =>
+  Client.query(
+    "FrameworkSummaryList",
+    {},
+    {
+      reactivityKeys: [...frameworkReactiveKeys.all, "summaries"],
+    },
+  );

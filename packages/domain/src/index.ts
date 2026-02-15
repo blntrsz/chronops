@@ -9,6 +9,7 @@ export * as Control from "./control";
 export * as Evidence from "./evidence";
 export * as Event from "./event";
 export * as Framework from "./framework";
+export * as FrameworkSummary from "./framework-summary";
 export * as Issue from "./issue";
 export * as Policy from "./policy";
 export * as Risk from "./risk";
