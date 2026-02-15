@@ -1,4 +1,4 @@
-import { Control, Framework } from "@chronops/domain";
+import { Base, Control, Framework } from "@chronops/domain";
 import { Rpc, RpcGroup } from "@effect/rpc";
 import { Schema } from "effect";
 import { ParseError } from "effect/ParseResult";
@@ -17,6 +17,11 @@ export class ControlContract extends RpcGroup.make(
     success: Control.Control,
     error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError), Control.ControlNotFoundError),
     payload: { id: Control.ControlId },
+  }),
+  Rpc.make("ControlByTicket", {
+    success: Control.Control,
+    error: Schema.Union(DatabaseError, Schema.instanceOf(ParseError), Control.ControlNotFoundError),
+    payload: { ticket: Base.Ticket },
   }),
   Rpc.make("ControlList", {
     success: Paginated(Control.Control),

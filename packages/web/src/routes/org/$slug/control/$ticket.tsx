@@ -4,9 +4,11 @@ import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MetadataSidebar } from "@/widgets/layout/metadata-sidebar";
-import { getControlById, listControls, updateControl } from "@/features/control/_atom";
+import { getControlByTicket, listControls, updateControl } from "@/features/control/_atom";
 import { CreateAssessmentTemplate } from "@/features/assessment/create-template";
+import { ListAssessmentTemplates } from "@/features/assessment/list-templates";
 import { CommentsSection } from "@/features/comment/comments-section";
+import { CreateRisk } from "@/features/risk/create-risk";
 import { ListRisk } from "@/features/risk/list-risk";
 import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
@@ -115,15 +117,15 @@ function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
   );
 }
 
-export const Route = createFileRoute("/org/$slug/control/$id")({
+export const Route = createFileRoute("/org/$slug/control/$ticket")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { id, slug } = Route.useParams();
-  const ctrl = useAtomValue(getControlById(id as never));
+  const { ticket, slug } = Route.useParams();
+  const ctrl = useAtomValue(getControlByTicket(ticket as never));
   const mutate = useAtomSet(updateControl(), { mode: "promise" });
-  const refreshDetail = useAtomRefresh(getControlById(id as never));
+  const refreshDetail = useAtomRefresh(getControlByTicket(ticket as never));
   const refreshList = useAtomRefresh(listControls(1));
 
   const ctrlModel = Result.getOrElse(ctrl, () => null);
@@ -134,9 +136,10 @@ function RouteComponent() {
     name: ctrlModel?.name,
     description: ctrlModel?.description,
     onSave: async ({ name: nextName, description: nextDescription }) => {
+      if (!ctrlModel) return;
       await mutate({
         payload: {
-          id: id as never,
+          id: ctrlModel.id as never,
           data: {
             name: nextName,
             description: nextDescription,
@@ -201,6 +204,7 @@ function RouteComponent() {
           <Tabs defaultValue="overview" className="mt-6 flex flex-col gap-6">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="assessments">Assessments</TabsTrigger>
               <TabsTrigger value="risks">Risks</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="m-0">
@@ -210,16 +214,24 @@ function RouteComponent() {
                   Minimal control dashboard placeholder; add widgets next.
                 </p>
               </div>
-              <CommentsSection entityId={id as never} />
-              <div className="mt-8">
+              <CommentsSection entityId={control.id as never} />
+            </TabsContent>
+            <TabsContent value="assessments" className="m-0">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Assessments</h2>
                 <CreateAssessmentTemplate
-                  controlId={id as never}
+                  controlId={control.id as never}
                   trigger={<Button type="button">Create assessment</Button>}
                 />
               </div>
+              <ListAssessmentTemplates controlId={control.id} slug={slug} className="mt-4" />
             </TabsContent>
             <TabsContent value="risks" className="m-0">
-              <ListRisk slug={slug} filter={{ controlId: id as never }} />
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Risks</h2>
+                <CreateRisk trigger={<Button type="button">Create risk</Button>} />
+              </div>
+              <ListRisk slug={slug} filter={{ controlId: control.id as never }} className="mt-4" />
             </TabsContent>
           </Tabs>
         </div>

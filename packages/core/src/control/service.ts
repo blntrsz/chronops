@@ -146,8 +146,33 @@ export class ControlService extends Effect.Service<ControlService>()("ControlSer
       yield* eventService.append(event);
     });
 
+    /**
+     * Get a control by its ticket.
+     * @since 1.0.0
+     * @category service-method
+     */
+    const getByTicket = Effect.fn(function* (ticket: Schema.Schema.Type<typeof Base.Ticket>) {
+      const actor = yield* Actor.Actor;
+      const model = yield* use((db) =>
+        db.query.control.findFirst({
+          where: and(
+            eq(tables.control.ticket, ticket),
+            eq(tables.control.orgId, actor.orgId),
+            isNull(tables.control.deletedAt),
+          ),
+        }),
+      );
+
+      if (!model) {
+        throw yield* Control.ControlNotFoundError.fromId(ticket as unknown as Control.ControlId);
+      }
+
+      return Control.Control.make(model);
+    });
+
     return {
       getById,
+      getByTicket,
       list,
       insert,
       update,
