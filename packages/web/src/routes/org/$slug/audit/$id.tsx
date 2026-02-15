@@ -2,9 +2,8 @@ import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 import { getAuditById, listAudits, updateAudit } from "@/features/audit/_atom";
+import { MetadataSidebar } from "@/widgets/layout/metadata-sidebar";
 import { CommentsSection } from "@/features/comment/comments-section";
 import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
@@ -271,28 +270,9 @@ function RouteComponent() {
     <OrgListLayout title={null} action={null} className="gap-0 pr-0">
       <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
         <div className="min-w-0 flex-1">{mainContent}</div>
-        <Sidebar
-          id="audit-metadata"
-          side="right"
-          collapsible="none"
-          className={cn(
-            "border-l transition-[width,opacity] duration-300 lg:-mt-4 lg:sticky lg:top-14 lg:h-[calc(100vh-56px)] lg:ml-4",
-            isMetaOpen ? "w-full opacity-100 lg:w-[320px]" : "w-0 opacity-0",
-          )}
-          aria-hidden={!isMetaOpen}
-        >
-          <div
-            className={cn("flex h-full w-full flex-col", isMetaOpen ? "" : "pointer-events-none")}
-          >
-            <SidebarHeader className="px-4 py-3">
-              <div className="text-xs uppercase text-muted-foreground">Metadata</div>
-            </SidebarHeader>
-            <SidebarSeparator />
-            <SidebarContent className="gap-4 px-4 py-4">
-              <AuditMetadataPanel audit={audit} />
-            </SidebarContent>
-          </div>
-        </Sidebar>
+        <MetadataSidebar id="audit-metadata" open={isMetaOpen} onOpenChange={setIsMetaOpen}>
+          <AuditMetadataPanel audit={audit} />
+        </MetadataSidebar>
       </div>
     </OrgListLayout>
   );

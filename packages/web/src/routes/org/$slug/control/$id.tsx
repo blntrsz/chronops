@@ -2,9 +2,8 @@ import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarSeparator } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { MetadataSidebar } from "@/widgets/layout/metadata-sidebar";
 import { getControlById, listControls, updateControl } from "@/features/control/_atom";
 import { CreateAssessmentTemplate } from "@/features/assessment/create-template";
 import { CommentsSection } from "@/features/comment/comments-section";
@@ -51,6 +50,7 @@ function ControlSkeleton() {
 
 type ControlModel = {
   id: string;
+  ticket: string;
   name: string;
   description?: string | null;
   frameworkId: string;
@@ -136,8 +136,8 @@ function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
   return (
     <div className="space-y-4 text-sm">
       <div>
-        <div className="text-xs uppercase text-muted-foreground">ID</div>
-        <div className="mt-1 font-medium text-foreground">{control.id}</div>
+        <div className="text-xs uppercase text-muted-foreground">Ticket</div>
+        <div className="mt-1 font-medium text-foreground">{control.ticket}</div>
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Framework</div>
@@ -205,9 +205,12 @@ function RouteComponent() {
     [isMetaOpen, statusLabel],
   );
 
-  useAppHeaderSlots({ right: headerRight }, [headerRight]);
-
   const control = ctrlModel as ControlModel | null;
+
+  useAppHeaderSlots({ right: headerRight, breadcrumbLabel: control?.ticket }, [
+    headerRight,
+    control?.ticket,
+  ]);
 
   if (ctrl._tag === "Initial") {
     return <ControlSkeleton />;
@@ -250,28 +253,9 @@ function RouteComponent() {
             </TabsContent>
           </Tabs>
         </div>
-        <Sidebar
-          id="control-metadata"
-          side="right"
-          collapsible="none"
-          className={cn(
-            "border-l transition-[width,opacity] duration-300 lg:-mt-4 lg:sticky lg:top-14 lg:h-[calc(100vh-56px)] lg:ml-4",
-            isMetaOpen ? "w-full opacity-100 lg:w-[320px]" : "w-0 opacity-0",
-          )}
-          aria-hidden={!isMetaOpen}
-        >
-          <div
-            className={cn("flex h-full w-full flex-col", isMetaOpen ? "" : "pointer-events-none")}
-          >
-            <SidebarHeader className="px-4 py-3">
-              <div className="text-xs uppercase text-muted-foreground">Metadata</div>
-            </SidebarHeader>
-            <SidebarSeparator />
-            <SidebarContent className="gap-4 px-4 py-4">
-              <ControlMetadataPanel control={control} />
-            </SidebarContent>
-          </div>
-        </Sidebar>
+        <MetadataSidebar id="control-metadata" open={isMetaOpen} onOpenChange={setIsMetaOpen}>
+          <ControlMetadataPanel control={control} />
+        </MetadataSidebar>
       </div>
     </OrgListLayout>
   );
