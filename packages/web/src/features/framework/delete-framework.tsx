@@ -1,14 +1,14 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  ResponsiveAlertDialog,
+  ResponsiveAlertDialogAction,
+  ResponsiveAlertDialogCancel,
+  ResponsiveAlertDialogContent,
+  ResponsiveAlertDialogDescription,
+  ResponsiveAlertDialogFooter,
+  ResponsiveAlertDialogHeader,
+  ResponsiveAlertDialogTitle,
+} from "@/components/ui/responsive-alert-dialog";
 import { Button } from "@/components/ui/button";
 import { countFrameworks, listFrameworks, removeFramework } from "@/features/framework/_atom";
 import { cn } from "@/lib/utils";
@@ -55,27 +55,27 @@ export function DeleteFramework({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <AlertDialog
+      <ResponsiveAlertDialog
         open={open}
         onOpenChange={(isOpen) => setActiveDialog(isOpen ? "deleteFramework" : null)}
       >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete framework</AlertDialogTitle>
-            <AlertDialogDescription>
+        <ResponsiveAlertDialogContent>
+          <ResponsiveAlertDialogHeader>
+            <ResponsiveAlertDialogTitle>Delete framework</ResponsiveAlertDialogTitle>
+            <ResponsiveAlertDialogDescription>
               This removes framework and associated work. Irreversible.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction asChild>
+            </ResponsiveAlertDialogDescription>
+          </ResponsiveAlertDialogHeader>
+          <ResponsiveAlertDialogFooter>
+            <ResponsiveAlertDialogCancel disabled={pending}>Cancel</ResponsiveAlertDialogCancel>
+            <ResponsiveAlertDialogAction asChild>
               <Button variant="destructive" onClick={onDelete} disabled={pending}>
                 Delete
               </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </ResponsiveAlertDialogAction>
+          </ResponsiveAlertDialogFooter>
+        </ResponsiveAlertDialogContent>
+      </ResponsiveAlertDialog>
     </div>
   );
 }

@@ -1,7 +1,13 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,9 +93,9 @@ function CreateIssueForm({ controlId }: { controlId: Control.ControlId }) {
   }
 
   return (
-    <DialogContent className="gap-0 p-0">
+    <ResponsiveDialogContent>
       <form onSubmit={onSubmit} className="flex flex-col">
-        <div className="px-6 pt-6 pb-5">
+        <ResponsiveDialogBody>
           <GhostInput
             id="title"
             name="title"
@@ -181,11 +187,9 @@ function CreateIssueForm({ controlId }: { controlId: Control.ControlId }) {
               </DropdownMenu>
             </div>
           </div>
-        </div>
+        </ResponsiveDialogBody>
 
-        <hr className="w-full" />
-
-        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
+        <ResponsiveDialogFooter>
           <Button type="submit" disabled={pending}>
             {pending ? (
               <>
@@ -196,9 +200,9 @@ function CreateIssueForm({ controlId }: { controlId: Control.ControlId }) {
               "Create"
             )}
           </Button>
-        </div>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   );
 }
 
@@ -223,16 +227,19 @@ export function CreateIssue({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog open={open} onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createIssue" : null)}>
+      <ResponsiveDialog
+        open={open}
+        onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createIssue" : null)}
+      >
         {trigger ? (
-          <DialogTrigger asChild>{triggerNode}</DialogTrigger>
+          <ResponsiveDialogTrigger asChild>{triggerNode}</ResponsiveDialogTrigger>
         ) : (
-          <DialogTrigger asChild disabled={!controlId}>
+          <ResponsiveDialogTrigger asChild disabled={!controlId}>
             {triggerNode}
-          </DialogTrigger>
+          </ResponsiveDialogTrigger>
         )}
         {controlId ? <CreateIssueForm controlId={controlId} /> : null}
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   );
 }

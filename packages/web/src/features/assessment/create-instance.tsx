@@ -1,7 +1,13 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { GhostInput } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { createAssessmentInstance, listAssessmentInstances } from "@/features/assessment/_atom";
 import { cn } from "@/lib/utils";
@@ -68,9 +74,9 @@ function CreateInstanceForm({
   }
 
   return (
-    <DialogContent className="gap-0 p-0">
+    <ResponsiveDialogContent>
       <form onSubmit={onSubmit} className="flex flex-col">
-        <div className="px-6 pt-6 pb-5">
+        <ResponsiveDialogBody>
           <GhostInput
             id="name"
             name="name"
@@ -83,11 +89,9 @@ function CreateInstanceForm({
             required
             autoFocus
           />
-        </div>
+        </ResponsiveDialogBody>
 
-        <hr className="w-full" />
-
-        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
+        <ResponsiveDialogFooter>
           <Button type="submit" disabled={pending || !values.name.trim()}>
             {pending ? (
               <>
@@ -98,9 +102,9 @@ function CreateInstanceForm({
               "Create"
             )}
           </Button>
-        </div>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   );
 }
 
@@ -124,13 +128,13 @@ export function CreateAssessmentInstance({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createAssessmentInstance" : null)}
       >
-        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
+        {trigger && <ResponsiveDialogTrigger asChild>{triggerNode}</ResponsiveDialogTrigger>}
         <CreateInstanceForm templateId={templateId} controlId={controlId} />
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   );
 }

@@ -1,7 +1,13 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -153,9 +159,9 @@ function CreateTemplateForm() {
   }
 
   return (
-    <DialogContent className="gap-0 p-0 max-w-3xl">
+    <ResponsiveDialogContent className="max-w-3xl">
       <form onSubmit={onSubmit} className="flex flex-col">
-        <div className="px-6 pt-6 pb-4">
+        <ResponsiveDialogBody>
           <GhostInput
             id="name"
             name="name"
@@ -183,110 +189,108 @@ function CreateTemplateForm() {
             className="mt-3 w-full min-h-24 text-lg leading-relaxed placeholder:text-muted-foreground/40"
             disabled={pending}
           />
-        </div>
 
-        <div className="px-6 pb-2 text-xs uppercase text-muted-foreground tracking-wider">
-          Questions
-        </div>
+          <div className="mt-5 pb-2 text-xs uppercase text-muted-foreground tracking-wider">
+            Questions
+          </div>
 
-        <div className="px-6 pb-6 flex flex-col gap-4">
-          {values.questions.map((question, idx) => (
-            <div key={question.id} className="rounded-lg border p-4 space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
-                <Input
-                  value={question.prompt}
-                  onChange={(e) => updateQuestion(idx, { prompt: e.target.value })}
-                  placeholder={`Question ${idx + 1}`}
-                  aria-label="Prompt"
-                  disabled={pending}
-                />
-                <Select
-                  value={question.type}
-                  onValueChange={(value) =>
-                    updateQuestion(idx, {
-                      type: value as QuestionerTemplate.QuestionerQuestionType,
-                      options:
-                        value === "select" || value === "multiselect" ? question.options : [],
-                    })
-                  }
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="text">Text</SelectItem>
-                    <SelectItem value="textarea">Textarea</SelectItem>
-                    <SelectItem value="select">Select</SelectItem>
-                    <SelectItem value="multiselect">Multiselect</SelectItem>
-                    <SelectItem value="number">Number</SelectItem>
-                    <SelectItem value="date">Date</SelectItem>
-                    <SelectItem value="boolean">Boolean</SelectItem>
-                  </SelectContent>
-                </Select>
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Checkbox
-                    checked={question.required ?? false}
-                    onCheckedChange={(checked) =>
-                      updateQuestion(idx, { required: checked === true })
-                    }
+          <div className="pb-2 flex flex-col gap-4">
+            {values.questions.map((question, idx) => (
+              <div key={question.id} className="rounded-lg border p-4 space-y-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Input
+                    value={question.prompt}
+                    onChange={(e) => updateQuestion(idx, { prompt: e.target.value })}
+                    placeholder={`Question ${idx + 1}`}
+                    aria-label="Prompt"
                     disabled={pending}
                   />
-                  Required
-                </label>
+                  <Select
+                    value={question.type}
+                    onValueChange={(value) =>
+                      updateQuestion(idx, {
+                        type: value as QuestionerTemplate.QuestionerQuestionType,
+                        options:
+                          value === "select" || value === "multiselect" ? question.options : [],
+                      })
+                    }
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">Text</SelectItem>
+                      <SelectItem value="textarea">Textarea</SelectItem>
+                      <SelectItem value="select">Select</SelectItem>
+                      <SelectItem value="multiselect">Multiselect</SelectItem>
+                      <SelectItem value="number">Number</SelectItem>
+                      <SelectItem value="date">Date</SelectItem>
+                      <SelectItem value="boolean">Boolean</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Checkbox
+                      checked={question.required ?? false}
+                      onCheckedChange={(checked) =>
+                        updateQuestion(idx, { required: checked === true })
+                      }
+                      disabled={pending}
+                    />
+                    Required
+                  </label>
+                </div>
+
+                {(question.type === "select" || question.type === "multiselect") && (
+                  <Input
+                    value={question.optionsInput ?? question.options?.join(", ") ?? ""}
+                    onChange={(e) => updateQuestion(idx, { optionsInput: e.target.value })}
+                    placeholder="Options (comma separated)"
+                    disabled={pending}
+                  />
+                )}
+
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Input
+                    value={question.helpText ?? ""}
+                    onChange={(e) => updateQuestion(idx, { helpText: e.target.value })}
+                    placeholder="Help text"
+                    disabled={pending}
+                  />
+                  <Input
+                    value={question.placeholder ?? ""}
+                    onChange={(e) => updateQuestion(idx, { placeholder: e.target.value })}
+                    placeholder="Placeholder"
+                    disabled={pending}
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeQuestion(idx)}
+                    disabled={pending || values.questions.length <= 1}
+                  >
+                    Remove
+                  </Button>
+                </div>
               </div>
+            ))}
 
-              {(question.type === "select" || question.type === "multiselect") && (
-                <Input
-                  value={question.optionsInput ?? question.options?.join(", ") ?? ""}
-                  onChange={(e) => updateQuestion(idx, { optionsInput: e.target.value })}
-                  placeholder="Options (comma separated)"
-                  disabled={pending}
-                />
-              )}
-
-              <div className="grid gap-3 md:grid-cols-2">
-                <Input
-                  value={question.helpText ?? ""}
-                  onChange={(e) => updateQuestion(idx, { helpText: e.target.value })}
-                  placeholder="Help text"
-                  disabled={pending}
-                />
-                <Input
-                  value={question.placeholder ?? ""}
-                  onChange={(e) => updateQuestion(idx, { placeholder: e.target.value })}
-                  placeholder="Placeholder"
-                  disabled={pending}
-                />
-              </div>
-
-              <div className="flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeQuestion(idx)}
-                  disabled={pending || values.questions.length <= 1}
-                >
-                  Remove
-                </Button>
-              </div>
-            </div>
-          ))}
-
-          <Button type="button" variant="outline" onClick={addQuestion} disabled={pending}>
-            Add question
-          </Button>
-        </div>
-
-        {formError ? (
-          <div role="alert" className="px-6 pb-4 text-sm text-destructive">
-            {formError}
+            <Button type="button" variant="outline" onClick={addQuestion} disabled={pending}>
+              Add question
+            </Button>
           </div>
-        ) : null}
 
-        <hr className="w-full" />
+          {formError ? (
+            <div role="alert" className="text-sm text-destructive">
+              {formError}
+            </div>
+          ) : null}
+        </ResponsiveDialogBody>
 
-        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
+        <ResponsiveDialogFooter>
           <Button type="submit" disabled={pending || !values.name.trim()}>
             {pending ? (
               <>
@@ -297,9 +301,9 @@ function CreateTemplateForm() {
               "Create"
             )}
           </Button>
-        </div>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   );
 }
 
@@ -318,13 +322,13 @@ export function CreateQuestionerTemplate({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createQuestionerTemplate" : null)}
       >
-        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
+        {trigger && <ResponsiveDialogTrigger asChild>{triggerNode}</ResponsiveDialogTrigger>}
         <CreateTemplateForm />
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   );
 }

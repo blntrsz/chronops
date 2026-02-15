@@ -1,7 +1,13 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -101,9 +107,9 @@ function CreateEvidenceForm() {
   }
 
   return (
-    <DialogContent className="gap-0 p-0">
+    <ResponsiveDialogContent>
       <form onSubmit={onSubmit} className="flex flex-col">
-        <div className="px-6 pt-6 pb-5">
+        <ResponsiveDialogBody>
           <GhostInput
             id="title"
             name="title"
@@ -195,11 +201,9 @@ function CreateEvidenceForm() {
               </DropdownMenu>
             </div>
           </div>
-        </div>
+        </ResponsiveDialogBody>
 
-        <hr className="w-full" />
-
-        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
+        <ResponsiveDialogFooter>
           <Button type="submit" disabled={pending}>
             {pending ? (
               <>
@@ -210,9 +214,9 @@ function CreateEvidenceForm() {
               "Create"
             )}
           </Button>
-        </div>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   );
 }
 
@@ -230,13 +234,13 @@ export function CreateEvidence({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createEvidence" : null)}
       >
-        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
+        {trigger && <ResponsiveDialogTrigger asChild>{triggerNode}</ResponsiveDialogTrigger>}
         <CreateEvidenceForm />
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   );
 }

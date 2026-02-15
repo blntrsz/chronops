@@ -1,7 +1,13 @@
 import { useActiveDialog, useSetActiveDialog } from "@/atoms/dialog-atom";
 import { GhostInput, GhostTextArea } from "@/components/ghost-input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogBody,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogTrigger,
+} from "@/components/ui/responsive-dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -93,9 +99,9 @@ function CreateTemplateForm({ controlId }: { controlId?: Control.ControlId }) {
   }
 
   return (
-    <DialogContent className="gap-0 p-0">
+    <ResponsiveDialogContent>
       <form onSubmit={onSubmit} className="flex flex-col">
-        <div className="px-6 pt-6 pb-5">
+        <ResponsiveDialogBody>
           <GhostInput
             id="name"
             name="name"
@@ -164,11 +170,9 @@ function CreateTemplateForm({ controlId }: { controlId?: Control.ControlId }) {
               </DropdownMenu>
             </div>
           </div>
-        </div>
+        </ResponsiveDialogBody>
 
-        <hr className="w-full" />
-
-        <div className="flex flex-row items-center justify-end gap-3 px-6 py-4">
+        <ResponsiveDialogFooter>
           <Button type="submit" disabled={pending || !values.controlId}>
             {pending ? (
               <>
@@ -179,9 +183,9 @@ function CreateTemplateForm({ controlId }: { controlId?: Control.ControlId }) {
               "Create"
             )}
           </Button>
-        </div>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   );
 }
 
@@ -203,13 +207,13 @@ export function CreateAssessmentTemplate({
 
   return (
     <div className={cn("flex", className)} {...props}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onOpenChange={(isOpen) => setActiveDialog(isOpen ? "createAssessmentTemplate" : null)}
       >
-        {trigger && <DialogTrigger asChild>{triggerNode}</DialogTrigger>}
+        {trigger && <ResponsiveDialogTrigger asChild>{triggerNode}</ResponsiveDialogTrigger>}
         <CreateTemplateForm controlId={controlId} />
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   );
 }
