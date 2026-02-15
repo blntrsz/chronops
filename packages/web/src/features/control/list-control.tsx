@@ -43,7 +43,6 @@ function formatUpdatedAt(value: unknown) {
 
 type ControlRow = {
   id: string;
-  ticket: string;
   name: string;
   frameworkId: string;
   status: string;
@@ -53,9 +52,9 @@ type ControlRow = {
 
 const columns = (slug: string): ColumnDef<ControlRow>[] => [
   {
-    accessorKey: "ticket",
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Ticket" />,
-    cell: ({ row }) => <div className="w-[120px] truncate">{row.getValue("ticket")}</div>,
+    accessorKey: "id",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="ID" />,
+    cell: ({ row }) => <div className="w-[120px] truncate">{row.getValue("id")}</div>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -64,8 +63,8 @@ const columns = (slug: string): ColumnDef<ControlRow>[] => [
     header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
     cell: ({ row }) => (
       <Link
-        to="/org/$slug/control/$ticket"
-        params={{ slug, ticket: row.original.ticket }}
+        to="/org/$slug/control/$id"
+        params={{ slug, id: row.getValue("id") as string }}
         className="block max-w-[520px] truncate font-medium hover:underline"
       >
         {row.getValue("name")}
@@ -99,8 +98,8 @@ const columns = (slug: string): ColumnDef<ControlRow>[] => [
     header: () => null,
     cell: ({ row }) => (
       <Link
-        to="/org/$slug/control/$ticket"
-        params={{ slug, ticket: row.original.ticket }}
+        to="/org/$slug/control/$id"
+        params={{ slug, id: row.getValue("id") as string }}
         className="text-sm text-muted-foreground hover:underline"
       >
         Open
@@ -157,7 +156,6 @@ export function ListControl({
             columns={cols}
             data={data.data.map((c: any) => ({
               id: c.id,
-              ticket: c.ticket,
               name: c.name,
               frameworkId: c.frameworkId,
               status: c.status,

@@ -15,4 +15,4 @@ export const RpcConfigLayer = RpcClient.layerProtocolHttp({
 export class Client extends AtomRpc.Tag<Client>()("Client", {
   group: RpcContract,
   protocol: RpcConfigLayer,
-}) { }
+}) {}

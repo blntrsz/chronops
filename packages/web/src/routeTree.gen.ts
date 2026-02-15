@@ -22,6 +22,7 @@ import { Route as OrgSlugRiskRouteRouteImport } from './routes/org/$slug/risk/ro
 import { Route as OrgSlugPolicyRouteRouteImport } from './routes/org/$slug/policy/route'
 import { Route as OrgSlugIssueRouteRouteImport } from './routes/org/$slug/issue/route'
 import { Route as OrgSlugEvidenceRouteRouteImport } from './routes/org/$slug/evidence/route'
+import { Route as OrgSlugControlRouteRouteImport } from './routes/org/$slug/control/route'
 import { Route as OrgSlugAuditRouteRouteImport } from './routes/org/$slug/audit/route'
 import { Route as OrgSlugAssessmentRouteRouteImport } from './routes/org/$slug/assessment/route'
 import { Route as OrgSlugRiskIndexRouteImport } from './routes/org/$slug/risk/index'
@@ -37,7 +38,7 @@ import { Route as OrgSlugPolicyIdRouteImport } from './routes/org/$slug/policy/$
 import { Route as OrgSlugIssueIdRouteImport } from './routes/org/$slug/issue/$id'
 import { Route as OrgSlugFrameworkIdRouteImport } from './routes/org/$slug/framework/$id'
 import { Route as OrgSlugEvidenceIdRouteImport } from './routes/org/$slug/evidence/$id'
-import { Route as OrgSlugControlTicketRouteImport } from './routes/org/$slug/control/$ticket'
+import { Route as OrgSlugControlIdRouteImport } from './routes/org/$slug/control/$id'
 import { Route as OrgSlugAuditIdRouteImport } from './routes/org/$slug/audit/$id'
 import { Route as OrgSlugAssessmentIdRouteImport } from './routes/org/$slug/assessment/$id'
 import { Route as OrgSlugAssessmentInstanceIdRouteImport } from './routes/org/$slug/assessment-instance/$id'
@@ -111,6 +112,11 @@ const OrgSlugEvidenceRouteRoute = OrgSlugEvidenceRouteRouteImport.update({
   path: '/evidence',
   getParentRoute: () => OrgSlugRouteRoute,
 } as any)
+const OrgSlugControlRouteRoute = OrgSlugControlRouteRouteImport.update({
+  id: '/control',
+  path: '/control',
+  getParentRoute: () => OrgSlugRouteRoute,
+} as any)
 const OrgSlugAuditRouteRoute = OrgSlugAuditRouteRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -147,9 +153,9 @@ const OrgSlugEvidenceIndexRoute = OrgSlugEvidenceIndexRouteImport.update({
   getParentRoute: () => OrgSlugEvidenceRouteRoute,
 } as any)
 const OrgSlugControlIndexRoute = OrgSlugControlIndexRouteImport.update({
-  id: '/control/',
-  path: '/control/',
-  getParentRoute: () => OrgSlugRouteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrgSlugControlRouteRoute,
 } as any)
 const OrgSlugAuditIndexRoute = OrgSlugAuditIndexRouteImport.update({
   id: '/',
@@ -186,10 +192,10 @@ const OrgSlugEvidenceIdRoute = OrgSlugEvidenceIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => OrgSlugEvidenceRouteRoute,
 } as any)
-const OrgSlugControlTicketRoute = OrgSlugControlTicketRouteImport.update({
-  id: '/control/$ticket',
-  path: '/control/$ticket',
-  getParentRoute: () => OrgSlugRouteRoute,
+const OrgSlugControlIdRoute = OrgSlugControlIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrgSlugControlRouteRoute,
 } as any)
 const OrgSlugAuditIdRoute = OrgSlugAuditIdRouteImport.update({
   id: '/$id',
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/org/create': typeof OrgCreateRoute
   '/org/$slug/assessment': typeof OrgSlugAssessmentRouteRouteWithChildren
   '/org/$slug/audit': typeof OrgSlugAuditRouteRouteWithChildren
+  '/org/$slug/control': typeof OrgSlugControlRouteRouteWithChildren
   '/org/$slug/evidence': typeof OrgSlugEvidenceRouteRouteWithChildren
   '/org/$slug/issue': typeof OrgSlugIssueRouteRouteWithChildren
   '/org/$slug/policy': typeof OrgSlugPolicyRouteRouteWithChildren
@@ -253,7 +260,7 @@ export interface FileRoutesByFullPath {
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
-  '/org/$slug/control/$ticket': typeof OrgSlugControlTicketRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/evidence/$id': typeof OrgSlugEvidenceIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
@@ -284,7 +291,7 @@ export interface FileRoutesByTo {
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
-  '/org/$slug/control/$ticket': typeof OrgSlugControlTicketRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/evidence/$id': typeof OrgSlugEvidenceIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
@@ -311,6 +318,7 @@ export interface FileRoutesById {
   '/org/create': typeof OrgCreateRoute
   '/org/$slug/assessment': typeof OrgSlugAssessmentRouteRouteWithChildren
   '/org/$slug/audit': typeof OrgSlugAuditRouteRouteWithChildren
+  '/org/$slug/control': typeof OrgSlugControlRouteRouteWithChildren
   '/org/$slug/evidence': typeof OrgSlugEvidenceRouteRouteWithChildren
   '/org/$slug/issue': typeof OrgSlugIssueRouteRouteWithChildren
   '/org/$slug/policy': typeof OrgSlugPolicyRouteRouteWithChildren
@@ -323,7 +331,7 @@ export interface FileRoutesById {
   '/org/$slug/assessment-instance/$id': typeof OrgSlugAssessmentInstanceIdRoute
   '/org/$slug/assessment/$id': typeof OrgSlugAssessmentIdRoute
   '/org/$slug/audit/$id': typeof OrgSlugAuditIdRoute
-  '/org/$slug/control/$ticket': typeof OrgSlugControlTicketRoute
+  '/org/$slug/control/$id': typeof OrgSlugControlIdRoute
   '/org/$slug/evidence/$id': typeof OrgSlugEvidenceIdRoute
   '/org/$slug/framework/$id': typeof OrgSlugFrameworkIdRoute
   '/org/$slug/issue/$id': typeof OrgSlugIssueIdRoute
@@ -351,6 +359,7 @@ export interface FileRouteTypes {
     | '/org/create'
     | '/org/$slug/assessment'
     | '/org/$slug/audit'
+    | '/org/$slug/control'
     | '/org/$slug/evidence'
     | '/org/$slug/issue'
     | '/org/$slug/policy'
@@ -363,7 +372,7 @@ export interface FileRouteTypes {
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
-    | '/org/$slug/control/$ticket'
+    | '/org/$slug/control/$id'
     | '/org/$slug/evidence/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/issue/$id'
@@ -394,7 +403,7 @@ export interface FileRouteTypes {
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
-    | '/org/$slug/control/$ticket'
+    | '/org/$slug/control/$id'
     | '/org/$slug/evidence/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/issue/$id'
@@ -420,6 +429,7 @@ export interface FileRouteTypes {
     | '/org/create'
     | '/org/$slug/assessment'
     | '/org/$slug/audit'
+    | '/org/$slug/control'
     | '/org/$slug/evidence'
     | '/org/$slug/issue'
     | '/org/$slug/policy'
@@ -432,7 +442,7 @@ export interface FileRouteTypes {
     | '/org/$slug/assessment-instance/$id'
     | '/org/$slug/assessment/$id'
     | '/org/$slug/audit/$id'
-    | '/org/$slug/control/$ticket'
+    | '/org/$slug/control/$id'
     | '/org/$slug/evidence/$id'
     | '/org/$slug/framework/$id'
     | '/org/$slug/issue/$id'
@@ -552,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugEvidenceRouteRouteImport
       parentRoute: typeof OrgSlugRouteRoute
     }
+    '/org/$slug/control': {
+      id: '/org/$slug/control'
+      path: '/control'
+      fullPath: '/org/$slug/control'
+      preLoaderRoute: typeof OrgSlugControlRouteRouteImport
+      parentRoute: typeof OrgSlugRouteRoute
+    }
     '/org/$slug/audit': {
       id: '/org/$slug/audit'
       path: '/audit'
@@ -603,10 +620,10 @@ declare module '@tanstack/react-router' {
     }
     '/org/$slug/control/': {
       id: '/org/$slug/control/'
-      path: '/control'
+      path: '/'
       fullPath: '/org/$slug/control/'
       preLoaderRoute: typeof OrgSlugControlIndexRouteImport
-      parentRoute: typeof OrgSlugRouteRoute
+      parentRoute: typeof OrgSlugControlRouteRoute
     }
     '/org/$slug/audit/': {
       id: '/org/$slug/audit/'
@@ -657,12 +674,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgSlugEvidenceIdRouteImport
       parentRoute: typeof OrgSlugEvidenceRouteRoute
     }
-    '/org/$slug/control/$ticket': {
-      id: '/org/$slug/control/$ticket'
-      path: '/control/$ticket'
-      fullPath: '/org/$slug/control/$ticket'
-      preLoaderRoute: typeof OrgSlugControlTicketRouteImport
-      parentRoute: typeof OrgSlugRouteRoute
+    '/org/$slug/control/$id': {
+      id: '/org/$slug/control/$id'
+      path: '/$id'
+      fullPath: '/org/$slug/control/$id'
+      preLoaderRoute: typeof OrgSlugControlIdRouteImport
+      parentRoute: typeof OrgSlugControlRouteRoute
     }
     '/org/$slug/audit/$id': {
       id: '/org/$slug/audit/$id'
@@ -780,6 +797,19 @@ const OrgSlugAuditRouteRouteChildren: OrgSlugAuditRouteRouteChildren = {
 const OrgSlugAuditRouteRouteWithChildren =
   OrgSlugAuditRouteRoute._addFileChildren(OrgSlugAuditRouteRouteChildren)
 
+interface OrgSlugControlRouteRouteChildren {
+  OrgSlugControlIdRoute: typeof OrgSlugControlIdRoute
+  OrgSlugControlIndexRoute: typeof OrgSlugControlIndexRoute
+}
+
+const OrgSlugControlRouteRouteChildren: OrgSlugControlRouteRouteChildren = {
+  OrgSlugControlIdRoute: OrgSlugControlIdRoute,
+  OrgSlugControlIndexRoute: OrgSlugControlIndexRoute,
+}
+
+const OrgSlugControlRouteRouteWithChildren =
+  OrgSlugControlRouteRoute._addFileChildren(OrgSlugControlRouteRouteChildren)
+
 interface OrgSlugEvidenceRouteRouteChildren {
   OrgSlugEvidenceIdRoute: typeof OrgSlugEvidenceIdRoute
   OrgSlugEvidenceIndexRoute: typeof OrgSlugEvidenceIndexRoute
@@ -835,30 +865,28 @@ const OrgSlugRiskRouteRouteWithChildren =
 interface OrgSlugRouteRouteChildren {
   OrgSlugAssessmentRouteRoute: typeof OrgSlugAssessmentRouteRouteWithChildren
   OrgSlugAuditRouteRoute: typeof OrgSlugAuditRouteRouteWithChildren
+  OrgSlugControlRouteRoute: typeof OrgSlugControlRouteRouteWithChildren
   OrgSlugEvidenceRouteRoute: typeof OrgSlugEvidenceRouteRouteWithChildren
   OrgSlugIssueRouteRoute: typeof OrgSlugIssueRouteRouteWithChildren
   OrgSlugPolicyRouteRoute: typeof OrgSlugPolicyRouteRouteWithChildren
   OrgSlugRiskRouteRoute: typeof OrgSlugRiskRouteRouteWithChildren
   OrgSlugIndexRoute: typeof OrgSlugIndexRoute
   OrgSlugAssessmentInstanceIdRoute: typeof OrgSlugAssessmentInstanceIdRoute
-  OrgSlugControlTicketRoute: typeof OrgSlugControlTicketRoute
   OrgSlugFrameworkIdRoute: typeof OrgSlugFrameworkIdRoute
-  OrgSlugControlIndexRoute: typeof OrgSlugControlIndexRoute
   OrgSlugFrameworkIndexRoute: typeof OrgSlugFrameworkIndexRoute
 }
 
 const OrgSlugRouteRouteChildren: OrgSlugRouteRouteChildren = {
   OrgSlugAssessmentRouteRoute: OrgSlugAssessmentRouteRouteWithChildren,
   OrgSlugAuditRouteRoute: OrgSlugAuditRouteRouteWithChildren,
+  OrgSlugControlRouteRoute: OrgSlugControlRouteRouteWithChildren,
   OrgSlugEvidenceRouteRoute: OrgSlugEvidenceRouteRouteWithChildren,
   OrgSlugIssueRouteRoute: OrgSlugIssueRouteRouteWithChildren,
   OrgSlugPolicyRouteRoute: OrgSlugPolicyRouteRouteWithChildren,
   OrgSlugRiskRouteRoute: OrgSlugRiskRouteRouteWithChildren,
   OrgSlugIndexRoute: OrgSlugIndexRoute,
   OrgSlugAssessmentInstanceIdRoute: OrgSlugAssessmentInstanceIdRoute,
-  OrgSlugControlTicketRoute: OrgSlugControlTicketRoute,
   OrgSlugFrameworkIdRoute: OrgSlugFrameworkIdRoute,
-  OrgSlugControlIndexRoute: OrgSlugControlIndexRoute,
   OrgSlugFrameworkIndexRoute: OrgSlugFrameworkIndexRoute,
 }
 

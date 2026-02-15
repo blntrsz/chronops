@@ -31,9 +31,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const getById = Effect.fn(function* (
-      id: Schema.Schema.Type<typeof Pdf.PdfId>,
-    ) {
+    const getById = Effect.fn(function* (id: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const actor = yield* Actor.Actor;
       const model = yield* use((db) =>
         db.query.pdf.findFirst({
@@ -56,14 +54,9 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const getUploadUrl = Effect.fn(function* (
-      input: Schema.Schema.Type<typeof Pdf.CreatePdf>,
-    ) {
+    const getUploadUrl = Effect.fn(function* (input: Schema.Schema.Type<typeof Pdf.CreatePdf>) {
       const actor = yield* Actor.Actor;
-      const ticket = yield* ticketService.next(
-        actor.orgId,
-        Base.TicketPrefix.make("PDF"),
-      );
+      const ticket = yield* ticketService.next(actor.orgId, Base.TicketPrefix.make("PDF"));
       const model = yield* Pdf.make({ ...input, ticket } as Pdf.CreatePdfInput);
       yield* use((db) => db.insert(tables.pdf).values(model));
       const event = yield* Event.make({
@@ -75,10 +68,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
       });
       yield* eventService.append(event);
 
-      const uploadUrl = yield* storage.getSignedUploadUrl(
-        model.storageKey,
-        model.contentType,
-      );
+      const uploadUrl = yield* storage.getSignedUploadUrl(model.storageKey, model.contentType);
 
       return {
         pdfId: model.id,
@@ -93,14 +83,10 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const startProcessing = Effect.fn(function* (
-      id: Schema.Schema.Type<typeof Pdf.PdfId>,
-    ) {
+    const startProcessing = Effect.fn(function* (id: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const model = yield* getById(id);
       const processingModel = yield* Pdf.markProcessing(model).pipe(
-        Effect.catchAll(() =>
-          Effect.succeed({ ...model, status: "processing" as const }),
-        ),
+        Effect.catchAll(() => Effect.succeed({ ...model, status: "processing" as const })),
       );
       yield* use((db) => db.insert(tables.pdf).values(processingModel));
 
@@ -123,9 +109,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @category service-method
      * @private
      */
-    const processPdf = Effect.fn(function* (
-      id: Schema.Schema.Type<typeof Pdf.PdfId>,
-    ) {
+    const processPdf = Effect.fn(function* (id: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const process = Effect.gen(function* () {
         const model = yield* getById(id);
 
@@ -153,9 +137,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
         });
         yield* eventService.append(readyEvent);
 
-        yield* Effect.log(
-          `PDF ${id} processed successfully with ${pages.length} pages`,
-        );
+        yield* Effect.log(`PDF ${id} processed successfully with ${pages.length} pages`);
       });
 
       const result = yield* Effect.either(process);
@@ -165,9 +147,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
         const model = yield* getById(id);
         const failedModel = yield* Pdf.markFailed(model).pipe(
-          Effect.catchAll(() =>
-            Effect.succeed({ ...model, status: "failed" as const }),
-          ),
+          Effect.catchAll(() => Effect.succeed({ ...model, status: "failed" as const })),
         );
         yield* use((db) => db.insert(tables.pdf).values(failedModel));
 
@@ -189,9 +169,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const remove = Effect.fn(function* (
-      id: Schema.Schema.Type<typeof Pdf.PdfId>,
-    ) {
+    const remove = Effect.fn(function* (id: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const model = yield* getById(id);
 
       const removedModel = yield* Pdf.remove(model);
@@ -251,9 +229,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
      * @since 1.0.0
      * @category service-method
      */
-    const listByPdfId = Effect.fn(function* (
-      pdfId: Schema.Schema.Type<typeof Pdf.PdfId>,
-    ) {
+    const listByPdfId = Effect.fn(function* (pdfId: Schema.Schema.Type<typeof Pdf.PdfId>) {
       const actor = yield* Actor.Actor;
       const models = yield* use((db) =>
         db.query.pdfPage.findMany({
@@ -284,9 +260,7 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
           s3Object.Body as { transformToByteArray: () => Promise<Uint8Array> }
         ).transformToByteArray(),
       ).pipe(
-        Effect.mapError(
-          (error: unknown) => new Error(`Failed to read PDF data: ${error}`),
-        ),
+        Effect.mapError((error: unknown) => new Error(`Failed to read PDF data: ${error}`)),
       )) as Uint8Array;
 
       const pdfjs = yield* Effect.tryPromise({
@@ -296,18 +270,13 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
       const pdfDocument = (yield* Effect.tryPromise(
         () =>
-          pdfjs.getDocument({ data: arrayBuffer as Uint8Array })
-            .promise as Promise<{
+          pdfjs.getDocument({ data: arrayBuffer as Uint8Array }).promise as Promise<{
             numPages: number;
             getPage: (pageNumber: number) => Promise<{
               getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
             }>;
           }>,
-      ).pipe(
-        Effect.mapError(
-          (error: unknown) => new Error(`Failed to parse PDF: ${error}`),
-        ),
-      )) as {
+      ).pipe(Effect.mapError((error: unknown) => new Error(`Failed to parse PDF: ${error}`)))) as {
         numPages: number;
         getPage: (pageNumber: number) => Promise<{
           getTextContent: () => Promise<{ items: Array<{ str: string }> }>;
@@ -327,21 +296,16 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
 
             const page = yield* Effect.tryPromise({
               try: () => pdfDocument.getPage(pageNum),
-              catch: (error: unknown) =>
-                new Error(`Failed to get page ${pageNum}: ${error}`),
+              catch: (error: unknown) => new Error(`Failed to get page ${pageNum}: ${error}`),
             });
 
             const textContent = yield* Effect.tryPromise({
               try: async () => {
                 const content = await page.getTextContent();
-                return content.items
-                  .map((item: { str: string }) => item.str)
-                  .join(" ");
+                return content.items.map((item: { str: string }) => item.str).join(" ");
               },
               catch: (error: unknown) =>
-                new Error(
-                  `Failed to extract text from page ${pageNum}: ${error}`,
-                ),
+                new Error(`Failed to extract text from page ${pageNum}: ${error}`),
             });
 
             const pdfPage = yield* PdfPage.make({
@@ -355,14 +319,9 @@ export class PdfService extends Effect.Service<PdfService>()("PdfService", {
               ),
             });
 
-            const pdfPageWithText = yield* PdfPage.updateText(
-              pdfPage,
-              textContent,
-            );
+            const pdfPageWithText = yield* PdfPage.updateText(pdfPage, textContent);
 
-            yield* use((db) =>
-              db.insert(tables.pdfPage).values(pdfPageWithText),
-            );
+            yield* use((db) => db.insert(tables.pdfPage).values(pdfPageWithText));
             const event = yield* Event.make({
               name: PdfPage.Event.created,
               entityId: pdfPageWithText.id,

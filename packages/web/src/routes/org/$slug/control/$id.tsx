@@ -3,13 +3,12 @@ import { Button } from "@/components/ui/button";
 import { FieldDescription } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getControlById, listControls, updateControl } from "@/features/control/_atom";
 import { MetadataSidebar } from "@/widgets/layout/metadata-sidebar";
-import { getControlByTicket, listControls, updateControl } from "@/features/control/_atom";
-import { CreateAssessmentTemplate } from "@/features/assessment/create-template";
-import { ListAssessmentTemplates } from "@/features/assessment/list-templates";
 import { CommentsSection } from "@/features/comment/comments-section";
-import { CreateRisk } from "@/features/risk/create-risk";
+import { ListAssessmentTemplates } from "@/features/assessment/list-templates";
 import { ListRisk } from "@/features/risk/list-risk";
+import { useSetActiveDialog } from "@/atoms/dialog-atom";
 import { useAutosaveFields } from "@/hooks/use-autosave-fields";
 import { OrgListLayout } from "@/widgets/layout/org-list-layout";
 import { useAppHeaderSlots } from "@/widgets/header/app-header-slots";
@@ -52,11 +51,10 @@ function ControlSkeleton() {
 
 type ControlModel = {
   id: string;
-  ticket: string;
   name: string;
   description?: string | null;
-  frameworkId: string;
   status?: string | null;
+  frameworkId?: string | null;
   testingFrequency?: string | null;
   updatedAt?: unknown;
 };
@@ -86,6 +84,21 @@ function ControlHeaderRight({ statusLabel, isMetaOpen, onToggle }: ControlHeader
   );
 }
 
+function ControlMainContent({ id }: { id: string }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold">Overview</h2>
+        <p className="text-muted-foreground text-sm">
+          Control detail placeholder; add widgets next.
+        </p>
+      </div>
+
+      <CommentsSection entityId={id as never} />
+    </div>
+  );
+}
+
 type ControlMetadataPanelProps = {
   control: ControlModel;
 };
@@ -94,19 +107,19 @@ function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
   return (
     <div className="space-y-4 text-sm">
       <div>
-        <div className="text-xs uppercase text-muted-foreground">Ticket</div>
-        <div className="mt-1 font-medium text-foreground">{control.ticket}</div>
-      </div>
-      <div>
-        <div className="text-xs uppercase text-muted-foreground">Framework</div>
-        <div className="mt-1 font-medium text-foreground">{control.frameworkId}</div>
+        <div className="text-xs uppercase text-muted-foreground">ID</div>
+        <div className="mt-1 font-medium text-foreground">{control.id}</div>
       </div>
       <div>
         <div className="text-xs uppercase text-muted-foreground">Status</div>
         <div className="mt-1 font-medium text-foreground">{control.status ?? "—"}</div>
       </div>
       <div>
-        <div className="text-xs uppercase text-muted-foreground">Testing</div>
+        <div className="text-xs uppercase text-muted-foreground">Framework</div>
+        <div className="mt-1 font-medium text-foreground">{control.frameworkId ?? "—"}</div>
+      </div>
+      <div>
+        <div className="text-xs uppercase text-muted-foreground">Testing Frequency</div>
         <div className="mt-1 font-medium text-foreground">{control.testingFrequency ?? "—"}</div>
       </div>
       <div>
@@ -117,29 +130,29 @@ function ControlMetadataPanel({ control }: ControlMetadataPanelProps) {
   );
 }
 
-export const Route = createFileRoute("/org/$slug/control/$ticket")({
+export const Route = createFileRoute("/org/$slug/control/$id")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { ticket, slug } = Route.useParams();
-  const ctrl = useAtomValue(getControlByTicket(ticket as never));
+  const { id, slug } = Route.useParams();
+  const setActiveDialog = useSetActiveDialog();
+  const controlState = useAtomValue(getControlById(id as never));
   const mutate = useAtomSet(updateControl(), { mode: "promise" });
-  const refreshDetail = useAtomRefresh(getControlByTicket(ticket as never));
+  const refreshDetail = useAtomRefresh(getControlById(id as never));
   const refreshList = useAtomRefresh(listControls(1));
 
-  const ctrlModel = Result.getOrElse(ctrl, () => null);
+  const controlModel = Result.getOrElse(controlState, () => null);
   const [isMetaOpen, setIsMetaOpen] = React.useState(true);
 
   const { name, setName, description, setDescription, statusLabel } = useAutosaveFields({
-    id: ctrlModel?.id ?? null,
-    name: ctrlModel?.name,
-    description: ctrlModel?.description,
+    id: controlModel?.id ?? null,
+    name: controlModel?.name,
+    description: controlModel?.description,
     onSave: async ({ name: nextName, description: nextDescription }) => {
-      if (!ctrlModel) return;
       await mutate({
         payload: {
-          id: ctrlModel.id as never,
+          id: id as never,
           data: {
             name: nextName,
             description: nextDescription,
@@ -164,76 +177,72 @@ function RouteComponent() {
     [isMetaOpen, statusLabel],
   );
 
-  const control = ctrlModel as ControlModel | null;
+  useAppHeaderSlots({ right: headerRight }, [headerRight]);
 
-  useAppHeaderSlots({ right: headerRight, breadcrumbLabel: control?.ticket }, [
-    headerRight,
-    control?.ticket,
-  ]);
+  const control = controlModel as ControlModel | null;
 
-  if (ctrl._tag === "Initial") {
+  if (controlState._tag === "Initial") {
     return <ControlSkeleton />;
   }
 
-  if (Result.isFailure(ctrl)) {
+  if (Result.isFailure(controlState)) {
     return <FieldDescription>Failed loading control</FieldDescription>;
   }
 
-  if (!ctrlModel || !control) {
+  if (!controlModel || !control) {
     return <FieldDescription>Control not found</FieldDescription>;
   }
 
   return (
     <OrgListLayout title={null} action={null} className="gap-0 pr-0">
       <div className="relative flex min-h-[calc(100vh-140px)] flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
-        <div className="min-w-0 flex-1 py-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <GhostInput
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
-            />
-            <GhostTextArea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
-              placeholder="Description"
-              rows={1}
-            />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-4 py-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <GhostInput
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="h-auto w-full min-w-0 p-0 text-2xl font-semibold focus-visible:ring-0"
+              />
+              <GhostTextArea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="text-muted-foreground min-h-12 w-full min-w-0 p-0 text-sm"
+                placeholder="Description"
+                rows={1}
+              />
+            </div>
+            <Tabs defaultValue="overview" className="flex flex-col gap-6">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="risks">Risks</TabsTrigger>
+                <TabsTrigger value="assessments">Assessments</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview" className="m-0">
+                <ControlMainContent id={id} />
+              </TabsContent>
+              <TabsContent value="risks" className="m-0">
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">Risks</h2>
+                    <Button onClick={() => setActiveDialog("createRisk")}>Create risk</Button>
+                  </div>
+                  <ListRisk slug={slug} filter={{ controlId: id as never }} />
+                </div>
+              </TabsContent>
+              <TabsContent value="assessments" className="m-0">
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">Assessments</h2>
+                    <Button onClick={() => setActiveDialog("createAssessmentTemplate")}>
+                      Create assessment
+                    </Button>
+                  </div>
+                  <ListAssessmentTemplates controlId={id} slug={slug} />
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
-          <Tabs defaultValue="overview" className="mt-6 flex flex-col gap-6">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="assessments">Assessments</TabsTrigger>
-              <TabsTrigger value="risks">Risks</TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="m-0">
-              <div className="space-y-3">
-                <h2 className="text-lg font-semibold">Overview</h2>
-                <p className="text-muted-foreground text-sm">
-                  Minimal control dashboard placeholder; add widgets next.
-                </p>
-              </div>
-              <CommentsSection entityId={control.id as never} />
-            </TabsContent>
-            <TabsContent value="assessments" className="m-0">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Assessments</h2>
-                <CreateAssessmentTemplate
-                  controlId={control.id as never}
-                  trigger={<Button type="button">Create assessment</Button>}
-                />
-              </div>
-              <ListAssessmentTemplates controlId={control.id} slug={slug} className="mt-4" />
-            </TabsContent>
-            <TabsContent value="risks" className="m-0">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Risks</h2>
-                <CreateRisk trigger={<Button type="button">Create risk</Button>} />
-              </div>
-              <ListRisk slug={slug} filter={{ controlId: control.id as never }} className="mt-4" />
-            </TabsContent>
-          </Tabs>
         </div>
         <MetadataSidebar id="control-metadata" open={isMetaOpen} onOpenChange={setIsMetaOpen}>
           <ControlMetadataPanel control={control} />

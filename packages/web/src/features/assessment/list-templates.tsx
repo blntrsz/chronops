@@ -22,10 +22,12 @@ function TemplateCardSkeleton() {
 export function ListAssessmentTemplates({
   className,
   controlId,
+  slug: slugProp,
   ...props
-}: React.ComponentProps<"div"> & { controlId?: string }) {
+}: React.ComponentProps<"div"> & { controlId?: string; slug?: string }) {
   const [page] = React.useState(1);
-  const { slug } = useParams({ from: "/org/$slug/assessment" });
+  const params = useParams({ strict: false }) as { slug?: string };
+  const slug = slugProp ?? params.slug ?? "";
 
   const list = useAtomValue(listAssessmentTemplates(page, controlId as never));
 

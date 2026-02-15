@@ -218,14 +218,13 @@ export class PdfNotFoundError extends Base.NotFoundError {
  * @since 1.0.0
  * @category errors
  */
-export class PdfProcessingError extends Schema.TaggedError<PdfProcessingError>("PdfProcessingError")(
+export class PdfProcessingError extends Schema.TaggedError<PdfProcessingError>(
   "PdfProcessingError",
-  {
-    message: Schema.String,
-    pdfId: Schema.optional(PdfId),
-    cause: Schema.optional(Schema.Unknown),
-  },
-) {
+)("PdfProcessingError", {
+  message: Schema.String,
+  pdfId: Schema.optional(PdfId),
+  cause: Schema.optional(Schema.Unknown),
+}) {
   static fromCause(cause: unknown, pdfId?: PdfId) {
     return new PdfProcessingError({
       message: `Failed to process PDF: ${cause}`,

@@ -8,7 +8,6 @@ export const ControlHandler = ControlContract.toLayer(
 
     return {
       ControlById: ({ id }) => service.getById(id),
-      ControlByTicket: ({ ticket }) => service.getByTicket(ticket),
       ControlCreate: (payload) => service.insert(payload),
       ControlList: ({ page, size, frameworkId }) => service.list({ page, size }, { frameworkId }),
       ControlUpdate: (payload) => service.update(payload),
