@@ -1,0 +1,407 @@
+# ChronOps Codebase Analysis
+
+## Executive Summary
+
+ChronOps is a unified GRC (Governance, Risk, and Compliance) platform designed to streamline compliance workflows, control management, evidence collection, and audit readiness. Built as a modern web application using TypeScript/Bun with a functional programming approach via Effect-TS, it targets compliance leads, control owners, security teams, and auditors.
+
+## Project Purpose and Goals
+
+### Core Problem
+- Compliance work is fragmented, slow, and difficult to prove
+- Control ownership is unclear and evidence is scattered
+- Audit preparation involves high manual effort and low confidence
+
+### Primary Goals
+1. Single source of truth for entire compliance program
+2. Clear control ownership, status tracking, and testing cadence
+3. Evidence traceability to controls and framework requirements
+4. Audit-ready outputs with minimal last-minute scrambling
+
+### Success Metrics
+- Reduce time to audit-ready by 50%
+- Achieve 90% controls mapped to evidence
+- Maintain 80% controls tested on schedule
+- Complete assessments within target windows
+
+## Architecture Overview
+
+### Technology Stack
+
+**Runtime & Build:**
+- Bun (v1.3.8) - Fast all-in-one JavaScript runtime
+- TypeScript 5
+- Vite for web bundling
+
+**Backend Framework:**
+- Effect-TS (v3.19.15) - Functional programming framework for TypeScript
+- @effect/platform & @effect/platform-bun - Platform abstractions
+- @effect/rpc - RPC communication layer
+- Drizzle ORM (v0.45.1) for database operations
+- Better Auth (v1.4.18) for authentication
+
+**Frontend:**
+- React 19.2
+- TanStack Router (v1.157) - File-based routing
+- TanStack Start - SSR capabilities
+- Radix UI - Accessible component primitives
+- Tailwind CSS v4 - Styling
+- Shadcn UI components
+- Lucide React - Icons
+
+**Database:**
+- PostgreSQL 16 (Alpine)
+- Drizzle ORM for type-safe queries
+- @effect/sql-pg for Effect integration
+
+**Storage & External Services:**
+- AWS S3 (@effect-aws/s3) - Document/evidence storage
+- pdfjs-serverless - PDF text extraction
+- OpenAI SDK (@ai-sdk/openai) - AI capabilities via Vercel AI SDK
+
+**Development Tools:**
+- oxlint & oxfmt - Fast Rust-based linting/formatting
+- Sherif - Monorepo validation
+- Vitest - Testing framework
+- agent-browser - Browser automation for testing
+
+### Monorepo Structure
+
+```
+chronops/
+├── packages/
+│   ├── domain/        # Pure domain models and business logic
+│   ├── core/          # Backend services, database, RPC, auth
+│   ├── web/           # Frontend React application
+│   └── functions/     # Serverless functions (if applicable)
+├── docs/              # Documentation
+├── compose.yaml       # Docker Compose for local PostgreSQL
+└── package.json       # Workspace root configuration
+```
+
+### Package Responsibilities
+
+**@chronops/domain:**
+- Pure TypeScript domain models using Effect Schema
+- Business entities: Framework, Control, Evidence, Policy, Risk, Audit, Issue
+- Assessment & Questioner templates and instances
+- PDF and document models
+- Schedule and workflow definitions
+- Zero external dependencies except Effect
+- Acts as shared contract between frontend and backend
+
+**@chronops/core:**
+- Backend business logic and data access
+- Service layer for all domain entities:
+  - framework/, control/, evidence/, policy/, risk/
+  - audit/, issue/, assessment/, questioner/
+  - comment/, event/, ticket/
+  - pdf/, storage/, schedule/
+- Database layer with Drizzle ORM
+- RPC server implementation (@effect/rpc)
+- Authentication service (Better Auth)
+- PDF text extraction service
+- S3 storage integration
+- Common utilities and logging
+- Database migrations
+
+**@chronops/web:**
+- React 19 frontend with TanStack Router
+- File-based routing in src/routes/
+- Org-scoped routes: /org/$slug/*
+- Feature areas:
+  - Framework management
+  - Control library
+  - Assessment & questioner workflows
+  - Policy management
+  - Issue tracking
+  - Risk management
+  - Audit workflows
+- Shadcn UI component library
+- RPC client for backend communication
+- Authentication UI
+- Responsive design with Tailwind CSS
+
+## Domain Model
+
+### Core Entities
+
+**Framework:**
+- Compliance frameworks (SOC 2, ISO 27001, etc.)
+- Version tracking
+- Requirements/controls mapping
+- Archive capability
+- Summary statistics
+
+**Control:**
+- Control library entries
+- Status tracking (Not Started, In Progress, Implemented, etc.)
+- Testing cadence (Annual, Quarterly, Monthly, etc.)
+- Owner assignment
+- Framework requirement mappings
+- Evidence attachments
+
+**Evidence:**
+- Evidence library entries
+- Document upload/link support
+- Metadata and retention policies
+- Control and requirement mappings
+- PDF extraction capability
+
+**Policy:**
+- Policy documents
+- Version control
+- Approval workflow
+- Control mappings
+
+**Risk:**
+- Risk register entries
+- Likelihood and impact assessment
+- Mitigation status
+- Control associations
+
+**Audit:**
+- Audit scopes and plans
+- Evidence request lists
+- Exportable evidence packs
+- Finding/issue tracking
+
+**Assessment:**
+- Assessment templates (questionnaires)
+- Assessment instances (actual runs)
+- Question responses with evidence
+- Pass/fail status by control
+- Completion tracking
+
+**Questioner:**
+- Flexible questionnaire system
+- Template and instance pattern
+- Dynamic question flows
+- Evidence collection per question
+
+**Issue:**
+- Findings from assessments or audits
+- Owner assignment
+- Due dates
+- Remediation status
+- Priority levels
+
+**Comment & Activity:**
+- Activity streams on entities
+- Comment threads
+- User mentions
+- Audit trail
+
+**Schedule & Workflow:**
+- Recurring task runner
+- Scheduled assessments/reviews
+- Notification triggers
+- Workflow state management
+
+## Current Implementation Status
+
+### Implemented (MVP-Ready):
+1. Organization management with access control
+2. Framework library (create/edit/archive)
+3. Control library with full metadata
+4. Framework detail views with control listings
+5. Control detail with comments/activity
+6. Document upload with backend PDF extraction
+7. Recurring task scheduling (backend ready)
+8. Dashboard navigation shell
+9. Authentication and authorization (Better Auth)
+10. Database schema with migrations
+11. RPC communication layer
+12. S3 storage integration
+
+### Gaps to MVP (Per PRD):
+1. **Missing Features:**
+   - Policies, risks, assessments, issues, audits (partial UI only)
+   - Evidence library UI and workflows
+   - Requirement-level mapping (only control-level exists)
+   - Roles/permissions beyond basic org membership
+   - Notifications/reminders not surfaced in UI
+   - Reporting and audit export
+   - Search functionality (shell only, no results)
+
+2. **Incomplete Workflows:**
+   - Evidence collection and mapping
+   - Assessment execution and response gathering
+   - Audit scope and evidence pack export
+   - Issue remediation tracking
+   - Control testing reminders
+
+## Key Technical Patterns
+
+### Effect-TS Philosophy:
+- Functional, composable error handling
+- Type-safe dependency injection via Context
+- Effect pipelines for async operations
+- Schema-based validation and serialization
+- Layered architecture (Service, Repository patterns)
+
+### RPC Architecture:
+- Contract-first API design (@chronops/core/contract.ts)
+- Type-safe client-server communication
+- Shared domain models via @chronops/domain
+- Effect-native request/response handling
+
+### Database Design:
+- Drizzle ORM for type-safe SQL
+- Effect-SQL integration for functional DB access
+- ULID-based IDs for distributed systems
+- Soft deletes (archived flag)
+- Audit columns (createdAt, updatedAt, createdBy)
+
+### Authentication:
+- Better Auth for modern auth patterns
+- Org-based multi-tenancy
+- Session management
+- Token-based API access
+
+### Frontend Architecture:
+- File-based routing (TanStack Router)
+- Route-level code splitting
+- Loader-based data fetching
+- Shadcn components for consistent UI
+- Responsive design with Tailwind CSS
+- Org-scoped navigation (/org/$slug/...)
+
+## Development Workflow
+
+### Commands:
+- `bun install` - Install dependencies
+- `bun run dev` - Start all packages in dev mode
+- `bun scan` - Run lint, format, typecheck
+- `bun scan:fix` - Auto-fix linting and formatting
+- `bun run typecheck` - Type checking across workspace
+- Web server runs on port 3000
+
+### Testing:
+- Vitest for unit/integration tests
+- agent-browser for UI automation
+- Testing library for React components
+- Effect testing utilities (@effect/vitest)
+
+### Database:
+- Docker Compose for local PostgreSQL
+- `bun run auth:migrate` - Run auth migrations
+- `bun run db` - Drizzle Kit CLI for schema management
+
+### Code Quality:
+- oxlint (Rust-based linter) for fast linting
+- oxfmt (Rust-based) for consistent formatting
+- Sherif for monorepo dependency validation
+- Conventional commits with scope format
+
+## User Journeys
+
+### Setup Journey:
+1. Create organization
+2. Select relevant frameworks (SOC 2, ISO 27001)
+3. Import/create control library
+4. Assign control owners
+
+### Operation Journey:
+1. Assign control owners
+2. Collect and upload evidence
+3. Link evidence to controls
+4. Run periodic assessments
+5. Track testing cadence
+6. Review compliance dashboard
+
+### Audit Journey:
+1. Define audit scope
+2. Compile evidence pack
+3. Respond to auditor requests
+4. Track and close findings
+5. Export audit-ready documentation
+
+## Strategic Considerations
+
+### MVP Scope Management:
+- Start with 1-2 core frameworks (SOC 2 + ISO 27001)
+- Manual evidence collection (no integrations yet)
+- Focus on compliance posture over full risk engine
+- Avoid scope creep into continuous monitoring
+
+### Non-Goals (Explicitly Out of Scope):
+- Continuous control monitoring via integrations
+- Full vendor risk management
+- Deep policy authoring workflow engine
+- Real-time GRC analytics warehouse
+
+### Key Risks:
+1. MVP scope creep (trying to do too much)
+2. Data quality from manual entry
+3. Evidence trust without automated integrations
+4. User adoption if workflows too complex
+
+### Assumptions:
+- Users comfortable with manual evidence uploads
+- Compliance teams familiar with GRC concepts
+- Audit-readiness primary driver (not real-time monitoring)
+- Start small, iterate based on feedback
+
+## Target Personas
+
+1. **Compliance Lead:**
+   - Program owner
+   - Audit preparation coordinator
+   - Needs visibility across entire program
+   - Reports to leadership on compliance posture
+
+2. **Control Owner:**
+   - Implements and tests controls
+   - Collects evidence
+   - Responds to assessment questions
+   - Needs clear ownership and deadlines
+
+3. **Security Lead:**
+   - Wants visibility into risk posture
+   - Reviews control effectiveness
+   - Identifies gaps and weaknesses
+   - Prioritizes remediation efforts
+
+4. **Auditor/Reviewer:**
+   - Needs evidence pack exports
+   - Reviews control testing
+   - Validates compliance claims
+   - Issues findings and recommendations
+
+## Technical Debt and Improvement Areas
+
+1. **Frontend State Management:**
+   - Currently using TanStack Router loaders
+   - May need TanStack Query for complex caching
+   - Consider TanStack Store for global state
+
+2. **Authentication & Authorization:**
+   - Basic org membership implemented
+   - Need role-based permissions (admin, editor, viewer)
+   - Fine-grained access control per entity type
+
+3. **Search:**
+   - Shell exists but no implementation
+   - Need full-text search across entities
+   - Consider PostgreSQL full-text or external search service
+
+4. **Notifications:**
+   - Backend scheduling exists
+   - No UI for notification preferences
+   - Need email/in-app notification system
+
+5. **Reporting:**
+   - No dashboard with real metrics
+   - Need coverage reports, overdue testing alerts
+   - Readiness score calculations
+
+6. **Evidence Management:**
+   - PDF extraction ready but UI incomplete
+   - Need drag-drop upload, preview, versioning
+   - Retention policy enforcement
+
+## Conclusion
+
+ChronOps is a well-architected GRC platform leveraging modern TypeScript, functional programming patterns, and a monorepo structure for scalability. The current implementation provides a solid foundation with org management, framework library, and control tracking. Key gaps remain in evidence workflows, assessment execution, audit exports, and comprehensive reporting. The Effect-TS approach ensures type safety and composability but may present a learning curve for contributors unfamiliar with functional programming patterns.
+
+The project is positioned for incremental MVP delivery, with clear separation of concerns across domain, backend, and frontend packages. Focus should remain on completing core compliance workflows—evidence collection, assessment execution, and audit-ready exports—before expanding into advanced features like continuous monitoring or vendor risk management.
