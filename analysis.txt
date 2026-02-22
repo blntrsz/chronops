@@ -1,0 +1,749 @@
+================================================================================
+                    CHRONOPS CODEBASE ANALYSIS
+                         February 22, 2026
+================================================================================
+
+1. PROJECT IDENTITY
+================================================================================
+
+Project Name: Chronops
+
+Purpose: A unified compliance workspace (GRC - Governance, Risk, and Compliance)
+designed for modern engineering teams to streamline frameworks, controls,
+evidence management, assessments, and audit readiness.
+
+Core Value Proposition: Simplify compliance work by providing a single source
+of truth for the compliance program, enabling clear control ownership, evidence
+traceability, and audit-ready outputs with minimal manual effort.
+
+Target Audience: Engineering teams, compliance professionals, security teams,
+and organizations preparing for or maintaining compliance certifications
+(SOC 2, ISO 27001, HIPAA, etc.)
+
+
+2. TECHNOLOGY STACK
+================================================================================
+
+Language & Runtime:
+- TypeScript 5.x (primary language for all packages)
+- Bun 1.3.8 (JavaScript runtime - fast alternative to Node.js)
+- ES Modules throughout
+
+Frontend Stack:
+- React 19.2.4 (UI framework)
+- TanStack React Router 1.157.18 (file-based routing)
+- TanStack React Form 1.28.0 (form state management)
+- TanStack React Start 1.157.18 (SSR/full-stack meta framework)
+- Vite 7.3.1 (build tool and dev server)
+- Tailwind CSS 4.1.18 (utility-first styling)
+- Radix UI (accessible primitive components - 20+ components)
+- Shadcn UI (component library built on Radix)
+- Recharts 3.7.0 (data visualization and charting)
+- React Hook Form 7.71.1 (form handling)
+- Zod 4.3.6 (schema validation)
+
+Backend Stack:
+- Better Auth 1.4.18 (authentication with email OTP + organization support)
+- Drizzle ORM 0.45.1 (type-safe database query builder)
+- PostgreSQL 16 (primary database)
+- Effect 3.19.15 (functional programming library for error handling,
+  dependency injection, and async workflows)
+- @effect/platform & @effect/platform-bun (Effect-based platform abstractions)
+- @effect/rpc (type-safe RPC framework for client-server communication)
+- @effect/sql-pg (Effect-based PostgreSQL integration)
+
+Development & Quality Tools:
+- Vitest 4.0.18 (unit and integration testing)
+- Oxlint 1.42.0 (fast linter)
+- Oxfmt 0.27.0 (code formatter)
+- Sherif 1.10.0 (monorepo dependency linting)
+- TypeScript Compiler (type checking)
+
+AI/ML & Document Processing:
+- AI SDK (Vercel's AI SDK for LLM integration)
+- OpenAI (@ai-sdk/openai for text extraction and analysis)
+- PDFjs Serverless 0.4.2 (server-side PDF text extraction)
+
+Storage & Infrastructure:
+- AWS S3 (@effect-aws/client-s3, @effect-aws/s3 for document storage)
+- Better Auth Drizzle Adapter (persistent authentication state)
+- Nitro 3.0.1-alpha.2 (universal server framework)
+
+Utility Libraries:
+- ULID (distributed ID generation)
+- Lucide React (icon library)
+- Date-fns 4.1.0 (date manipulation)
+- Class Variance Authority 0.7.1 (component styling patterns)
+- Sonner 2.0.7 (toast notifications)
+- React Resizable Panels 4.5.6 (resizable UI layouts)
+- CMDk 1.1.1 (command palette component)
+
+
+3. ARCHITECTURE OVERVIEW
+================================================================================
+
+Monorepo Structure (Bun workspaces):
+
+packages/
+├── domain/          # Shared domain models, types, and schemas
+├── core/            # Backend services, database, RPC handlers
+├── web/             # Frontend React application
+└── functions/       # Scheduled job executor (background tasks)
+
+Architectural Pattern: Full-stack TypeScript monorepo with clear separation
+of concerns and layered architecture
+
+Layer Descriptions:
+
+1. Domain Layer (@chronops/domain):
+   - Pure TypeScript domain models
+   - Effect Schema for runtime type safety and validation
+   - Business logic and workflow definitions
+   - No external dependencies on UI or database
+   - Shared between all packages
+
+2. Core Layer (@chronops/core):
+   - Backend services using Effect for DI and error handling
+   - RPC contracts and handlers
+   - Database access via Drizzle ORM
+   - Service implementations for all domain entities
+   - Event sourcing and audit trail
+
+3. Web Layer (@chronops/web):
+   - Full-stack React application
+   - TanStack Router for file-based routing
+   - Feature-based folder structure
+   - UI components using Shadcn + Radix
+   - Form management and validation
+   - Client-side state management with atoms
+
+4. Functions Layer (@chronops/functions):
+   - Scheduled task executor
+   - Background job processing
+   - Separate deployment unit
+
+Communication Patterns:
+- Frontend ↔ Backend: Type-safe RPC via @effect/rpc
+- API Routes: TanStack Start with better-auth for authentication
+- State Management: Atoms via @effect-atom/atom-react for reactive state
+- Database Queries: Drizzle ORM with full TypeScript type inference
+
+
+4. KEY DOMAIN MODELS
+================================================================================
+
+The system is built around 13 core domain entities:
+
+1. Framework
+   - Compliance standards and requirements (SOC 2, ISO 27001, HIPAA, etc.)
+   - Properties: id, name, description, version, status (draft/active/archived)
+   - Includes workflow template for state transitions
+   - Can be preloaded from framework library
+
+2. Control
+   - Specific control implementations aligned to framework requirements
+   - Properties: id, name, description, framework association, status
+   - Testing frequencies: daily, weekly, monthly, quarterly, semiannual, annual
+   - Workflow-driven state management
+   - Owner assignment for accountability
+
+3. Evidence
+   - Proof artifacts demonstrating control compliance
+   - Links to controls and framework requirements
+   - Document metadata and retention policies
+   - PDF text extraction for searchability
+   - AWS S3 storage integration
+
+4. Assessment
+   - Control testing and evaluation process
+   - Assessment Template: Question sets, control scope, cadence definition
+   - Assessment Instance: Execution state, responses, timestamps
+   - Questioner Template: Questions + response schema
+   - Questioner Instance: Question execution and response collection
+
+5. Audit
+   - External audit management
+   - Audit entity, audit runs, audit frameworks
+   - Snapshots of controls, risks, and evidence at audit time
+   - Finding and issue generation
+
+6. Issue/Finding
+   - Non-conformities, gaps, and remediation items
+   - Properties: severity, status, remediation tracking
+   - Can be created from assessments or audits
+   - Owner assignment and due date tracking
+
+7. Risk
+   - Risk register and scoring
+   - Risk treatments and mitigation strategies
+   - Control mappings for risk mitigation
+   - Likelihood and impact assessment
+
+8. Policy
+   - Internal policies and procedures
+   - Review cycles and versioning
+   - Control mappings showing policy enforcement
+
+9. Comment
+   - Threaded notes with mentions support
+   - Attachable to any entity
+   - Activity tracking and collaboration
+
+10. PDF
+    - Document handling and processing
+    - Page-level text extraction
+    - Searchable document content
+
+11. Schedule & ScheduleRun
+    - Recurring task definitions
+    - Cadence configuration (daily, weekly, monthly, etc.)
+    - Execution triggers and time windows
+
+12. Actor
+    - User context for all operations
+    - Member ID, Organization ID, Organization Slug
+    - Enforces multi-tenancy
+
+13. Base (Foundation)
+    - Common properties for all entities
+    - Timestamps: createdAt, updatedAt, deletedAt
+    - Audit trail: createdBy, updatedBy, deletedBy
+    - Revision tracking
+    - Organization scoping (orgId on every entity)
+
+
+5. CORE SERVICES & RESPONSIBILITIES
+================================================================================
+
+For each domain entity, the core package provides:
+
+1. Contract - RPC method definitions (@effect/rpc)
+2. Handler - RPC request/response processing
+3. Service - Business logic with Effect for async operations
+4. SQL - Drizzle ORM table definitions and queries
+
+Key Service Modules:
+
+- FrameworkService: Framework CRUD, versioning, library management
+- ControlService: Control lifecycle, testing cadence, owner assignment
+- EvidenceService: Document upload, PDF extraction, evidence linking
+- AuditService: Audit scope, runs, findings, snapshot creation
+- AssessmentService: Template creation, instance execution, questioner workflow
+- RiskService: Risk register, scoring, treatment tracking
+- PolicyService: Policy management, review cycles
+- IssueService: Issue/finding tracking, remediation workflow
+- EventService: Event publishing and tracking for audit trail
+- TicketService: Human-readable ticket/ID generation with org scoping
+- AIService: Integration with OpenAI for document processing
+- PDFService: PDF upload, text extraction, S3 storage
+
+
+6. WEB APPLICATION FEATURES
+================================================================================
+
+Feature-Based Architecture (packages/web/src/features/):
+
+Each feature contains:
+- atoms/ - Reactive state management
+- components/ - React UI components
+- hooks/ - Custom React hooks
+- routes/ - Page components with file-based routing
+
+Implemented Features:
+
+1. Authentication (auth/)
+   - Email-based login with OTP verification
+   - Organization creation and switching
+   - Session management
+
+2. Framework Management (framework/)
+   - Framework CRUD operations
+   - Framework library browser
+   - Framework summary dashboard with statistics
+   - Version tracking
+
+3. Control Management (control/)
+   - Control library with list and detail views
+   - Status tracking and lifecycle management
+   - Testing cadence configuration
+   - Control-to-framework requirement mapping
+   - Owner assignment
+
+4. Evidence Management (evidence/)
+   - Document upload with drag-and-drop
+   - PDF text extraction
+   - Evidence linking to controls and requirements
+   - Metadata and retention tracking
+
+5. Assessment System (assessment/ & questioner/)
+   - Assessment template creation
+   - Assessment instance execution
+   - Question-based evaluation (questioner)
+   - Response collection with evidence attachment
+   - Finding generation from assessments
+
+6. Audit Management (audit/)
+   - Audit scope definition
+   - Audit run management
+   - Framework selection for audit
+   - Snapshot capability for point-in-time state
+
+7. Issue Tracking (issue/)
+   - Issue/finding creation from assessments or audits
+   - Severity and status tracking
+   - Remediation workflow
+   - Owner assignment and due dates
+
+8. Risk Management (risk/)
+   - Risk register
+   - Risk scoring (likelihood × impact)
+   - Treatment tracking
+   - Control linkage for mitigation
+
+9. Policy Management (policy/)
+   - Policy CRUD
+   - Review cycle tracking
+   - Control mapping
+
+10. Collaboration (comment/)
+    - Threaded comments on entities
+    - Mentions support
+    - Activity feed
+
+11. Dashboard & Reporting
+    - Framework summary dashboard
+    - Control coverage metrics
+    - Overdue testing tracking
+    - Audit readiness scoring
+
+12. Search & Navigation
+    - Command palette (Cmd+K)
+    - Framework and control browsing
+    - Global search (in development)
+
+Route Structure:
+
+/(auth)/
+  ├── login - Login page
+  └── otp - OTP verification
+
+/org - Organization router (redirects to active org)
+/org/$slug/
+  ├── (dashboard) - Organization dashboard
+  ├── framework/ - Frameworks list and detail
+  ├── control/ - Controls list and detail
+  ├── evidence/ - Evidence library
+  ├── assessment/ - Assessment templates and instances
+  ├── audit/ - Audits
+  ├── issue/ - Issues and findings
+  ├── risk/ - Risk register
+  └── policy/ - Policies
+
+/api/
+  ├── rpc/ - RPC endpoint for Effect RPC
+  └── auth/ - Better Auth routes
+
+
+7. DATABASE SCHEMA
+================================================================================
+
+PostgreSQL 16 database with 19+ tables:
+
+Core Tables:
+- organization - Multi-tenant organization records
+- member - Users within organizations with roles
+- framework - Compliance framework definitions
+- control - Control implementations
+- evidence - Evidence documents and metadata
+- assessment - Assessment definitions and instances
+- audit - Audit records and runs
+- issue - Issues and findings
+- risk - Risk register entries
+- policy - Policy documents
+- comment - Comments and threads
+- event - Event sourcing and audit trail
+- schedule - Scheduled task definitions
+- schedule_run - Schedule execution history
+- pdf - PDF document metadata
+- pdf_page - Extracted PDF page content
+
+Key Schema Features:
+- All entities scoped by orgId (multi-tenancy)
+- Soft deletes (deletedAt timestamp column)
+- Audit columns (createdBy, updatedBy, deletedBy)
+- Timestamps (createdAt, updatedAt)
+- Event sourcing table for complete audit trail
+- Foreign key relationships with cascade rules
+
+
+8. DATA FLOW
+================================================================================
+
+Typical User Journey:
+
+1. User Authentication
+   ↓ User logs in with email
+   ↓ Better Auth sends OTP
+   ↓ User verifies OTP
+   ↓ Session created, organization assigned
+
+2. Organization Setup
+   ↓ User selects or creates organization
+   ↓ Organization context loaded
+   ↓ Dashboard shows compliance status
+
+3. Framework Selection
+   ↓ User browses framework library (SOC 2, ISO 27001, etc.)
+   ↓ User activates framework for organization
+   ↓ Framework requirements loaded
+
+4. Control Implementation
+   ↓ User creates controls mapped to framework requirements
+   ↓ Controls assigned to owners
+   ↓ Testing cadence configured
+
+5. Evidence Collection
+   ↓ User uploads evidence documents
+   ↓ PDFs automatically extracted to text
+   ↓ Evidence linked to controls and requirements
+   ↓ Documents stored in S3
+
+6. Assessment Execution
+   ↓ User creates assessment template for controls
+   ↓ Assessment instance scheduled
+   ↓ Questioner presents questions to control owner
+   ↓ Responses collected with supporting evidence
+   ↓ System generates findings if gaps identified
+
+7. Issue Remediation
+   ↓ Issues created from assessment findings
+   ↓ Issues assigned to owners with due dates
+   ↓ Remediation tracked to completion
+
+8. Audit Preparation
+   ↓ User defines audit scope (frameworks, controls)
+   ↓ System creates snapshot of current state
+   ↓ Audit evidence pack compiled
+   ↓ Auditor reviews controls and evidence
+
+9. Dashboard & Reporting
+   ↓ Dashboard shows control coverage
+   ↓ Testing cadence compliance tracked
+   ↓ Overdue items highlighted
+   ↓ Audit readiness score calculated
+
+Event-Driven Architecture:
+- Entity changes emit events (created, updated, deleted)
+- Events persisted in event table for audit trail
+- EventService coordinates event publishing
+- Events enable activity feed and notifications
+
+
+9. KEY ARCHITECTURAL PATTERNS
+================================================================================
+
+1. Type Safety First
+   - End-to-end TypeScript from domain → database → RPC → frontend
+   - Runtime validation via Effect Schema
+   - Type inference propagates through all layers
+   - No any types, strict TypeScript configuration
+
+2. Functional Programming with Effect
+   - Dependency injection via Effect.Service
+   - Tagged errors for precise error handling
+   - Async operations with Effect.gen generators
+   - Resource management with acquire/release patterns
+   - Composable business logic
+
+3. Monorepo Benefits
+   - Shared domain models between frontend and backend
+   - Workspace dependencies for tight integration
+   - Single versioning for related packages
+   - Atomic changes across multiple packages
+
+4. Multi-Tenancy
+   - Every entity scoped to orgId at database layer
+   - Actor context enforces organization boundaries
+   - No cross-organization data leakage
+   - Organization switcher in UI
+
+5. Workflow Engine
+   - Custom workflow template system
+   - State transitions for frameworks, controls, assessments
+   - Configurable workflow stages
+   - Status tracking and validation
+
+6. Event Sourcing
+   - Events table enables complete audit trail
+   - Historical analysis and debugging
+   - Activity feed generation
+   - Compliance evidence of all changes
+
+7. Full-Stack Reactivity
+   - TanStack ecosystem for routing, forms, and queries
+   - Atoms for reactive state management
+   - Real-time UI updates without polling
+   - Optimistic updates with rollback
+
+8. Document Processing Pipeline
+   - PDF upload → S3 storage
+   - Text extraction via PDFjs
+   - AI analysis via OpenAI
+   - Searchable content indexing
+
+
+10. DESIGN SYSTEM & UX PHILOSOPHY
+================================================================================
+
+Design Principles (from docs/design-system.md):
+
+1. Dark Theme by Default
+   - Dark surfaces for trust and calmness
+   - Brand gradient: cyan → indigo
+   - Semantic color tokens for states
+
+2. Density & Readability
+   - Dense, readable tables for GRC data
+   - Clear hierarchy and spacing
+   - Monospace fonts for technical data
+
+3. Subtle Motion
+   - 150–250ms transitions
+   - Gentle fade-ins and slide animations
+   - No distracting or jarring movement
+
+4. Accessibility
+   - 4.5:1 minimum contrast ratio (WCAG AA)
+   - Keyboard navigation support
+   - Screen reader friendly
+   - Focus indicators on all interactive elements
+
+5. Component Library
+   - Shadcn UI built on Radix primitives
+   - Consistent component API
+   - Composable and customizable
+   - Dark theme optimized
+
+UI Patterns:
+- Responsive dialogs for mobile
+- Resizable panels for complex views
+- Command palette for quick navigation
+- Toast notifications for feedback
+- Loading states and skeletons
+
+
+11. DEVELOPMENT WORKFLOW
+================================================================================
+
+Build & Development:
+- bun install - Install dependencies
+- bun run dev - Start development server (Vite + TanStack Start)
+- bun run build - Production build
+- bun run preview - Preview production build
+- bun run check - Type check all packages
+- bun run lint - Lint with Oxlint
+- bun run format - Format with Oxfmt
+- bun run test - Run Vitest tests
+
+Database:
+- Docker Compose for local PostgreSQL 16
+- Drizzle migrations for schema changes
+- Seed scripts for demo data
+
+Conventions (from AGENTS.md):
+- Commit format: <keyword>(<folder>/<domain-slice>): <message>
+- Conventional commits (feat, fix, refactor, docs, test, chore)
+- Scope indicates changed package and feature
+- Detailed impact in commit body
+
+Tools:
+- Sherif for monorepo dependency validation
+- Oxlint for fast linting
+- Bun for all operations (not Node.js)
+- GitHub Actions for CI/CD (assumed)
+
+
+12. PROJECT STATUS & ROADMAP
+================================================================================
+
+Implemented (MVP Features):
+✓ Organization setup and management
+✓ Email OTP authentication
+✓ Organization switcher
+✓ Framework CRUD with preloaded library
+✓ Framework summary dashboard
+✓ Control library with lifecycle management
+✓ Control status and testing cadence
+✓ Evidence document upload and PDF extraction
+✓ Assessment templates and instances
+✓ Questioner execution workflow
+✓ Audit scope and run management
+✓ Issue/Finding creation and tracking
+✓ Comments and activity tracking
+✓ Dashboard shell with statistics
+
+Partially Implemented:
+⚠ Risk management (domain model exists, limited UI)
+⚠ Policy management (domain model exists, limited UI)
+⚠ Requirement-level detail mapping
+⚠ Role-based permissions (basic org roles only)
+
+Not Yet Implemented:
+✗ Notifications and reminders UI
+✗ Full audit export functionality
+✗ Advanced search results page
+✗ Continuous monitoring integrations
+✗ Vendor risk management
+✗ Third-party integrations (Jira, Slack, etc.)
+✗ Bulk import/export
+✗ Compliance reporting templates
+✗ Custom workflow builder UI
+
+
+13. RECENT DEVELOPMENT ACTIVITY
+================================================================================
+
+Latest Commits (from git log):
+1. feat(core/framework): add framework summary dashboard with real stats
+2. feat(web/ui): add responsive dialogs
+3. refactor(web/control): switch from ticket to id-based routing
+4. refactor(web/control): use ticket instead of id in URL
+5. fix(web/control): move tabs below title/description
+
+Development Focus Areas:
+- Framework statistics and dashboard refinement
+- Control routing and detail views
+- Responsive UI improvements for mobile
+- Risk and evidence tab UI
+- Organization ticketing system
+- Questioner domain implementation
+- Audit UI enhancements
+
+
+14. STRENGTHS & INNOVATIONS
+================================================================================
+
+1. Modern Tech Stack
+   - Cutting-edge TypeScript ecosystem (React 19, TanStack, Effect)
+   - Bun for faster builds and better DX
+   - Type-safe RPC eliminates API documentation drift
+
+2. Type Safety Guarantee
+   - Runtime validation via Effect Schema
+   - Compile-time guarantees from domain to UI
+   - Eliminates entire class of runtime errors
+
+3. Multi-Tenant Architecture
+   - Clean organization scoping at database layer
+   - Actor context enforces boundaries
+   - Scales to enterprise use cases
+
+4. Event Sourcing
+   - Complete audit trail by design
+   - Debugging and historical analysis
+   - Compliance requirement for GRC
+
+5. Functional Programming
+   - Effect enables composable, testable business logic
+   - Dependency injection without magic
+   - Precise error handling with tagged errors
+
+6. Document Intelligence
+   - Automated PDF text extraction
+   - AI-powered document analysis
+   - Evidence searchability
+
+7. Workflow Engine
+   - Configurable compliance workflows
+   - State machine validation
+   - Adaptable to different frameworks
+
+
+15. TECHNICAL DEBT & CONSIDERATIONS
+================================================================================
+
+Potential Areas for Improvement:
+
+1. Effect Adoption Curve
+   - Effect has a learning curve for new contributors
+   - Functional programming paradigm may be unfamiliar
+   - Mitigation: Good documentation and code examples
+
+2. Bun Maturity
+   - Bun is newer than Node.js, potential edge cases
+   - Some npm packages may have compatibility issues
+   - Mitigation: Test thoroughly, fallback to Node if needed
+
+3. Monorepo Complexity
+   - Build orchestration can be complex
+   - Dependency management requires discipline
+   - Mitigation: Sherif tool helps enforce rules
+
+4. Database Schema Evolution
+   - Migrations must be carefully managed
+   - Breaking changes impact all packages
+   - Mitigation: Schema versioning and migration testing
+
+5. Test Coverage
+   - Unit tests exist but coverage may be incomplete
+   - Integration tests needed for critical paths
+   - Mitigation: Expand test suite as features stabilize
+
+6. Performance Optimization
+   - Large datasets may require pagination and virtualization
+   - Database query optimization for complex reports
+   - Mitigation: Performance testing and query profiling
+
+
+16. DEPLOYMENT CONSIDERATIONS
+================================================================================
+
+Infrastructure Requirements:
+- PostgreSQL 16 database (AWS RDS, Supabase, etc.)
+- AWS S3 bucket for document storage
+- Node.js or Bun runtime (Bun preferred)
+- Environment variables for secrets (DATABASE_URL, S3 credentials, etc.)
+
+Scaling Considerations:
+- Database read replicas for reporting queries
+- CDN for static assets
+- Background job workers for scheduled tasks
+- Horizontal scaling for web tier
+
+Security Requirements:
+- HTTPS/TLS for all traffic
+- Database encryption at rest
+- S3 bucket encryption
+- Environment variable management (AWS Secrets Manager, etc.)
+- Regular security updates for dependencies
+
+
+17. CONCLUSION
+================================================================================
+
+Chronops is a sophisticated, modern GRC (Governance, Risk, and Compliance)
+platform built with cutting-edge full-stack TypeScript tooling. It emphasizes:
+
+- Type safety at every layer
+- Functional programming patterns via Effect
+- Multi-tenant architecture for scalability
+- Event sourcing for audit trails
+- Modern UX with accessible, responsive design
+- Document intelligence with AI-powered extraction
+
+The codebase demonstrates strong architectural discipline with clear separation
+of concerns, domain-driven design, and thoughtful abstractions. The monorepo
+structure enables rapid development with shared types while maintaining
+modularity.
+
+Target users are engineering teams and compliance professionals who need a
+single source of truth for their compliance program, with features supporting
+the full compliance lifecycle from framework selection through audit readiness.
+
+The project is in active development with core MVP features implemented and
+additional capabilities on the roadmap. The foundation is solid and extensible
+for future growth.
+
+================================================================================
+                             END OF ANALYSIS
+================================================================================
